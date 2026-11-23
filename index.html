@@ -616,8 +616,8 @@ setSong(SONGS[songIdx]);
 let offsetMs=store.get('sb.offset2',0);
 // 배속 (노트가 내려오는 속도만 바꾸고 판정 타이밍은 그대로)
 const SPEEDS=[0.75,1,1.25,1.5,2]; let speedMul=store.get('sb.speed',1); if(!SPEEDS.includes(speedMul)) speedMul=1;
-// 배속(노트 낙하 속도)별 점수 배율: 느리게 보면 쉬우니 감점, 빠르면 약간 가산 (최대 100만 점은 그대로)
-const SPEED_SCORE={0.75:0.85,1:1,1.25:1.02,1.5:1.04,2:1.06}, spMul=v=>SPEED_SCORE[v]||1;
+// 배속(노트 낙하 속도)별 점수 배율: 느리게 보면 쉬우니 감점, 빠르면 가산 (만점도 그만큼 커짐)
+const SPEED_SCORE={0.75:0.85,1:1,1.25:1.02,1.5:1.04,2:1.06}, spMul=v=>SPEED_SCORE[v]||1, MAXS=1.1e6;   // 1배 넘으면 만점도 늘어남 (2배속 만점 106만)
 // 체력 게이지: 맞히면 회복, 놓치면 감소, 0이 되면 패배
 const GAUGES={easy:{name:'연습',hit:{PERFECT:2,GREAT:1.5,GOOD:0.8},miss:2,swing:1,def:7,chip:0.5,nofail:true},
               normal:{name:'일반',hit:{PERFECT:1.2,GREAT:0.9,GOOD:0.3},miss:4,swing:2.5,def:9,chip:1.5},
@@ -1219,7 +1219,7 @@ function judge(n,j,dt,pt){
 }
 
 function gain(pv,lane,c){   // 100만 점 만점: 판정 가치 비율로 점수
-  const r=run, v=Math.round(1e6*pv/r.maxPts*r.sMul); r.pts+=pv; r.score=Math.min(1e6,Math.round(1e6*r.pts/r.maxPts*r.sMul)); const [x,y]=L.impact[lane];
+  const r=run, v=Math.round(1e6*pv/r.maxPts*r.sMul); r.pts+=pv; r.score=Math.round(1e6*r.pts/r.maxPts*r.sMul); const [x,y]=L.impact[lane];
   fx.pops.push({x:x+(hand(lane)?1:-1)*L.faceR*0.5,y:y-L.faceR*0.5,txt:'+'+v,c,t:performance.now()/1000});
 }
 function comboCheck(pt){
@@ -2319,7 +2319,7 @@ function showResults(){
   if(r.failed){ const pk='sb6.prog.'+recKey(r.song.id), pb=store.get(pk,0), pct=r.prog||0;
     $('rProgPct').textContent=pct+'%'; $('rProgFill').style.width='0%'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ $('rProgFill').style.width=pct+'%'; }));
     $('rProgBest').textContent=pct>pb?'최고 기록 갱신!':pb?`최고 ${pb}%`:''; if(pct>pb) store.set(pk,pct); }
-  if(r.failed) r.score=Math.min(1e6,Math.round(1e6*r.pts/r.maxPts*r.sMul));
+  if(r.failed) r.score=Math.round(1e6*r.pts/r.maxPts*r.sMul);
   const lamp=r.failed?1:(c.MISS===0&&r.empty===0&&c.GREAT===0&&c.GOOD===0)?6:(c.MISS===0&&r.empty===0)?5:r.G.nofail?2:r.gaugeKey==='hard'?4:3;
   const L_=LAMPS[lamp]; $('rLamp').textContent=L_.n; $('rLamp').style.color=L_.c; $('rLamp').style.borderColor=L_.c;
   $('rScore').textContent=r.score.toLocaleString();
@@ -2417,7 +2417,7 @@ function bestSum(best){
   for(const [k,b] of Object.entries(best||{})){ const id=k.split('@')[0], sg=SONGS.find(x=>x.id===id); if(!sg||!b) continue;
     const l=num(b.l,6)|0, f=seen[id]||(seen[id]={});
     if(l>=5) f.fc=1; if(l>=6) f.ap=1; if(String(b.g||'')==='S') f.s=1;
-    if(l>=3){ f.c=1; if(sg.level>=11) f.death=1; else if(sg.level>=9) f.hell=1; else if(sg.level>=7) f.ext=1; } B.total+=num(b.s,1e6); }
+    if(l>=3){ f.c=1; if(sg.level>=11) f.death=1; else if(sg.level>=9) f.hell=1; else if(sg.level>=7) f.ext=1; } B.total+=num(b.s,MAXS); }
   for(const f of Object.values(seen)){ B.fc+=f.fc||0; B.ap+=f.ap||0; B.s+=f.s||0; B.cleared+=f.c||0; B.ext+=f.ext||0; B.hell+=f.hell||0; B.death+=f.death||0; }
   return B; }
 function achState(S,best){ const B=bestSum(best); return ACHS.map(a=>{ const [c,g]=a.v(S||ST0,B); return {a,cur:Math.min(c,g),goal:g,ok:c>=g}; }); }
@@ -2671,7 +2671,7 @@ document.querySelectorAll('#judgeSeg button').forEach(b=>b.onclick=()=>{setJudge
 function syncSeg(id,attr,val){ document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr])===String(val))); }
 document.querySelectorAll('#flashSeg button').forEach(b=>b.onclick=()=>{ flashSafe=b.dataset.f==='safe'; store.set('sb.flashSafe',flashSafe); syncSeg('flashSeg','f',b.dataset.f); uiTick(); });
 document.querySelectorAll('#rateSeg button').forEach(b=>b.onclick=()=>{ rateMul=+b.dataset.r; store.set('sb.rate',rateMul); syncSeg('rateSeg','r',rateMul); updateMenu(); uiTick(); });
-function spHint(){ const m=spMul(speedMul), e=$('spHint'); if(e) e.textContent='노트 낙하 속도 · 점수 ×'+m+(m<1?' (느려서 감점)':m>1?' (빨라서 가산)':''); }
+function spHint(){ const m=spMul(speedMul), e=$('spHint'); if(e) e.textContent='노트 낙하 속도 · 점수 ×'+m+(m<1?` (느려서 감점 · 만점 ${(1e6*m).toLocaleString()})`:m>1?` (만점 ${(1e6*m).toLocaleString()}점)`:''); }
 document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>{ speedMul=+b.dataset.s; store.set('sb.speed',speedMul); syncSeg('speedSeg','s',speedMul); spHint(); uiTick();
   if(run){ run.sMul=Math.min(run.sMul,spMul(speedMul)); } });   // 곡 도중 바꾸면 그 판은 가장 낮은 배율로
 document.querySelectorAll('#gaugeSeg button').forEach(b=>b.onclick=()=>{ gaugeKey=b.dataset.g; store.set('sb.gauge',gaugeKey); syncSeg('gaugeSeg','g',gaugeKey); uiTick(); });
@@ -2733,7 +2733,7 @@ function makeCode(o){ const p=b64u(JSON.stringify(o)); return 'YH1.'+p+'.'+fnv(p
 function readCode(c){ const m=/^YH1\.([A-Za-z0-9_-]+)\.([0-9a-f]{8})$/.exec(c); if(!m||fnv(m[1]+'|'+CODE_SALT)!==m[2]) return null;
   try{ const o=JSON.parse(unb64u(m[1])); const [sid,rt]=String(o.k||'').split('@');
     if(!SONGS.some(x=>x.id===sid)||!RATES.includes(+rt)||!/^[a-z0-9_]{4,40}$/i.test(String(o.g||''))) return null;
-    return {g:String(o.g),n:cleanNick(o.n)||'게스트',k:sid+'@'+(+rt),s:Math.round(num(o.s,1e6)),r:String(o.r||'').slice(0,1),l:num(o.l,6)|0,a:num(o.a,100),t:num(o.t,9e15)}; }catch(e){ return null; } }
+    return {g:String(o.g),n:cleanNick(o.n)||'게스트',k:sid+'@'+(+rt),s:Math.round(num(o.s,MAXS)),r:String(o.r||'').slice(0,1),l:num(o.l,6)|0,a:num(o.a,100),t:num(o.t,9e15)}; }catch(e){ return null; } }
 function guestNick(){ return cleanNick(store.get('sb.gnick',''))||(NET.me&&NET.me.name)||''; }
 const cleanNick=s=>String(s||'').replace(/[\u0000-\u001f\u007f<>]/g,'').replace(/\s+/g,' ').trim().slice(0,16);
 const num=(v,max)=>{ const n=Number(v); return isFinite(n)?clamp(n,0,max):0; };
@@ -2845,7 +2845,7 @@ function rankList(key){   // key: "곡@속도" 또는 null(종합)
   const out=[];
   for(const [id,v] of NET.all){
     let s=0, g='', l=0;
-    if(key){ const b=v.best&&v.best[key]; if(!b) continue; s=num(b.s,1e6); g=String(b.g||'').slice(0,1); l=num(b.l,6)|0; }
+    if(key){ const b=v.best&&v.best[key]; if(!b) continue; s=num(b.s,MAXS); g=String(b.g||'').slice(0,1); l=num(b.l,6)|0; }
     else s=num(v.total,1e9);
     if(s>0) out.push({id,s,g,l,nick:cleanNick(v.nick)});
   }
@@ -2901,9 +2901,9 @@ $('rkRegGo').onclick=async()=>{
   for(const [id,list] of byDoc){
     const cur=NET.all.get(id)?JSON.parse(JSON.stringify(NET.all.get(id))):{}; const best=Object.assign({},cur.best||{}); let nick=cleanNick(cur.nick), changed=false;
     for(const o of list.sort((a,b)=>a.t-b.t)){ nick=o.n||nick; const old=best[o.k];
-      if(old&&num(old.s,1e6)>=o.s){ low++; continue; } best[o.k]={s:o.s,g:o.r,l:o.l,a:o.a,t:o.t}; ok++; changed=true; }
+      if(old&&num(old.s,MAXS)>=o.s){ low++; continue; } best[o.k]={s:o.s,g:o.r,l:o.l,a:o.a,t:o.t}; ok++; changed=true; }
     if(!changed&&nick===cleanNick(cur.nick)) continue;
-    const doc={...cur,nick,best,total:Object.values(best).reduce((a,b)=>a+num(b.s,1e6),0),v:1,via:'code'};
+    const doc={...cur,nick,best,total:Object.values(best).reduce((a,b)=>a+num(b.s,MAXS),0),v:1,via:'code'};
     try{ await NET.db.doc('scores/'+id).set(doc); NET.all.set(id,doc); }catch(e){ msg.textContent='저장하지 못했어요 (권한 확인)'; return; }
   }
   msg.textContent=`등록 ${ok}개`+(low?` · 이미 더 높은 기록 ${low}개`:'')+(bad?` · 잘못된 코드 ${bad}개`:''); if(ok) $('rkRegText').value='';
@@ -2927,9 +2927,9 @@ async function netRecord(r,rank,lamp,acc){
   if(!NET.db||!NET.uid){ showCode(r,rank,lamp,acc,'게스트 기록'); return; }
   if(NET.noWrite){ showCode(r,rank,lamp,acc,'이 링크에서는 직접 기록할 수 없어요'); return; }
   const key=r.song.id+'@'+r.rate, best=Object.assign({},NET.mine&&NET.mine.best||{}), old=best[key];
-  if(old&&num(old.s,1e6)>=r.score){ note.textContent=`랭킹 최고 기록 ${num(old.s,1e6).toLocaleString()} · 현재 ${placeOf(key,NET.uid)||'-'}위`; return; }
+  if(old&&num(old.s,MAXS)>=r.score){ note.textContent=`랭킹 최고 기록 ${num(old.s,MAXS).toLocaleString()} · 현재 ${placeOf(key,NET.uid)||'-'}위`; return; }
   best[key]={s:r.score,g:rank,l:lamp,a:Math.round(acc*10)/10,t:Date.now()};
-  const total=Object.values(best).reduce((a,b)=>a+num(b.s,1e6),0);
+  const total=Object.values(best).reduce((a,b)=>a+num(b.s,MAXS),0);
   note.textContent='랭킹에 기록하는 중…';
   try{ await saveMine({best,total}); note.textContent=`랭킹 등록! 이 곡 ${placeOf(key,NET.uid)}위`; }
   catch(e){ NET.noWrite=true; showCode(r,rank,lamp,acc,'이 링크에서는 직접 기록할 수 없어요'); }
@@ -3037,7 +3037,7 @@ function saveMine(patch){
   const run_=async()=>{
     const cur=NET.mine?JSON.parse(JSON.stringify(NET.mine)):{};
     const best=patch.best||cur.best||{};
-    const next={nick:ACC.id,best,total:Object.values(best).reduce((a,b)=>a+num(b.s,1e6),0),v:1};
+    const next={nick:ACC.id,best,total:Object.values(best).reduce((a,b)=>a+num(b.s,MAXS),0),v:1};
     await NET.db.doc('scores/'+NET.uid).set(next);
     NET.mine=next; NET.all.set(NET.uid,next);
   };
@@ -3068,7 +3068,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123143211'; let pending=false;
+  const CUR='20261123143556'; let pending=false;
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent='새 버전으로 업데이트하는 중…';
@@ -3270,7 +3270,7 @@ async function sendDuel(toUid,key){
   const mine=NET.mine&&NET.mine.best&&NET.mine.best[key];
   if(!mine) throw {code:'no-best'}; if(toUid===NET.uid) throw {code:'self'};
   if(NET.duels.some(d=>d.from===NET.uid&&d.to===toUid&&d.key===key&&d.status==='open')) throw {code:'dup'};
-  await FBK.sendChallenge(toUid,key,num(mine.s,1e6));
+  await FBK.sendChallenge(toUid,key,num(mine.s,MAXS));
 }
 const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 있어야 도전장을 보낼 수 있어요','self':'나에게는 보낼 수 없어요','dup':'이미 같은 곡으로 보낸 도전장이 있어요','no-user':'그런 아이디가 없어요'})[e&&e.code]||FBK.errMsg(e);
 (function duelPage(){
@@ -3321,10 +3321,10 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
     const ach=achState(p.st||{},sc.best||{}).filter(x=>x.ok).length, ph=photoOf(uid), nk=nickOf(uid);
     const key=SONGS[rkIdx].id+'@'+rateMul, sb=sc.best&&sc.best[key], mineB=NET.mine&&NET.mine.best&&NET.mine.best[key];
     $('pcBody').innerHTML=`<div class="pav">${ph?`<img src="${ph}" alt="">`:''}</div>${p.title&&(p.title!==DEV_TITLE||isDev(uid))?`<div class="pt${p.title===DEV_TITLE?' dev':''}">「${p.title.replace(/[<>&]/g,'')}」</div>`:''}<div class="pn"></div><div class="pi">@${idOf(uid)}</div>
-      <dl class="acinfo" style="margin-top:12px"><dt>종합 점수</dt><dd>${Math.round(num(sc.total,1e9)).toLocaleString()}</dd><dt>종합 순위</dt><dd>${ri>=0?ri+1+'위':'—'}</dd><dt>업적</dt><dd>${ach} / ${ACHS.length}</dd><dt>${SONGS[rkIdx].title} ×${rateMul}</dt><dd>${sb?num(sb.s,1e6).toLocaleString():'기록 없음'}</dd></dl>`;
+      <dl class="acinfo" style="margin-top:12px"><dt>종합 점수</dt><dd>${Math.round(num(sc.total,1e9)).toLocaleString()}</dd><dt>종합 순위</dt><dd>${ri>=0?ri+1+'위':'—'}</dd><dt>업적</dt><dd>${ach} / ${ACHS.length}</dd><dt>${SONGS[rkIdx].title} ×${rateMul}</dt><dd>${sb?num(sb.s,MAXS).toLocaleString():'기록 없음'}</dd></dl>`;
     $('pcBody').querySelector('.pn').textContent=nk; if(!ph) $('pcBody').querySelector('.pav').textContent=nk.slice(0,1).toUpperCase();
     const me=uid===NET.uid; $('pcDuel').classList.toggle('hidden',me||!ACC);
-    $('pcMsg').classList.remove('ok'); $('pcMsg').classList.toggle('info',!!mineB); $('pcMsg').textContent=me?'':mineB?`「${SONGS[rkIdx].title}」 ×${rateMul} 내 기록 ${num(mineB.s,1e6).toLocaleString()}점으로 도전해요`:`이 곡 ×${rateMul} 내 기록이 있어야 도전장을 보낼 수 있어요`;
+    $('pcMsg').classList.remove('ok'); $('pcMsg').classList.toggle('info',!!mineB); $('pcMsg').textContent=me?'':mineB?`「${SONGS[rkIdx].title}」 ×${rateMul} 내 기록 ${num(mineB.s,MAXS).toLocaleString()}점으로 도전해요`:`이 곡 ×${rateMul} 내 기록이 있어야 도전장을 보낼 수 있어요`;
     $('pcDuel').onclick=async()=>{ $('pcMsg').textContent='보내는 중…'; try{ await sendDuel(uid,key); $('pcMsg').classList.remove('info'); $('pcMsg').textContent='도전장을 보냈어요!'; $('pcMsg').classList.add('ok'); }catch(e){ $('pcMsg').classList.remove('info'); $('pcMsg').textContent=duelErr(e); } };
     pc.classList.remove('hidden');
   }
@@ -3337,7 +3337,7 @@ function renderDuels(){
     const av=ph?Object.assign(document.createElement('img'),{src:ph,alt:''}):Object.assign(document.createElement('div'),{className:'ini',textContent:nk.slice(0,1).toUpperCase()});
     const mid=document.createElement('div'); const b=document.createElement('b'); b.textContent=nk; const sm=document.createElement('small');
     const myS=mine?d.fromScore:d.toScore, thS=mine?d.toScore:d.fromScore;
-    sm.textContent=`${song?song.title:'?'} ×${rate} · ${d.status==='open'?(mine?`내 ${num(d.fromScore,1e6).toLocaleString()} · 상대 도전 대기 중`:`상대 ${num(d.fromScore,1e6).toLocaleString()}점을 넘어라`):d.status==='declined'?'거절됨':`나 ${num(myS,1e6).toLocaleString()} : ${num(thS,1e6).toLocaleString()} 상대`}`;
+    sm.textContent=`${song?song.title:'?'} ×${rate} · ${d.status==='open'?(mine?`내 ${num(d.fromScore,MAXS).toLocaleString()} · 상대 도전 대기 중`:`상대 ${num(d.fromScore,MAXS).toLocaleString()}점을 넘어라`):d.status==='declined'?'거절됨':`나 ${num(myS,MAXS).toLocaleString()} : ${num(thS,MAXS).toLocaleString()} 상대`}`;
     mid.append(b,sm);
     const right=document.createElement('div'); right.className='acts';
     if(d.status==='done'){ const w=myS>thS, l=myS<thS; const r=document.createElement('div'); r.className='res '+(w?'w':l?'l':'d'); r.textContent=w?'WIN':l?'LOSE':'DRAW'; right.append(r); }
@@ -3355,7 +3355,7 @@ window.afterRunHook=async(r)=>{
   const key=r.song.id+'@'+r.rate;
   if(CH_PENDING&&CH_PENDING.key===key&&Date.now()-CH_PENDING.t<3600e3){
     const c=CH_PENDING; CH_PENDING=null; const note=$('rRankNote'), w=r.score>c.from, l=r.score<c.from;
-    try{ await FBK.answerChallenge(c.id,r.score); note.textContent=`대결 ${w?'승리!':l?'패배…':'무승부'} 나 ${r.score.toLocaleString()} : ${num(c.from,1e6).toLocaleString()} 상대`; note.style.color=w?'#8fd19e':l?'#e8768a':''; if(w) confettiBurst(90); }
+    try{ await FBK.answerChallenge(c.id,r.score); note.textContent=`대결 ${w?'승리!':l?'패배…':'무승부'} 나 ${r.score.toLocaleString()} : ${num(c.from,MAXS).toLocaleString()} 상대`; note.style.color=w?'#8fd19e':l?'#e8768a':''; if(w) confettiBurst(90); }
     catch(e){ note.textContent='대결 결과를 보내지 못했어요: '+FBK.errMsg(e); }
   }
 };
