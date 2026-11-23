@@ -120,6 +120,19 @@ output{font-family:"Cinzel",serif;color:var(--gold2);min-width:58px;text-align:r
 .gbtn:hover{background:#f6f6f6}
 .lgor{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--muted);margin:6px 0 0}.lgor::before,.lgor::after{content:'';flex:1;height:1px;background:rgba(216,181,106,.25)}
 .lglink{display:flex;flex-direction:column;align-items:center;gap:8px;margin:8px 0}.lglink .lgform{width:100%;padding:0}
+/* 설정 줄: 좁은 화면에서 글자가 세로로 깨지지 않게 */
+.prow>span:first-child{flex:1 1 auto;min-width:7.5em}
+.prow .hint{display:block;margin:3px 0 0;white-space:normal}
+.seg{flex:0 0 auto;flex-wrap:nowrap}
+.seg button{white-space:nowrap;text-align:center}
+.prow input[type=range]{min-width:0;flex:1}
+@media (max-width:560px){
+  .prow{flex-direction:column;align-items:stretch;gap:8px}
+  .prow>span:first-child{min-width:0}
+  .prow .seg{width:100%}
+  .prow .seg button{flex:1 1 0;padding:7px 4px;font-size:13px}
+  .prow>span:last-child:not(:first-child){display:flex;width:100%}
+}
 .tierbar{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 0 10px}
 .tchip{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.08em;color:var(--tc);background:rgba(8,6,5,.5);border:1px solid color-mix(in srgb,var(--tc) 45%,transparent);padding:5px 9px;cursor:pointer;display:flex;gap:5px;align-items:baseline}
 .tchip small{font-size:9px;opacity:.6;color:var(--ink)}
@@ -2662,6 +2675,23 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
   document.head.appendChild(st);
   b.onclick=()=>{ uiTick(); for(const o of document.querySelectorAll('.ov')) o.classList.add('hidden'); ov.classList.remove('hidden'); };
   $('dlBack').onclick=()=>{ ov.classList.add('hidden'); show('menu'); };
+})();
+// 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
+(function autoUpdate(){
+  const CUR='20261123112449'; let pending=false;
+  const busy=()=>!!(run&&!run.ended&&!run.paused);
+  const apply=()=>{ if(busy()){ pending=true; return; }
+    const t=document.createElement('div'); t.textContent='새 버전으로 업데이트하는 중…';
+    t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99;padding:10px 16px;background:rgba(20,16,10,.95);border:1px solid #e3c47a;color:#f3d995;font:600 13px "Noto Serif KR",serif';
+    document.body.appendChild(t); setTimeout(()=>location.reload(),600); };
+  async function check(){
+    if(location.protocol!=='https:') return;
+    try{ const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'}); if(!r.ok) return; const v=(await r.json()).v;
+      if(v&&v!==CUR) apply(); }catch(e){}
+  }
+  setTimeout(check,4000); setInterval(()=>{ if(pending&&!busy()) apply(); else check(); },180000);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) check(); });
+  setInterval(()=>{ if(pending&&!busy()) apply(); },3000);
 })();
 
 if('serviceWorker' in navigator&&location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
