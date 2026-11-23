@@ -10,12 +10,12 @@
 <style>
 :root{--bg:#0a0907;--ink:#efe6d2;--muted:#9b8f7a;--gold:#d8b56a;--gold2:#f0dca8;--line:rgba(216,181,106,.35);--blue:#9cc4e8;--red:#e0703c}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Pirata One","Gowun Batang",serif;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Pirata One","Bong Myung","Gowun Batang",serif;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #c{position:fixed;inset:0;width:100%;height:100%;display:block}
 .hidden{display:none!important}
 .ov{position:fixed;inset:0;z-index:3;animation:fadeIn .45s ease both}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.cinzel{font-family:"Pirata One","Gowun Batang",serif}
+.cinzel{font-family:"Pirata One","Bong Myung","Gowun Batang",serif}
 .logo{margin:0;font-weight:900;font-size:clamp(34px,7.2vw,80px);letter-spacing:.06em;line-height:1.1;text-align:center;
   background:linear-gradient(180deg,#fff6dc 0%,#e3c47a 52%,#8a6a35 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(216,181,106,.28)) drop-shadow(0 4px 2px rgba(0,0,0,.6))}
 .sub{font-family:"Pirata One",serif;font-weight:600;letter-spacing:.62em;color:var(--gold);font-size:13px;text-align:center;margin-top:14px;padding-left:.62em}
@@ -66,7 +66,7 @@ output{font-family:"Pirata One",serif;color:var(--gold2);min-width:58px;text-ali
 .songpanel{width:min(640px,96vw)}
 .songhint{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.04em;margin:-2px 0 8px}
 /* 로그인 · 랭킹 */
-.acct{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);background:rgba(8,6,5,.55);color:var(--ink);font:500 13px "Gowun Batang",serif;cursor:pointer;z-index:2;max-width:46vw}
+.acct{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);background:rgba(8,6,5,.55);color:var(--ink);font:500 13px "Bong Myung","Gowun Batang",serif;cursor:pointer;z-index:2;max-width:46vw}
 .acct span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .acct img{width:26px;height:26px;border-radius:50%;object-fit:cover;background:#2a241c;flex-shrink:0}
 .lgbox{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 4px 6px;text-align:center}
@@ -74,7 +74,7 @@ output{font-family:"Pirata One",serif;color:var(--gold2);min-width:58px;text-ali
 .lgwho{font-size:18px;font-weight:600;color:var(--gold2);letter-spacing:.04em}
 .lgsub{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:36ch;margin:8px auto 0;text-align:center}
 .lgnick{display:flex;flex-direction:column;gap:6px;width:min(280px,100%);margin-top:8px;font-size:12px;color:var(--muted);text-align:left}
-.lgnick input{font:500 16px "Gowun Batang",serif;color:var(--ink);background:rgba(8,6,5,.6);border:1px solid var(--line);padding:9px 12px;outline:none;-webkit-user-select:text;user-select:text;touch-action:auto}
+.lgnick input{font:500 16px "Bong Myung","Gowun Batang",serif;color:var(--ink);background:rgba(8,6,5,.6);border:1px solid var(--line);padding:9px 12px;outline:none;-webkit-user-select:text;user-select:text;touch-action:auto}
 .lgnick input:focus{border-color:var(--gold2)}
 .rkpanel{width:min(560px,94vw)}
 .rktabs{display:flex;justify-content:center;gap:8px;margin:12px 0 6px}
@@ -97,7 +97,7 @@ output{font-family:"Pirata One",serif;color:var(--gold2);min-width:58px;text-ali
 .rrank{font-size:13px;color:var(--gold2);text-align:center;margin-top:4px;min-height:18px}
 .rcode{display:flex;gap:6px;justify-content:center;margin:6px auto 0;width:min(420px,90vw)}
 .rcode input{flex:1;min-width:0;font:12px ui-monospace,Menlo,monospace;color:var(--ink);background:rgba(8,6,5,.6);border:1px solid var(--line);padding:7px 8px;-webkit-user-select:text;user-select:text;touch-action:auto}
-.rcode button,.rkregbox button{font:600 12px "Gowun Batang",serif;color:#8fd19e;background:rgba(8,6,5,.6);border:1px solid #8fd19e;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.rcode button,.rkregbox button{font:600 12px "Bong Myung","Gowun Batang",serif;color:#8fd19e;background:rgba(8,6,5,.6);border:1px solid #8fd19e;padding:6px 12px;cursor:pointer;white-space:nowrap}
 .rkreg{display:flex;flex-direction:column;align-items:center;gap:8px;margin:10px 0 2px}
 .rkregbox{display:flex;flex-direction:column;gap:6px;width:100%}
 .rkregbox textarea{font:12px ui-monospace,Menlo,monospace;color:var(--ink);background:rgba(8,6,5,.6);border:1px solid var(--line);padding:8px;resize:vertical;-webkit-user-select:text;user-select:text;touch-action:auto}
@@ -106,7 +106,7 @@ output{font-family:"Pirata One",serif;color:var(--gold2);min-width:58px;text-ali
 .lgtabs{display:flex;justify-content:center;gap:8px;margin:14px 0 4px}
 .lgform{display:flex;flex-direction:column;gap:10px;padding:10px 4px 2px}
 .lgform label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
-.lgform input:not([type=checkbox]){font:500 16px "Gowun Batang",serif;color:var(--ink);background:rgba(8,6,5,.6);border:1px solid var(--line);padding:9px 12px;outline:none;-webkit-user-select:text;user-select:text;touch-action:auto}
+.lgform input:not([type=checkbox]){font:500 16px "Bong Myung","Gowun Batang",serif;color:var(--ink);background:rgba(8,6,5,.6);border:1px solid var(--line);padding:9px 12px;outline:none;-webkit-user-select:text;user-select:text;touch-action:auto}
 .lgform input:focus{border-color:var(--gold2)}
 .lgform .lgchk{flex-direction:row;align-items:center;gap:8px;font-size:12.5px;color:var(--ink)}
 .lgerr{min-height:18px;font-size:12.5px;color:#ff7a86;text-align:center}
@@ -116,7 +116,7 @@ output{font-family:"Pirata One",serif;color:var(--gold2);min-width:58px;text-ali
 .rpbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#7a1020,#e8394f);box-shadow:0 0 10px rgba(232,57,79,.6);transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
 .rptxt{font-size:13px;color:var(--ink);letter-spacing:.04em}.rptxt b{font-family:"Pirata One",serif;font-size:20px;color:#ff8b96;margin-right:2px}.rptxt small{color:var(--muted);margin-left:6px}
 .song .prog{color:#ff8b96}
-.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:14px 0 6px;padding:11px 14px;background:#fff;color:#1f1f1f;border:1px solid #dadce0;border-radius:4px;font:600 15px "Gowun Batang",serif;cursor:pointer}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:14px 0 6px;padding:11px 14px;background:#fff;color:#1f1f1f;border:1px solid #dadce0;border-radius:4px;font:600 15px "Bong Myung","Gowun Batang",serif;cursor:pointer}
 .gbtn:hover{background:#f6f6f6}
 .lgor{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--muted);margin:6px 0 0}.lgor::before,.lgor::after{content:'';flex:1;height:1px;background:rgba(216,181,106,.25)}
 .lglink{display:flex;flex-direction:column;align-items:center;gap:8px;margin:8px 0}.lglink .lgform{width:100%;padding:0}
@@ -171,7 +171,7 @@ html,body{font-synthesis:none}
 .item.song.sel .sl b{color:#fff6dd}
 .song{position:relative}
 .song .lampbar{position:absolute;left:3px;top:16%;bottom:16%;width:4px;border-radius:2px}
-.song .info{color:rgba(216,181,106,.7)!important;font-family:"Pirata One","Gowun Batang",serif}
+.song .info{color:rgba(216,181,106,.7)!important;font-family:"Pirata One","Bong Myung","Gowun Batang",serif}
 .song .rk{font-family:"Pirata One",serif;color:var(--gold2);font-weight:700}
 .lampbadge{margin:8px auto 0;width:max-content;padding:3px 12px;border:1px solid;font-family:"Pirata One",serif;font-size:12px;letter-spacing:.25em}
 #rGraph{display:block;width:min(420px,88vw);height:70px;margin:14px auto 0;animation:fadeIn .8s .6s both}
@@ -1206,7 +1206,7 @@ addEventListener('resize',resize); if(window.visualViewport) visualViewport.addE
 /* ================= 그리기 ================= */
 function rr(x,y,w,h,r,c=ctx){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 const OUT='rgba(14,10,8,.85)';
-const SERIF='"Pirata One","Gowun Batang",serif', DISP='"Pirata One","Gowun Batang",serif';
+const SERIF='"Pirata One","Bong Myung","Gowun Batang",serif', DISP='"Pirata One","Bong Myung","Gowun Batang",serif';
 const IVORY='#efe6d2', STONE='#2b2620';
 function seeded(n){ let a=n|0; return ()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}; }
 
@@ -2115,7 +2115,7 @@ function showResults(){
   if(!r.failed&&ranks.indexOf(rank)>ranks.indexOf(store.get('sb6.rank.'+recKey(id),'')||'')) store.set('sb6.rank.'+recKey(id),rank);
   netRecord(r,rank,lamp,acc);
   const holds=r.notes.filter(n=>n.hold).length;
-  $('rStats').innerHTML=`<span>곡</span><b style="font-family:'Gowun Batang',serif">${r.song.title}</b><span>난이도</span><b style="color:${tier(r.song.level)[1]}">${r.d.name}</b><span>PERFECT</span><b>${c.PERFECT}</b><span>GREAT</span><b>${c.GREAT}</b><span>GOOD</span><b>${c.GOOD}</b><span>MISS</span><b>${c.MISS+r.empty}</b><span>FAST / SLOW</span><b>${r.fast} / ${r.slow}</b><span>최대 콤보</span><b>${r.maxCombo}</b><span>차징 펀치</span><b>${r.charges} / ${holds}</b><span>회피 / 가드</span><b>${r.dodges} / ${r.guards}</b><span>피격</span><b style="color:${r.hurts?'#e8394f':'inherit'}">${r.hurts}</b><span>정확도</span><b>${acc.toFixed(1)}%</b><span>게이지 · 판정</span><b style="font-family:'Gowun Batang',serif">${r.G.name} · ${WIN.name}</b><span>배속 · 곡 속도</span><b>×${speedMul} · ×${r.rate}</b>`;
+  $('rStats').innerHTML=`<span>곡</span><b style="font-family:'Bong Myung','Gowun Batang',serif">${r.song.title}</b><span>난이도</span><b style="color:${tier(r.song.level)[1]}">${r.d.name}</b><span>PERFECT</span><b>${c.PERFECT}</b><span>GREAT</span><b>${c.GREAT}</b><span>GOOD</span><b>${c.GOOD}</b><span>MISS</span><b>${c.MISS+r.empty}</b><span>FAST / SLOW</span><b>${r.fast} / ${r.slow}</b><span>최대 콤보</span><b>${r.maxCombo}</b><span>차징 펀치</span><b>${r.charges} / ${holds}</b><span>회피 / 가드</span><b>${r.dodges} / ${r.guards}</b><span>피격</span><b style="color:${r.hurts?'#e8394f':'inherit'}">${r.hurts}</b><span>정확도</span><b>${acc.toFixed(1)}%</b><span>게이지 · 판정</span><b style="font-family:'Bong Myung','Gowun Batang',serif">${r.G.name} · ${WIN.name}</b><span>배속 · 곡 속도</span><b>×${speedMul} · ×${r.rate}</b>`;
   drawGraph(r);
   const dts=r.dts.slice().sort((a,b)=>a-b), med=dts.length?dts[Math.floor(dts.length/2)]*1000:0;
   const tm=$('rTiming'); tm.innerHTML='';
@@ -2734,7 +2734,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123120121'; let pending=false;
+  const CUR='20261123121103'; let pending=false;
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent='새 버전으로 업데이트하는 중…';
