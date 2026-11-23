@@ -34,18 +34,40 @@ service cloud.firestore {
         && request.resource.data.total is number && request.resource.data.total >= 0 && request.resource.data.total <= 400000000;
       allow delete: if false;
     }
-    // 프로필: 닉네임(2~12자) + 사진(작은 JPEG/PNG/WebP, 약 110KB 이하). 본인만 쓰기, 누구나 읽기
+    // 프로필: 닉네임(2~12자) + 사진(작은 JPEG/PNG/WebP, 약 110KB 이하) + 칭호 · 꾸미기 · 업적용 누적 기록. 본인만 쓰기, 누구나 읽기
     match /profiles/{uid} {
       allow read: if true;
       allow create, update: if signedIn() && request.auth.uid == uid
         && exists(/databases/$(database)/documents/accounts/$(uid))
-        && request.resource.data.keys().hasOnly(['nick', 'photo', 'at'])
+        && request.resource.data.keys().hasOnly(['nick', 'photo', 'at', 'title', 'eq', 'st'])
+        && request.resource.data.get('title', '') is string && request.resource.data.get('title', '').size() <= 16
+        && request.resource.data.get('eq', {}) is map && request.resource.data.get('eq', {}).keys().hasOnly(['g', 'n'])
+        && request.resource.data.get('st', {}) is map && request.resource.data.get('st', {}).size() <= 16
         && request.resource.data.nick is string && request.resource.data.nick.size() >= 2 && request.resource.data.nick.size() <= 12
         && request.resource.data.nick.matches('^[-A-Za-z0-9가-힣_. ]+$')
         && request.resource.data.photo is string && request.resource.data.photo.size() <= 150000
         && (request.resource.data.photo == '' || request.resource.data.photo.matches('^data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$'))
         && request.resource.data.at == request.time;
       allow delete: if false;
+    }
+    // 친구 대결: 보낸 사람·받은 사람만 볼 수 있음. 보낸 점수는 내 랭킹 기록과 같아야 하고, 받은 사람은 한 번만 응답
+    match /challenges/{cid} {
+      allow read: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.from == request.auth.uid
+        && request.resource.data.keys().hasOnly(['from', 'to', 'key', 'fromScore', 'toScore', 'status', 'at', 'doneAt'])
+        && request.resource.data.to is string && request.resource.data.to != request.auth.uid
+        && exists(/databases/$(database)/documents/accounts/$(request.resource.data.to))
+        && request.resource.data.key is string && request.resource.data.key.size() <= 40
+        && request.resource.data.fromScore == get(/databases/$(database)/documents/scores/$(request.auth.uid)).data.best[request.resource.data.key].s
+        && request.resource.data.toScore == null && request.resource.data.status == 'open'
+        && request.resource.data.doneAt == null && request.resource.data.at == request.time;
+      allow update: if signedIn() && resource.data.to == request.auth.uid && resource.data.status == 'open'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['toScore', 'status', 'doneAt'])
+        && request.resource.data.doneAt == request.time
+        && ((request.resource.data.status == 'declined' && request.resource.data.toScore == null)
+          || (request.resource.data.status == 'done' && request.resource.data.toScore is number
+              && request.resource.data.toScore >= 0 && request.resource.data.toScore <= 1000000));
+      allow delete: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
     }
     match /{document=**} { allow read, write: if false; }
   }
