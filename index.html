@@ -138,13 +138,13 @@ html,body{font-synthesis:none}
 .logo{font-family:"UnifrakturCook","Pirata One",serif!important;font-weight:700!important;letter-spacing:0!important;padding-left:0!important}
 .sub{letter-spacing:.18em!important;padding-left:.18em!important;font-size:15px!important;text-transform:none}
 .tchip,.best,.rkname small,.kb{letter-spacing:.02em!important}
-/* 타이틀: Figma AI 키 아트 + 오른쪽 어둠 속에 제목 */
-#title{background:#0b0806 url(art/key.webp) 22% 50%/cover no-repeat}
-#title::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,5,4,0) 30%,rgba(6,5,4,.55) 62%,rgba(6,5,4,.8));pointer-events:none}
+/* 타이틀: 링 위의 최윤혁(캔버스) 옆에 제목 */
+#title{background:transparent}
+#title::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,5,4,.82),rgba(6,5,4,.55) 30%,rgba(6,5,4,0) 48%);pointer-events:none}
 #title>*{position:relative}
-@media (min-aspect-ratio:5/4){ #title{padding-left:48vw;padding-right:3vw} #title .orn{width:min(520px,40vw)} #title .logo{font-size:clamp(48px,6.6vw,104px)} #title .sub{font-size:clamp(15px,1.5vw,21px)!important} }
-@media (max-aspect-ratio:5/4){ #title{background-position:26% 50%;justify-content:flex-start;padding-top:14vh} #title::before{background:linear-gradient(180deg,rgba(6,5,4,.75),rgba(6,5,4,.2) 45%,rgba(6,5,4,.7))} }
-.press{letter-spacing:.12em!important;padding-left:.12em!important;font-size:16px!important}
+@media (min-aspect-ratio:5/4){ #title{padding-right:58vw;padding-left:2vw} #title .orn{width:min(440px,34vw)} #title .logo{font-size:clamp(44px,5.6vw,92px)} #title .sub{font-size:clamp(15px,1.4vw,20px)!important} }
+@media (max-aspect-ratio:5/4){ #title{justify-content:flex-start;padding-top:3.5vh} #title .orn{margin:12px auto} #title .sub{margin-top:2px} #title::before{background:linear-gradient(180deg,rgba(6,5,4,.85),rgba(6,5,4,.35) 30%,rgba(6,5,4,0) 45%,rgba(6,5,4,0) 75%,rgba(6,5,4,.8))} #title .press{position:absolute;bottom:9vh;left:0;right:0;margin:0;text-align:center} }
+.press{font-family:"Pirata One",serif;letter-spacing:.12em!important;padding-left:.12em!important;font-size:19px!important}
 /* 메뉴·패널 글자 정리: 한글은 자간을 벌리지 않고 크기·굵기로 위계 */
 .panel h2{letter-spacing:.04em!important;padding-left:0!important;font-size:26px!important;font-weight:700!important}
 .item{letter-spacing:.02em}
@@ -254,7 +254,7 @@ html,body{font-synthesis:none}
   <h1 class="logo">Bong's Game</h1>
   <div class="sub">Rhythm Boxing</div>
   <div class="orn"></div>
-  <div class="press" id="pressTxt">아무 키나 누르세요</div>
+  <div class="press" id="pressTxt">Press any key</div>
 </div>
 
 <div id="menu" class="ov ov-menu hidden">
@@ -2734,7 +2734,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123115611'; let pending=false;
+  const CUR='20261123115951'; let pending=false;
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent='새 버전으로 업데이트하는 중…';
