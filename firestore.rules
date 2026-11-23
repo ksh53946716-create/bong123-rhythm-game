@@ -30,7 +30,8 @@ service cloud.firestore {
       allow read: if true;
       allow create, update: if signedIn() && request.auth.uid == uid
         && exists(/databases/$(database)/documents/accounts/$(uid))
-        && request.resource.data.keys().hasOnly(['nick', 'best', 'total', 'v'])
+        && request.resource.data.keys().hasOnly(['nick', 'best', 'total', 'v', 'ss', 'dc', 'wc'])
+        && request.resource.data.get('ss', {}) is map && request.resource.data.get('ss', {}).size() <= 4
         && request.resource.data.nick == get(/databases/$(database)/documents/accounts/$(uid)).data.gameId
         && request.resource.data.best is map && request.resource.data.best.size() <= 400
         && request.resource.data.total is number && request.resource.data.total >= 0 && request.resource.data.total <= 400000000;
@@ -41,7 +42,8 @@ service cloud.firestore {
       allow read: if true;
       allow create, update: if signedIn() && request.auth.uid == uid
         && exists(/databases/$(database)/documents/accounts/$(uid))
-        && request.resource.data.keys().hasOnly(['nick', 'photo', 'at', 'title', 'eq', 'st'])
+        && request.resource.data.keys().hasOnly(['nick', 'photo', 'at', 'title', 'eq', 'st', 'fr'])
+        && request.resource.data.get('fr', []) is list && request.resource.data.get('fr', []).size() <= 100
         && request.resource.data.get('title', '') is string && request.resource.data.get('title', '').size() <= 16
         && (request.resource.data.get('title', '') != '개발자' || isDev())
         && (!(request.resource.data.nick in ['개발자', '운영자', '관리자']) || isDev())
@@ -72,6 +74,35 @@ service cloud.firestore {
           || (request.resource.data.status == 'done' && request.resource.data.toScore is number
               && request.resource.data.toScore >= 0 && request.resource.data.toScore <= 1500000));
       allow delete: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+    }
+    // 접속 표시: 본인 것만, 서버 시각만 기록
+    match /presence/{uid} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == uid && request.resource.data.keys().hasOnly(['at']) && request.resource.data.at == request.time;
+    }
+    // 실시간 1:1 대결 방 (방 코드로 참가 · 방장/참가자만 자기 점수 칸을 씀)
+    match /rooms/{rid} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.host == request.auth.uid
+        && request.resource.data.keys().hasOnly(['host', 'guest', 'inv', 'key', 'state', 'at', 'go', 'hs', 'gs', 'hd', 'gd'])
+        && request.resource.data.state == 'wait' && request.resource.data.guest == null && request.resource.data.go == null
+        && request.resource.data.hs == 0 && request.resource.data.gs == 0 && request.resource.data.hd == false && request.resource.data.gd == false
+        && request.resource.data.key is string && request.resource.data.key.size() <= 40 && request.resource.data.at == request.time
+        && (request.resource.data.inv == null || request.resource.data.inv is string);
+      allow update: if signedIn() && (
+          (resource.data.host == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['inv', 'state', 'go', 'hs', 'hd'])
+            && request.resource.data.state in ['wait', 'ready', 'play', 'done']
+            && (request.resource.data.go == resource.data.go || request.resource.data.go == request.time)
+            && request.resource.data.hs is number && request.resource.data.hs >= 0 && request.resource.data.hs <= 1500000)
+        || (resource.data.guest == request.auth.uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gs', 'gd', 'state'])
+            && request.resource.data.state in ['ready', 'play', 'done']
+            && request.resource.data.gs is number && request.resource.data.gs >= 0 && request.resource.data.gs <= 1500000)
+        || (resource.data.guest == null && resource.data.state == 'wait' && resource.data.host != request.auth.uid
+            && request.resource.data.guest == request.auth.uid && request.resource.data.state == 'ready'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['guest', 'state'])));
+      allow delete: if signedIn() && (resource.data.host == request.auth.uid || resource.data.guest == request.auth.uid);
     }
     match /{document=**} { allow read, write: if false; }
   }

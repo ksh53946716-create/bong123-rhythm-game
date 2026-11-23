@@ -393,6 +393,33 @@ html,body{font-synthesis:none}
 .bonusnow{margin-top:8px;font-size:13px;color:#e8cf8e}
 .hint.up{color:#9fd3a0}.hint.down{color:#e0897c}
 .uloghint{flex:none;font-size:12px;color:var(--muted);text-align:center;padding-top:8px}.uloghint:empty{display:none}
+/* 곡마다 난이도 칩 */
+.dchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.dchip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border:1px solid color-mix(in srgb,var(--tc) 40%,transparent);border-radius:999px;font:400 11.5px/1.2 "Pirata One",serif;letter-spacing:.04em;color:color-mix(in srgb,var(--tc) 80%,#fff);background:rgba(8,6,5,.45);cursor:pointer}
+.dchip i{font-style:normal;color:#f3d995;font-size:11px}
+.dchip.on{background:color-mix(in srgb,var(--tc) 26%,rgba(8,6,5,.6));border-color:var(--tc);color:#fff}
+.dchip:hover{border-color:var(--tc)}
+#rkSub{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.mtiles{grid-template-columns:repeat(4,1fr)!important}
+.rsec{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;margin-top:8px;font-size:13px;color:var(--muted)}
+.rsec b{color:#efe0b8}.rsec .item{padding:7px 14px!important;font-size:14px!important;border:1px solid rgba(201,163,90,.35);border-radius:999px}
+#prac .acchip{font-size:13px}
+.panel .item.song{flex-wrap:wrap;row-gap:0}
+.panel .item.song .dchips{flex-basis:100%;padding-left:14px;margin-top:8px}
+.panel .item.song .sr{align-self:flex-start}
+.tchip{white-space:nowrap}
+/* 도전 카드 */
+.chcards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
+.chcard{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:3px;padding:10px 12px;border:1px solid rgba(143,209,158,.35);border-radius:var(--r-md);background:rgba(20,30,20,.35);min-width:0}
+.chcard:hover,.chcard:focus-visible{border-color:#8fd19e}
+.chcard .chk{font-size:11.5px;color:#8fd19e;font-weight:700}
+.chcard b{font-size:14px;color:#efe3c6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chcard b i{font:400 12px "Pirata One",serif;font-style:normal}
+.chcard small{font-size:11.5px;color:var(--muted);line-height:1.35}
+.chcard.done{border-color:rgba(227,196,122,.5);background:rgba(60,45,18,.35)}.chcard.done .chk::after{content:' ✓';color:#e3c47a}
+.rktabs{flex-wrap:wrap;gap:6px!important;justify-content:center}
+@media (max-width:520px){ .chcards{grid-template-columns:1fr} }
+#rtJoinRow{flex-wrap:wrap}#rtJoinRow input{flex:1 1 140px;min-width:120px}
+.btoast{border-radius:18px!important;max-width:min(92vw,420px);text-align:center}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/app-192.png"><link rel="apple-touch-icon" href="icons/app-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
 <body>
@@ -408,6 +435,15 @@ html,body{font-synthesis:none}
   <div class="vertag" id="verTag"></div>
 </div>
 
+<div id="prac" class="ov ov-panel hidden">
+  <div class="panel acpanel"><h2>연습실</h2>
+    <section class="acsec" style="border-top:0;margin-top:0;padding-top:0"><h3>곡</h3><div class="acrow" style="align-items:center;justify-content:space-between"><span id="prSong"></span><button type="button" class="tchip" id="prSongBtn">곡 바꾸기</button></div></section>
+    <section class="acsec"><h3>구간</h3><div class="acchips" id="prSecs"></div></section>
+    <section class="acsec"><h3>속도 <small class="acnote">노래와 노트가 함께 느려져요</small></h3><div class="acchips" id="prSpeed"></div></section>
+    <section class="acsec"><h3>반복</h3><div class="acchips" id="prLoop"></div><small>연습실 기록은 랭킹 · 업적에 들어가지 않고, 체력이 0이 돼도 끝나지 않아요.</small></section>
+    <nav class="list ulognav"><button class="item" id="prGo"><span>연습 시작</span></button><button class="item" id="prBack"><span>돌아가기</span></button></nav>
+  </div>
+</div>
 <div id="ulog" class="ov ov-panel hidden">
   <div class="panel ulogp"><h2>업데이트 로그</h2><div id="ulogList"></div>
   <div class="uloghint" id="ulogHint"></div>
@@ -424,6 +460,7 @@ html,body{font-synthesis:none}
   <nav class="list mlist" id="mainList">
     <button class="item mcta" id="startBtn"><span class="mbk">오늘의 메인 이벤트</span><span class="mc1">싸움 시작</span><span class="mc2" id="bestLine"></span></button>
     <div class="mtiles">
+      <button class="item mtile" id="pracBtn"><svg class="gi" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M256 81c-7.7 0-15.5.33-23 .95V119h46V81.95c-7.5-.62-15.3-.95-23-.95m-41 3.07c-4.8.76-9.5 1.65-13.9 2.69c-14.7 3.46-26.3 8.71-32.8 14.04l-22.4 140.3L215 341V137h-23v-18h23zm82 0V119h23v18h-23v238.4c30.6 2.8 54.5 19.5 73.7 40.5c11 12.2 20.6 25.8 29.6 39.4l-56.6-354.5c-6.5-5.33-18.1-10.58-32.8-14.04c-4.4-1.04-9.1-1.93-13.9-2.69M39.34 90.79L24.66 101.2l20.89 29.6l15.14-9.9zm54.81 29.71l-56.04 36.7L82.56 183l17.54-11.5zM233 137v46h46v-46zm-124.8 50.8l-15.3 10l48.9 69.2l-30.1 188.3c9-13.6 18.6-27.2 29.6-39.4c19.2-21 43.1-37.7 73.7-40.5v-2.8l-73.2-105.7l4.1-26zM233 201v46h46v-46zm0 64v46h46v-46zm0 64v38l5.5 8H279v-46zm206 23v23h-33.2l2.9 18H439v23h18v-64zm-215 41c-29 0-50.3 14.1-69.3 35.1c-15.5 17-28.9 38.4-42.1 58.9h286.8c-13.2-20.5-26.6-41.9-42.1-58.9c-19-21-40.3-35.1-69.3-35.1h-37l12.4 17.9l-14.8 10.2l-19.5-28.1z"/></svg><span>연습</span></button>
       <button class="item mtile" id="rankBtn"><svg class="gi" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M134.594 73.375c-17.522 5.65-31.232 11.854-48.125 24.25a221 221 0 0 0-6.44 6.406c.24.566.61 1.265 1.157 2.25c1.016 1.832 2.767 4.023 4.97 6.19a252 252 0 0 0-9.5 16.624c-3.664-3.04-6.952-6.423-9.594-10.22a216.5 216.5 0 0 0-20.438 30.44c.395 1.636 1.557 3.42 3.78 5.81c2.656 2.853 6.805 5.8 11.626 8.314c-2.024 6.117-3.76 12.204-5.186 18.28c-7.44-3.38-14.245-7.768-19.594-13.343a211.6 211.6 0 0 0-13.406 43.656c1.335 2.434 3.714 4.663 7.312 7.032c5.072 3.34 12.36 6.076 20.282 7.657c-.045 6.437.25 12.822.812 19.124c-11.407-1.673-22.405-5.248-31.375-11.156c-.05-.034-.106-.06-.156-.094a214.3 214.3 0 0 0 1.093 45.906c2.31 3.48 6.176 5.957 11.937 7.938c7.406 2.546 17.472 3.344 27.72 2.312c2 6.122 4.275 12.13 6.81 18c-13.97 2.098-28.237 1.622-40.593-2.625c-.337-.116-.665-.252-1-.375a214.7 214.7 0 0 0 16.844 44.406c3.553 2.804 8.35 4.216 14.72 4.656c9.3.644 21.144-1.73 32.438-6.343a231 231 0 0 0 11.75 15.25c-14.57 6.715-30.36 10.675-45.063 9.75a217.3 217.3 0 0 0 34.844 39.75c4.26 1.446 9.3 1.465 15.374.28c9.6-1.873 20.855-7.404 31.03-15c.008.005.026-.005.032 0a230 230 0 0 0 15.906 11.25c-11.976 9.91-25.625 17.696-39.53 21.22a214 214 0 0 0 37.343 20.186c4.937.423 10.29-.96 16.344-3.906c7.672-3.735 15.78-10.252 23.03-18.28c17.036 6.783 34.732 11.22 52.563 12.905l1.78-18.625c-14.268-1.35-28.584-4.77-42.562-9.938c6.883-11.108 11.61-23.173 12.94-33.437c1.178-9.114.083-16.157-3.782-21.438c-8.08-1.58-15.89-3.94-23.375-7c-.172 6.47-1.706 12.987-4.22 19.094c-3.745 9.103-9.52 17.798-16.53 25.72a212 212 0 0 1-15.657-10.625c6.62-7.182 11.923-14.97 14.906-22.22c3.806-9.246 4.173-16.578.625-22.81c-7.748-4.957-15.003-10.737-21.718-17.22c-1.773 4.3-4.187 8.37-7.032 12.094c-5.476 7.165-12.572 13.51-20.563 18.905c-4.12-4.72-8.052-9.603-11.75-14.688c7.152-4.694 13.296-10.1 17.47-15.562c5.038-6.594 7.22-12.41 6.468-18.094a162 162 0 0 1-13.5-21a50 50 0 0 1-7.657 7.283c-6.758 5.175-14.798 9.155-23.406 12.03c-2.595-5.69-4.957-11.498-7-17.437c7.427-2.405 14.13-5.683 19.03-9.437c5.696-4.362 8.802-8.545 9.532-13.25a180 180 0 0 1-7.406-24.908a45 45 0 0 1-5.812 2.813c-7.45 2.947-15.75 4.434-24.28 4.75a177 177 0 0 1-1.033-18.72c6.957-.263 13.464-1.437 18.44-3.405c4.6-1.82 7.595-3.8 9.343-6.25a192 192 0 0 1-.813-29.813c-.65.104-1.29.18-1.938.25c-6.624.725-13.556.15-20.406-1.343c1.37-5.98 3.07-12.01 5.094-18.063c4.87.933 9.538 1.223 13.28.814c2.614-.286 4.532-.756 6-1.406a189 189 0 0 1 5.97-26.032c-4.182-.736-8.284-2.092-12.25-3.875a239 239 0 0 1 9.344-16.405c2.414.963 4.716 1.665 6.687 1.97c1.107.17 2.023.265 2.782.28c1.946-4.64 4.022-9.17 6.282-13.563c5.898-11.802 12.415-24.25 17-37.937zm244.375 0c4.583 13.686 11.1 26.135 17 37.938a191 191 0 0 1 6.31 13.562c.752-.016 1.66-.113 2.75-.28c1.98-.306 4.296-1 6.72-1.97a239 239 0 0 1 9.344 16.406c-3.976 1.786-8.096 3.14-12.28 3.876c2.563 8.39 4.573 17.1 5.967 26.03c1.474.658 3.404 1.12 6.033 1.408c3.742.41 8.41.12 13.28-.813a193 193 0 0 1 5.063 18.095c-6.837 1.487-13.762 2.036-20.375 1.313a41 41 0 0 1-1.967-.25a192 192 0 0 1-.782 29.812c1.75 2.45 4.745 4.43 9.345 6.25c4.967 1.965 11.462 3.14 18.406 3.406a177 177 0 0 1-1.03 18.72c-8.52-.32-16.808-1.808-24.25-4.75a46 46 0 0 1-5.813-2.814a180 180 0 0 1-7.406 24.875c.715 4.72 3.795 8.912 9.5 13.282c4.904 3.753 11.605 7.03 19.033 9.436c-2.044 5.94-4.405 11.747-7 17.438c-8.598-2.875-16.624-6.862-23.375-12.03a50 50 0 0 1-7.688-7.283c-4.01 7.422-8.52 14.444-13.5 21c-.76 5.682 1.43 11.502 6.47 18.095c4.168 5.457 10.313 10.87 17.467 15.563c-3.697 5.085-7.63 9.966-11.75 14.687c-7.99-5.396-15.086-11.74-20.562-18.906c-2.838-3.715-5.234-7.778-7-12.064c-6.71 6.478-13.976 12.236-21.72 17.188c-3.547 6.233-3.18 13.565.626 22.812c2.985 7.25 8.288 15.037 14.908 22.22a212 212 0 0 1-15.688 10.624c-7.003-7.922-12.754-16.617-16.5-25.72c-2.513-6.106-4.047-12.623-4.22-19.092a125.4 125.4 0 0 1-23.405 7c-3.873 5.28-4.96 12.324-3.78 21.437c1.327 10.264 6.08 22.33 12.967 33.438c-13.974 5.168-28.293 8.587-42.562 9.937l1.75 18.625c17.84-1.687 35.546-6.116 52.594-12.906c7.25 8.028 15.358 14.545 23.03 18.28c6.056 2.947 11.408 4.33 16.345 3.906a214 214 0 0 0 37.342-20.187c-13.896-3.52-27.562-11.293-39.53-21.19c5.442-3.504 10.74-7.293 15.906-11.28c10.18 7.604 21.456 13.126 31.062 15c6.056 1.182 11.09 1.185 15.344-.25a217.4 217.4 0 0 0 34.875-39.78c-14.705.925-30.526-3.035-45.095-9.75c4.12-4.913 8.066-9.99 11.78-15.25c11.295 4.61 23.138 6.986 32.44 6.342c6.368-.44 11.166-1.852 14.717-4.656a214.7 214.7 0 0 0 16.844-44.406c-.335.123-.663.26-1 .375c-12.355 4.247-26.623 4.723-40.594 2.625a209 209 0 0 0 6.813-18c10.236 1.027 20.29.23 27.688-2.313c5.765-1.98 9.65-4.455 11.968-7.937a214.4 214.4 0 0 0 1.064-45.906c-.043.028-.082.065-.125.094c-8.97 5.908-19.97 9.483-31.376 11.156c.563-6.302.856-12.687.812-19.125c7.92-1.582 15.21-4.317 20.28-7.657c3.593-2.366 5.946-4.604 7.283-7.032a211.8 211.8 0 0 0-13.408-43.655c-5.347 5.57-12.133 9.96-19.562 13.344a213 213 0 0 0-5.188-18.282c4.805-2.513 8.942-5.464 11.594-8.313c2.212-2.376 3.402-4.15 3.813-5.78a216.5 216.5 0 0 0-20.44-30.47c-2.642 3.796-5.93 7.18-9.592 10.22a253 253 0 0 0-9.5-16.626c2.208-2.166 3.953-4.36 4.968-6.19c.538-.97.92-1.656 1.156-2.218a222 222 0 0 0-6.468-6.437c-16.893-12.396-30.603-18.6-48.125-24.25zM152.81 134.313l24.094 129.718H341l22.906-124.5l-57.937 63.5L261 135.845l-45 67.187l-63.188-68.718zm27.563 148.406l3.563 19.217H334.03l3.533-19.218H180.375z"/></svg><span>랭킹</span></button>
     </div>
   </nav>
@@ -455,15 +492,11 @@ html,body{font-synthesis:none}
   <div class="panel rkpanel">
     <h2>랭킹</h2>
     <div class="orn"></div>
-    <div class="rktabs"><button class="tchip" data-m="song" style="--tc:#e3c47a">곡별</button><button class="tchip" data-m="total" style="--tc:#e3c47a">종합</button></div>
+    <div class="rktabs"><button class="tchip" data-m="song" style="--tc:#e3c47a">곡별</button><button class="tchip" data-m="total" style="--tc:#e3c47a">종합</button><button class="tchip" data-m="season" style="--tc:#e3c47a">시즌</button><button class="tchip" data-m="d" style="--tc:#8fd19e">오늘의 도전</button><button class="tchip" data-m="w" style="--tc:#8fd19e">주간 도전</button><button class="tchip" id="rkFr" style="--tc:#9cc4e8">친구만</button></div>
     <div class="rksong" id="rkSongRow"><button class="rkarrow" id="rkPrev" type="button" aria-label="이전 곡">‹</button><div class="rkname"><b id="rkTitle"></b><small id="rkSub"></small></div><button class="rkarrow" id="rkNext" type="button" aria-label="다음 곡">›</button></div>
     <div class="rkstatus" id="rkStatus"></div>
     <ol class="rklist" id="rkList"></ol>
     <div class="rkme" id="rkMe"></div>
-    <div class="rkreg hidden" id="rkReg">
-      <button type="button" class="tchip" id="rkRegOpen" style="--tc:#8fd19e">친구 기록 코드 등록</button>
-      <div class="rkregbox hidden" id="rkRegBox"><textarea id="rkRegText" rows="3" placeholder="친구가 보낸 기록 코드를 붙여넣으세요 (여러 개 가능)"></textarea><div class="rkregrow"><span id="rkRegMsg"></span><button type="button" class="tchip on" id="rkRegGo" style="--tc:#8fd19e">등록</button></div></div>
-    </div>
     <nav class="list"><button class="item" id="rkBack"><span>돌아가기</span></button></nav>
   </div>
 </div>
@@ -472,7 +505,8 @@ html,body{font-synthesis:none}
   <div class="panel songpanel">
     <h2>곡 선택</h2>
     <div class="orn"></div>
-    <div class="songhint">클래식(퍼블릭 도메인 · 직접 편곡) + 오리지널 EDM · 곡마다 난이도가 다릅니다</div>
+    <div class="songhint">곡마다 난이도를 골라서 칠 수 있어요 · 난이도 이름을 누르거나 ← → 키</div>
+    <div class="chcards" id="chCards"></div>
     <div class="tierbar" id="tierBar"></div>
     <nav class="list" id="songList"></nav>
     <nav class="list"><button class="item" id="songBack"><span>돌아가기</span></button></nav>
@@ -503,12 +537,9 @@ html,body{font-synthesis:none}
     <div class="orn"></div>
     <div class="bonusnote"><b>점수 보너스</b><p><b>배속</b> · <b>체력 게이지</b> · <b>판정 범위</b>를 어렵게 할수록 점수가 더 나와요 (최대 +17%). 쉽게 하면 그만큼 깎여요. 세 배율은 곱해지고, 랭킹에도 이 점수로 올라가요. 단, <b>연습 게이지</b>는 안 죽는 모드라 랭킹 · 업적에 기록되지 않아요.</p><div class="bonusnow" id="mulTotal"></div></div>
     <div class="prow"><span>배속 <small class="hint" id="spHint">노트 낙하 속도</small></span><div class="seg" id="speedSeg"><button data-s="0.75">0.75</button><button data-s="1">1.0</button><button data-s="1.25">1.25</button><button data-s="1.5">1.5</button><button data-s="2">2.0</button></div></div>
-    <div class="prow"><span>곡 속도 <small class="hint">노래 + 노트 함께</small></span><div class="seg" id="rateSeg"><button data-r="1">1.0</button><button data-r="1.5">1.5</button><button data-r="2">2.0</button></div></div>
     <div class="prow"><span>번쩍임 효과 <small class="hint">DEATH 연출 · 광과민 주의</small></span><div class="seg" id="flashSeg"><button data-f="on">켜기</button><button data-f="safe">약하게</button></div></div>
     <div class="prow"><span>체력 게이지 <small class="hint" id="gHint"></small></span><div class="seg" id="gaugeSeg"><button data-g="easy">연습</button><button data-g="normal">일반</button><button data-g="hard">하드</button></div></div>
     <div class="prow"><span>판정 범위 <small class="hint" id="jHint"></small></span><div class="seg" id="judgeSeg"><button data-j="loose">널널하게</button><button data-j="normal">중간</button><button data-j="strict">강하게</button></div></div>
-    <div class="prow"><span>그래픽 품질</span><div class="seg" id="gfx"><button data-q="high">고급</button><button data-q="mid">보통</button><button data-q="low">끄기</button></div></div>
-    <div class="prow"><span>싱크 보정</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="offset" min="-250" max="250" step="5"><output id="offsetVal">0ms</output></span></div>
     <div class="prow"><span>음악 볼륨</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="mvol" min="0" max="100" step="5"><output id="mvolVal">80</output></span></div>
     <div class="prow"><span>효과음 볼륨</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="svol" min="0" max="100" step="5"><output id="svolVal">80</output></span></div>
     <div class="prow"><span>키 설정 <small class="hint">누른 뒤 원하는 키 입력 · 바깥=얼굴 안쪽=몸통</small></span><div class="seg" id="keySeg"><button data-k="0">D</button><button data-k="1">F</button><button data-k="2">J</button><button data-k="3">K</button><button data-k="-1">기본</button></div></div>
@@ -561,13 +592,13 @@ html,body{font-synthesis:none}
       <div class="rscore" id="rScore">0</div>
       <div class="newbest hidden" id="rBest">NEW RECORD</div>
       <div class="rrank" id="rRankNote"></div>
-      <div class="rcode hidden" id="rCodeBox"><input id="rCode" readonly aria-label="기록 코드"><button type="button" id="rCodeCopy">코드 복사</button></div>
       <div class="lampbadge" id="rLamp">CLEAR</div>
       <div class="stats" id="rStats"></div>
     </div>
   </div>
   <canvas id="rGraph"></canvas>
   <div class="timing" id="rTiming"></div>
+  <div class="rsec hidden" id="rSec"></div>
   <nav class="list" id="resList">
     <button class="item" id="retryBtn"><span>다시 도전</span></button>
     <button class="item" id="toMenuBtn"><span>곡 선택</span></button>
@@ -639,7 +670,7 @@ const LVP={1:[.44,1.9],2:[.37,1.75],3:[.30,1.6],4:[.25,1.45],5:[.20,1.3],6:[.18,
 const TIERS=[['EASY','#9cc4e8'],['MEDIUM','#8fd19e'],['HARD','#e3c47a'],['EXTREME','#e0703c'],['HELL','#e8394f'],['DEATH','#c00028']];
 const tier=lv=>lv>=11?TIERS[5]:TIERS[Math.min(4,Math.floor((lv-1)/2))];
 let songIdx=Math.max(0,SONGS.findIndex(x=>x.id===store.get('sb.song','mountain')));
-const RATES=[1,1.5,2]; let rateMul=store.get('sb.rate',1); if(!RATES.includes(rateMul)) rateMul=1; let RATE=1;
+const RATES=[1,1.5,2]; let rateMul=1;   // 곡 속도 옵션은 v2.00.00에서 없앰 (곡당 랭킹 하나) let RATE=1;
 let ACC=null;   // 로그인한 게임 계정 {id, key}
 const recKey=id=>id+(rateMul!==1?'@'+rateMul:'')+(ACC?'#'+ACC.key:'');   // 곡 속도별 기록 따로
 function setSong(x,rate=1){ RATE=rate; BPM=x.bpm*rate; SPB=60/BPM; S16=SPB/4; BAR=S16*x.spb; END_BAR=x.bars; SECS=x.sections; SONG=x.events; INTRO_END=x.sections[1][0]; DROPS=x.sections.filter(q=>q[1]==='drop').map(q=>q[0]); }
@@ -650,7 +681,7 @@ const SPEEDS=[0.75,1,1.25,1.5,2]; let speedMul=store.get('sb.speed',1); if(!SPEE
 // 배속(노트 낙하 속도)별 점수 배율: 느리게 보면 쉬우니 감점, 빠르면 가산 (만점도 그만큼 커짐)
 const SPEED_SCORE={0.75:0.85,1:1,1.25:1.02,1.5:1.04,2:1.06}, spMul=v=>SPEED_SCORE[v]||1, MAXS=1.5e6;   // 1배 넘으면 만점도 늘어남
 // 체력 게이지 · 판정 범위 배율: 쉬운 설정은 감점, 어려운 설정은 가산 (배속과 곱해짐 · 최대 ×1.06×1.05×1.05)
-const GAUGE_SCORE={easy:0.9,normal:1,hard:1.05}, JUDGE_SCORE={loose:0.9,normal:1,strict:1.05};
+const GAUGE_SCORE={easy:1,normal:1,hard:1.05}, JUDGE_SCORE={loose:0.9,normal:1,strict:1.05};
 function scoreMul(){ return +(spMul(speedMul)*(GAUGE_SCORE[gaugeKey]||1)*(JUDGE_SCORE[judgeKey]||1)).toFixed(4); }
 // 체력 게이지: 맞히면 회복, 놓치면 감소, 0이 되면 패배
 const GAUGES={easy:{name:'연습',hit:{PERFECT:2,GREAT:1.5,GOOD:0.8},miss:2,swing:1,def:7,chip:0.5,nofail:true},
@@ -684,6 +715,56 @@ const LAMPS=[null,{n:'FAILED',c:'#7d756a'},{n:'ASSIST CLEAR',c:'#b48cff'},{n:'CL
 
 // 4레인 채보: 멜로디 음높이 흐름을 따라 왼쪽(낮음)→오른쪽(높음)으로 움직이고, 빠른 연타는 양손 번갈아
 const hand=l=>l<2?0:1;
+
+
+
+/* ================= 시즌 · 오늘의 도전 · 이번 주 도전 (한국 시간 기준) ================= */
+const KST=t=>new Date((t||Date.now())+9*3600e3);
+function seasonId(t){ return KST(t).toISOString().slice(0,7); }   // 예: 2026-11 (매달 새 시즌)
+function dayId(t){ return KST(t).toISOString().slice(0,10); }
+function weekId(t){ const d=KST(t); d.setUTCHours(0,0,0,0); const wd=(d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-wd+3); const y=d.getUTCFullYear(), j1=new Date(Date.UTC(y,0,4)); return y+'-W'+String(1+Math.round(((d-j1)/864e5-3+((j1.getUTCDay()+6)%7))/7)).padStart(2,'0'); }
+function seasonLeft(){ const d=KST(); const end=Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1); return Math.max(1,Math.ceil((end-d.getTime())/864e5)); }
+const seasonName=id=>`${+String(id).slice(5,7)}월 시즌`;
+function prevSeason(){ const d=KST(); return new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-1,15)).toISOString().slice(0,7); }
+const CONDS=[
+  {id:'miss5',t:'MISS 5개 이하',ok:(r,c)=>c.MISS+r.empty<=5},
+  {id:'acc92',t:'정확도 92% 이상',ok:(r,c,acc)=>acc>=92},
+  {id:'ko',t:'최윤혁 K.O.',ok:r=>r.ko},
+  {id:'hit3',t:'피격 3번 이하',ok:r=>r.hurts<=3},
+  {id:'combo',t:'최대 콤보가 노트의 40% 이상',ok:r=>r.maxCombo>=Math.ceil(r.notes.length*0.4)},
+  {id:'hard',t:'하드 게이지로 클리어',ok:r=>r.gaugeKey==='hard'}];
+function challengeOf(kind){   // 날짜(주)로 정해지는 곡 · 난이도 · 조건 – 모두에게 같음
+  const id=kind==='d'?dayId():weekId(); let hh=0; for(const ch of kind+id) hh=(Math.imul(hh,31)+ch.charCodeAt(0))|0; const rnd=seeded(hh);
+  const pool=kind==='w'?SONGS.filter(x=>x.level>=5):SONGS, x=pool[Math.floor(rnd()*pool.length)], lvs=chartLvs(x);
+  const lv=kind==='w'?lvs[lvs.length-1]:lvs[Math.floor(rnd()*Math.min(3,lvs.length))], cond=CONDS[Math.floor(rnd()*CONDS.length)];
+  return {kind,id,song:x,lv,key:ckey(x,lv)+'@1',cond,name:kind==='d'?'오늘의 도전':'이번 주 도전'};
+}
+function chState(v,kind){ const c=challengeOf(kind), e=v&&v[kind==='d'?'dc':'wc']; return e&&e[kind==='d'?'d':'w']===c.id?num(e.s,MAXS):0; }
+function renderChallenges(){
+  const box=$('chCards'); if(!box) return;
+  box.replaceChildren(...['d','w'].map(k=>{ const c=challengeOf(k), done=chState(NET.mine,k), el=document.createElement('button'); el.type='button'; el.className='chcard'+(done?' done':'');
+    el.innerHTML=`<span class="chk">${c.name}</span><b>${c.song.title} <i style="color:${tier(c.lv)[1]}">${tier(c.lv)[0]}</i></b><small>${c.cond.t}${done?` · 성공 ${done.toLocaleString()}점`:''}</small>`;
+    el.onclick=()=>{ songIdx=SONGS.indexOf(c.song); store.set('sb.song',c.song.id); setChart(c.song,c.lv); PRAC=null; uiConfirm(); startRun(); }; return el; }));
+}
+/* ================= 연습실: 구간 반복 · 느리게 치기 (기록 · 업적 제외) ================= */
+let PRAC=null;   // {b0,b1,speed,loop} – null이면 일반 플레이
+const SEC_NAME={intro:'도입',verse:'전개',build:'고조',drop:'클라이맥스',fin:'마무리',bridge:'브릿지',break:'쉬어가기',outro:'마무리'};
+function secList(x){   // [{label,b0,b1}] – 같은 이름은 번호를 붙임
+  const S=x.sections, n={}, cnt={}; S.forEach(q=>cnt[q[1]]=(cnt[q[1]]||0)+1);
+  const out=[]; for(let i=0;i<S.length-1;i++){ const nm=S[i][1]; if(nm==='end') continue; n[nm]=(n[nm]||0)+1;
+    const b0=S[i][0], b1=S[i+1][0]; if(b1<=b0) continue; out.push({label:(SEC_NAME[nm]||nm)+(cnt[nm]>1?' '+n[nm]:''),b0,b1}); }
+  return out; }
+/* ---------- 곡마다 여러 난이도(채보): 같은 곡을 EASY~원래 난이도까지 ---------- */
+function chartLvs(x){ const L=x.level; if(L>=9) return [4,6,8,L]; if(L>=7) return [2,4,6,L]; const a=[2,4,6]; a[Math.min(2,Math.floor((L-1)/2))]=L; return [...new Set(a)].sort((p,q)=>p-q); }
+function chartOf(x,lv){ return (lv==null||lv===x.level)?x:Object.create(x,{level:{value:lv,enumerable:true,writable:true},_base:{value:x}}); }
+const baseOf=x=>x._base||x;
+function ckey(x,lv){ const b=baseOf(x); lv=lv==null?x.level:lv; return lv===b.level?b.id:b.id+'#'+lv; }   // 기록 키: 원래 난이도는 곡 id 그대로 (예전 기록 호환)
+let chartSel=store.get('sb.chart',{}); if(!chartSel||typeof chartSel!=='object') chartSel={};
+function curLv(x){ const v=chartSel[x.id]; return chartLvs(x).includes(v)?v:x.level; }
+function setChart(x,lv){ chartSel[x.id]=lv; store.set('sb.chart',chartSel); }
+function parseKey(k){ const head=String(k).split('@')[0], [id,l]=head.split('#'), s=SONGS.find(q=>q.id===id); return {id,song:s,lv:l?+l:(s?s.level:0)}; }
+function totalOf(best){ const m={}; for(const [k,b] of Object.entries(best||{})){ if(!/@1$/.test(k)) continue; const id=k.split('@')[0].split('#')[0]; m[id]=Math.max(m[id]||0,num(b&&b.s,MAXS)); } return Object.values(m).reduce((a,b)=>a+b,0); }   // 종합 = 곡마다 가장 높은 난이도 점수 하나
+const nCache={};
 function buildChart(song){
   const lv=song.level, minGap=LVP[lv][0]/RATE, notes=[];
   let prevPitch=null, prevLane=1, last=-99, hS=-1, hE=-1, hL=-1, stair=0;
@@ -1082,23 +1163,24 @@ function scheduleMusic(){
 
 function startRun(){
   initAudio(); actx.resume();
-  const song=SONGS[songIdx];
+  const base=SONGS[songIdx], song=chartOf(base,curLv(base));
   if(!store.get('sb.tut',0)){ openTutorial(true); return; }
   const mk=mKey(rateMul);
-  if(!song[mk]){ if(!startRun.wait){ startRun.wait=true; setLoading(true); loadSong(song,rateMul).then(()=>{ startRun.wait=false; setLoading(false); startRun(); }).catch(()=>{ startRun.wait=false; setLoading(false,true); }); } return; }
-  stopRun(); endCalib(); menuMusic(false); setSong(song,rateMul);
+  if(!base[mk]){ if(!startRun.wait){ startRun.wait=true; setLoading(true); loadSong(base,rateMul).then(()=>{ startRun.wait=false; setLoading(false); startRun(); }).catch(()=>{ startRun.wait=false; setLoading(false,true); }); } return; }
+  stopRun(); endCalib(); menuMusic(false); const PS=PRAC?PRAC.speed:1; setSong(song,rateMul*PS);
   const musicBuf=song[mk].buf, musicT0=song[mk].t0;
   const bus=actx.createGain(); bus.gain.value=2.2*musVol/100; bus.connect(master);
   const duck=actx.createGain(); duck.connect(bus);
-  const notes=buildChart(song);
+  let notes=buildChart(song); const prac=PRAC?{...PRAC,fromT:PRAC.b0*BAR,toT:PRAC.b1*BAR}:null;
+  if(prac) notes=notes.filter(n=>n.t>=prac.fromT-0.02&&n.t<=prac.toT);
   let minGap=1; { const lastEnd=[-9,-9,-9,-9]; for(const n of notes){ const g=n.t-lastEnd[n.lane]; if(g>0.01) minGap=Math.min(minGap,g); lastEnd[n.lane]=n.hold?n.end:n.t; } }
   run={rate:rateMul,d:{approach:LVP[song.level][1]/rateMul,name:tier(song.level)[0]},minGap,song,notes,first:0,bus,duck,songStart:actx.currentTime+0.6,nextStep:0,score:0,sMul:scoreMul(),combo:0,maxCombo:0,
        cnt:{PERFECT:0,GREAT:0,GOOD:0,MISS:0},dts:[],hits:[],fast:0,slow:0,pts:0,maxPts:notes.length+notes.filter(q=>q.hold).length,life:100,lifeLag:100,G:GAUGES[gaugeKey],gaugeKey,failed:false,empty:0,charges:0,holds:[null,null,null,null],hp:100,hpLag:100,disp:0,ko:false,koT:0,paused:false,ended:false,lastTick:0};
-  bgC=null;   // 곡 난이도에 맞는 배경으로 다시 그림
+  run.ck=ckey(song); run.prac=prac; run.ghost=prac?null:store.get('sb.ghost.'+recKey(run.ck),null); run.tl=[]; bgC=null;   // 곡 난이도에 맞는 배경으로 다시 그림
   run.sv=buildSV(song); run.death=song.level>=11; run.dfx=null; run.svLast=1; run.svT=-9;
   run.mood=null; run.moodVis=null; run.moodK=0; run.moodT=-9; run.rageHits=0; run.tiredKO=false; run.moodN={};
   { const b=GAUGES[gaugeKey], m=song.level>=11?[2.2,0.4]:song.level>=9?[1.6,0.55]:song.level>=7?[1.3,0.75]:[1,1];   // 고난도: 더 아프고 덜 회복
-    run.G=Object.assign({},b,{miss:b.miss*m[0],swing:b.swing*m[0],def:b.def*m[0],chip:b.chip*m[0],hit:{PERFECT:b.hit.PERFECT*m[1],GREAT:b.hit.GREAT*m[1],GOOD:b.hit.GOOD*m[1]}}); }
+    run.G=Object.assign({},b,prac?{nofail:true,name:'연습실'}:{},{miss:b.miss*m[0],swing:b.swing*m[0],def:b.def*m[0],chip:b.chip*m[0],hit:{PERFECT:b.hit.PERFECT*m[1],GREAT:b.hit.GREAT*m[1],GOOD:b.hit.GOOD*m[1]}}); }
   run.turns=buildTurns(song);
   for(const n of notes){ const tt=turnAt(run.turns,n.t); n.def=!!(tt&&tt.side==='def'); }
   Object.assign(run,{dodges:0,guards:0,hurts:0,turnIdx:-1,defMix:0,cueT:-9,defN:notes.filter(q=>q.def).length});
@@ -1111,9 +1193,11 @@ function startRun(){
   Object.assign(HS,{ang:0,va:0,x:0,vx:0,y:0,vy:0,s:0,vs:0,jt:-9,ja:0}); EX.seq=null; EX.key=EX.prev='n'; Object.assign(BS,{b:0,vb:0,x:0,vx:0,dip:0,vdip:0,fl:0,vfl:0,jt:-9,ja:0,laughT:-9});
   // 녹음된 곡 재생: 곡의 0초가 songStart에 정확히 오도록
   const src=actx.createBufferSource(); src.buffer=musicBuf; src.connect(bus);
-  const at=actx.currentTime+0.08, offs=Math.max(0,musicT0-0.6);
-  src.start(at,offs); run.src=src; run.songStart=at+(musicT0-offs);
+  const at=actx.currentTime+0.08;
+  if(prac){ const s0=Math.max(0,prac.fromT-2*SPB), offs=musicT0+s0*PS; src.playbackRate.value=PS; src.start(at,offs); run.src=src; run.songStart=at-s0; }   // 구간 2박 전부터 · 느리게
+  else { const offs=Math.max(0,musicT0-0.6); src.start(at,offs); run.src=src; run.songStart=at+(musicT0-offs); }
   show(null); $('pauseBtn').classList.remove('hidden');
+  if(window.onRunStart) onRunStart(run);
 }
 function stopRun(){
   if(schedTimer){clearInterval(schedTimer); schedTimer=null;}
@@ -1123,7 +1207,7 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 /* ---------- 버전 · 업데이트 로그 (버전 규칙: 대규모 업데이트.신규 기능.버그 수정) ---------- */
-const CHANGELOG=[{"v": "1.04.00", "d": "2026-11-23", "items": ["연습 게이지(안 죽는 모드)로 친 판은 랭킹 · 내 최고 기록 · 업적에 들어가지 않아요", "연습 게이지로는 친구 대결 점수도 인정되지 않아요 (도전장은 남아 있어서 다시 도전할 수 있어요)"]}, {"v": "1.03.02", "d": "2026-11-23", "items": ["「다시 보지 않기」를 한 번 누르면 다음 업데이트 로그까지 영영 안 뜨던 문제를 고쳤어요 · 이제 그 버전만 안 뜨고, 새 업데이트가 나오면 다시 떠요"]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
+const CHANGELOG=[{"v": "2.00.00", "d": "2026-11-24", "items": ["곡마다 여러 난이도: 같은 곡을 EASY · MEDIUM · HARD (+ 원래 난이도)로 골라서 칠 수 있어요 · 곡 선택에서 난이도 이름을 누르거나 ← → 키", "연습실: 구간을 골라 반복하고, ×0.5 · ×0.75로 느리게 칠 수 있어요 (메인의 「연습」)", "결과 화면에 가장 많이 놓친 구간을 알려주고, 바로 그 구간을 연습할 수 있어요", "고스트: 플레이 중에 내 최고 기록보다 앞서는지 뒤처지는지 보여줘요", "시즌 랭킹: 매달 새 시즌 · 지난 시즌 3위 안에 들면 시즌 칭호", "오늘의 도전 · 이번 주 도전: 날마다(주마다) 정해지는 곡과 조건, 전용 랭킹", "친구 목록과 접속 표시 · 랭킹에서 「친구만」 보기", "실시간 1:1 대결: 방을 만들거나 친구를 초대해서 같은 곡을 동시에 치고 점수를 실시간으로 비교", "업적 5개 추가 (오늘의 도전 · 주간 도전 · 시즌 입상 · 실시간 대결)", "정리: 곡 속도(×1.5 · ×2) 옵션과 따로 나뉜 랭킹, 친구 기록 코드, 싱크 보정 슬라이더 · 그래픽 품질 설정(자동으로 조절), 데스크톱 앱 다운로드를 없앴어요 · 펀치 보정은 설정 안에 있어요", "종합 점수는 곡마다 가장 높은 난이도 점수 하나만 더해요"]}, {"v": "1.04.00", "d": "2026-11-23", "items": ["연습 게이지(안 죽는 모드)로 친 판은 랭킹 · 내 최고 기록 · 업적에 들어가지 않아요", "연습 게이지로는 친구 대결 점수도 인정되지 않아요 (도전장은 남아 있어서 다시 도전할 수 있어요)"]}, {"v": "1.03.02", "d": "2026-11-23", "items": ["「다시 보지 않기」를 한 번 누르면 다음 업데이트 로그까지 영영 안 뜨던 문제를 고쳤어요 · 이제 그 버전만 안 뜨고, 새 업데이트가 나오면 다시 떠요"]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
 function renderLog(){
   $('ulogList').replaceChildren(...CHANGELOG.map((e,i)=>{ const d=document.createElement('section'); d.className='ulv';
     const h=document.createElement('h3'); h.textContent='v'+e.v; const sm=document.createElement('small'); sm.textContent=e.d; h.append(sm);
@@ -1136,7 +1220,7 @@ function openLog(){ renderLog(); $('ulogOff').classList.toggle('hidden',logSeen(
 function show(id){
   let shownNow=''; try{ shownNow=sessionStorage.getItem('sb.logShown')||''; }catch(_){}
   if(id==='menu'&&!logSeen()&&shownNow!==APP_VER&&!show.logBusy){ show.logBusy=true; setTimeout(()=>{ show.logBusy=false; if(!$('menu').classList.contains('hidden')) openLog(); },450); }   // 새 버전이면 로비에서 한 번 자동으로
-  for(const o of ['title','menu','songs','pause','result','calib','settings','tutorial','login','ranking','downloads','account','duels','pcardOv','achv','ulog']){ const e=$(o); if(e) e.classList.toggle('hidden',o!==id); }
+  for(const o of ['title','menu','songs','pause','result','calib','settings','tutorial','login','ranking','downloads','account','duels','pcardOv','achv','ulog','prac']){ const e=$(o); if(e) e.classList.toggle('hidden',o!==id); }
   if(document.activeElement) document.activeElement.blur();
   const l=id&&$(id).querySelector('.list'); if(l) setSel(l,0,false);
 }
@@ -1362,6 +1446,7 @@ addEventListener('keydown',e=>{   // 키 지정 중이면 다른 동작보다 �
 },true);
 addEventListener('keydown',e=>{
   if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){ if(e.key==='Enter'&&e.target.closest('#login')){ e.preventDefault(); $('lgGo').click(); } return; }
+  if(!$('songs').classList.contains('hidden')&&(e.code==='ArrowLeft'||e.code==='ArrowRight')){ e.preventDefault(); cycleChart(e.code==='ArrowLeft'?-1:1); return; }
   if(!$('ranking').classList.contains('hidden')&&(e.code==='ArrowLeft'||e.code==='ArrowRight')){ e.preventDefault(); $(e.code==='ArrowLeft'?'rkPrev':'rkNext').click(); return; }
   if(!$('title').classList.contains('hidden')){ if(!e.repeat){ e.preventDefault(); enterMenu(); } return; }
   if(e.code==='KeyR'&&run&&!e.repeat&&$('pause').classList.contains('hidden')&&$('settings').classList.contains('hidden')){ e.preventDefault(); startRun(); return; }
@@ -2227,6 +2312,9 @@ function drawHUD(now,pt,dt,fever){
     ctx.font=`600 ${narrow?16:20}px ${DISP}`; ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillText(Math.round(r.disp).toLocaleString(),lx+1,sy+1);
     ctx.fillStyle=IVORY; ctx.fillText(Math.round(r.disp).toLocaleString(),lx,sy);
     ctx.font=`600 9px ${DISP}`; ctx.fillStyle='rgba(227,196,122,.7)'; ctx.fillText(spacedText('SCORE'),lx+ctx.measureText('0').width*0+(narrow?84:110),sy-1);
+    if(r.ghost&&now>1){ const g=r.ghost[Math.min(r.ghost.length-1,Math.floor(now))]||0, df=r.score-g; ctx.font=`600 ${narrow?10:11}px ${SERIF}`; ctx.fillStyle=df>=0?'#9fd3a0':'#e0897c'; ctx.fillText(`내 최고 대비 ${df>=0?'+':''}${df.toLocaleString()}`,lx,sy+(narrow?14:16)); }
+    if(r.rt){ const op=r.rt.opp||0, df=r.score-op; ctx.font=`700 ${narrow?10:11}px ${SERIF}`; ctx.fillStyle=df>=0?'#9fd3a0':'#e0897c'; ctx.fillText(`vs ${r.rt.name} ${op.toLocaleString()} · ${df>=0?'이기는 중':'지는 중'}${r.rt.oppDone?' (끝남)':''}`,lx,sy+(narrow?28:32)); }
+    if(r.prac){ ctx.font=`600 ${narrow?10:11}px ${SERIF}`; ctx.fillStyle='#9cc4e8'; ctx.fillText(`연습실 · ×${r.prac.speed}${r.prac.loop?' · 반복':''}`,lx,sy+(narrow?14:16)); }
   }
   // 판정 오차 막대 (왼쪽 = 빠름, 오른쪽 = 늦음)
   { const mx=(L.tx[0]+L.tx[3])/2, mw=Math.min(220,(L.tx[3]-L.tx[0])+L.lw*0.5), my=L.touch?Math.max(L.laneTop-12,(L.hudB||0)+24):Math.min(H-14,L.ty+52), sc=(mw/2)/WIN.good;
@@ -2293,7 +2381,9 @@ function frame(){
         if(ti>run.turnIdx&&nx&&nx.side&&!run.ko){ const pv=run.turnIdx>=0?T[run.turnIdx]:null; run.turnIdx=ti; if(!pv||pv.side!==nx.side) if(nx.b0>INTRO_END||nx.side==='def'){ fx.turn={side:nx.side,t:pt,drop:DROPS.includes(nx.b0)};
             if(actx){ const t=actx.currentTime; if(nx.side==='def'){ tone(sfx,t,'sawtooth',220,0.35,0.07,1200); tone(sfx,t+0.12,'sawtooth',165,0.5,0.07,900); } else { bell(sfx,t,0.12); } } } }
         const want=(cur&&cur.side==='def'&&!run.ko)?1:0; run.defMix+=(want-run.defMix)*Math.min(1,dt*5); }
-      if(!run.ended&&now>END_BAR*BAR+0.2){ run.ended=true; setTimeout(showResults,900); }
+      if(!run.ended&&run.prac&&now>run.prac.toT+1.0){ run.ended=true; if(run.prac.loop){ fx.banner={txt:'한 번 더!',t:pt}; setTimeout(()=>{ if(run&&run.prac&&PRAC) startRun(); },700); } else setTimeout(showResults,600); }
+      else if(!run.ended&&!run.prac&&now>END_BAR*BAR+0.2){ run.ended=true; setTimeout(showResults,900); }
+      if(!run.prac&&now>=0){ const si=Math.floor(now); while(run.tl.length<=si) run.tl.push(run.score); }   // 고스트용 점수 기록 (1초마다)
     }
   }
   const live=!run||!run.paused;
@@ -2351,6 +2441,16 @@ function drawGraph(r){
   x.strokeStyle='rgba(227,196,122,.5)'; x.strokeRect(0.5,0.5,w-1,h-1);
 }
 function songNowSafe(r){ try{ return songNow(); }catch(e){ return 0; } }
+
+function secAnalysis(r){   // 결과: 가장 많이 놓친 구간 → 바로 연습
+  const box=$('rSec'); if(!box) return; box.innerHTML=''; box.classList.add('hidden');
+  const secs=secList(r.song).map(q=>({...q,t0:q.b0*BAR,t1:q.b1*BAR,miss:0,n:0}));
+  for(const h of r.hits){ const q=secs.find(s=>h.t>=s.t0-0.01&&h.t<s.t1-0.01); if(!q) continue; q.n++; if(h.miss) q.miss++; }
+  const worst=secs.filter(q=>q.miss>=2).sort((a,b)=>b.miss/b.n-a.miss/a.n||b.miss-a.miss)[0]; if(!worst) return;
+  box.innerHTML=`<span>가장 많이 놓친 구간 <b>${worst.label}</b> · 마디 ${worst.b0+1}–${worst.b1} · MISS ${worst.miss}</span>`;
+  const b=document.createElement('button'); b.className='item'; b.textContent='이 구간 연습'; b.onclick=()=>{ PRAC={b0:worst.b0,b1:worst.b1,speed:0.75,loop:true}; uiConfirm(); startRun(); };
+  box.appendChild(b); box.classList.remove('hidden');
+}
 function showResults(){
   if(!run) return;
   const r=run, c=r.cnt, total=c.PERFECT+c.GREAT+c.GOOD+c.MISS+r.empty*0.5;
@@ -2363,23 +2463,23 @@ function showResults(){
   $('rVerdict').textContent=r.failed?'패 배':r.ko?'격 파':'판 정 승'; $('rVerdict').classList.toggle('lose',!win);
   $('rVsub').textContent=r.failed?`T.K.O. — ${r.prog||0}% 완료`:r.ko?'KNOCK OUT':'VICTORY BY DECISION';
   $('rProg').classList.toggle('hidden',!r.failed);
-  if(r.failed){ const pk='sb6.prog.'+recKey(r.song.id), pb=store.get(pk,0), pct=r.prog||0;
+  if(r.failed){ const pk='sb6.prog.'+recKey(r.ck), pb=store.get(pk,0), pct=r.prog||0;
     $('rProgPct').textContent=pct+'%'; $('rProgFill').style.width='0%'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ $('rProgFill').style.width=pct+'%'; }));
     $('rProgBest').textContent=pct>pb?'최고 기록 갱신!':pb?`최고 ${pb}%`:''; if(pct>pb) store.set(pk,pct); }
   if(r.failed) r.score=Math.round(1e6*r.pts/r.maxPts*r.sMul);
   const lamp=r.failed?1:(c.MISS===0&&r.empty===0&&c.GREAT===0&&c.GOOD===0)?6:(c.MISS===0&&r.empty===0)?5:r.G.nofail?2:r.gaugeKey==='hard'?4:3;
   const L_=LAMPS[lamp]; $('rLamp').textContent=L_.n; $('rLamp').style.color=L_.c; $('rLamp').style.borderColor=L_.c;
   $('rScore').textContent=r.score.toLocaleString();
-  const id=r.song.id, best=store.get('sb6.best.'+recKey(id),0), ranks='DCBAS';
+  const id=r.ck, best=store.get('sb6.best.'+recKey(id),0), ranks='DCBAS';
   const practice=!!r.G.nofail;   // 연습 게이지: 안 죽으니 기록 · 랭킹 · 업적에 넣지 않음
-  $('rBest').classList.toggle('hidden',practice||!(r.score>best)); if(!practice&&r.score>best) store.set('sb6.best.'+recKey(id),r.score);
+  $('rBest').classList.toggle('hidden',practice||!(r.score>best)); if(!practice&&r.score>best){ store.set('sb6.best.'+recKey(id),r.score); if(!r.failed&&r.tl.length) store.set('sb.ghost.'+recKey(id),r.tl.slice(0,900)); }
   if(!practice&&lamp>store.get('sb6.lamp.'+recKey(id),0)) store.set('sb6.lamp.'+recKey(id),lamp);
   if(!practice&&!r.failed&&ranks.indexOf(rank)>ranks.indexOf(store.get('sb6.rank.'+recKey(id),'')||'')) store.set('sb6.rank.'+recKey(id),rank);
   $('rAch').classList.add('hidden'); $('rAch').innerHTML='';
   Promise.resolve(netRecord(r,rank,lamp,acc)).catch(()=>{}).finally(()=>{ try{ progAfterRun(r); if(window.afterRunHook) afterRunHook(r,rank,lamp); }catch(e){ console.warn(e); } });
   const holds=r.notes.filter(n=>n.hold).length;
   $('rStats').innerHTML=`<span>곡</span><b style="font-family:'Bong Myung','Gowun Batang',serif">${r.song.title}</b><span>난이도</span><b style="color:${tier(r.song.level)[1]}">${r.d.name}</b><span>PERFECT</span><b>${c.PERFECT}</b><span>GREAT</span><b>${c.GREAT}</b><span>GOOD</span><b>${c.GOOD}</b><span>MISS</span><b>${c.MISS+r.empty}</b><span>FAST / SLOW</span><b>${r.fast} / ${r.slow}</b><span>최대 콤보</span><b>${r.maxCombo}</b><span>차징 펀치</span><b>${r.charges} / ${holds}</b><span>회피 / 가드</span><b>${r.dodges} / ${r.guards}</b><span>피격</span><b style="color:${r.hurts?'#e8394f':'inherit'}">${r.hurts}</b><span>정확도</span><b>${acc.toFixed(1)}%</b><span>게이지 · 판정</span><b style="font-family:'Bong Myung','Gowun Batang',serif">${r.G.name} · ${WIN.name}</b><span>배속 · 곡 속도</span><b>×${speedMul} · ×${r.rate}${r.sMul!==1?` (점수 ×${r.sMul})`:''}</b>`;
-  drawGraph(r);
+  drawGraph(r); secAnalysis(r);
   const dts=r.dts.slice().sort((a,b)=>a-b), med=dts.length?dts[Math.floor(dts.length/2)]*1000:0;
   const tm=$('rTiming'); tm.innerHTML='';
   if(dts.length>=10){
@@ -2445,10 +2545,15 @@ const ACHS=[
   {id:'songs_20',n:'올라운더',d:'서로 다른 20곡 클리어',t:'올라운더',v:(S,B)=>[B.cleared,20]},
   {id:'total_10m',n:'전설',d:'종합 점수 1,000만',t:'전설',v:(S,B)=>[B.total,1e7]},
   {id:'ch_win',n:'도전자 사냥꾼',d:'친구 대결 1승',t:'도전자 사냥꾼',v:(S)=>[S.chWins,1]},
-  {id:'ch_5',n:'결투왕',d:'친구 대결 5승',t:'결투왕',v:(S)=>[S.chWins,5]}];
+  {id:'ch_5',n:'결투왕',d:'친구 대결 5승',t:'결투왕',v:(S)=>[S.chWins,5]},
+  {id:'daily_1',n:'오늘의 도전자',d:'오늘의 도전 성공',t:'도전자',v:(S)=>[S.dcDone,1]},
+  {id:'daily_7',n:'꾸준함',d:'오늘의 도전 7번 성공',t:'꾸준한 복서',v:(S)=>[S.dcDone,7]},
+  {id:'weekly_1',n:'주간 정복',d:'이번 주 도전 성공',t:'주간 정복자',v:(S)=>[S.wcDone,1]},
+  {id:'season_top',n:'시즌 입상',d:'지난 시즌 3위 안에 들기',t:'시즌 입상자',v:(S)=>[S.seasonTop,1]},
+  {id:'rt_win',n:'실전 승리',d:'실시간 대결 1승',t:'실전파',v:(S)=>[S.rtWins,1]}];
 const DEV_UIDS=['9R3rJTrsOyS1crzNgMlcBxHhAZx1'], DEV_TITLE='개발자', RESERVED_NICK=['개발자','운영자','관리자'];   // 개발자 전용 칭호 (서버 규칙도 같은 계정만 허용)
 const isDev=uid=>!!uid&&DEV_UIDS.includes(uid);
-const ST0={plays:0,clears:0,kos:0,maxCombo:0,charges:0,defs:0,rageHits:0,tiredKO:0,chWins:0};
+const ST0={plays:0,clears:0,kos:0,maxCombo:0,charges:0,defs:0,rageHits:0,tiredKO:0,chWins:0,dcDone:0,wcDone:0,seasonTop:0,rtWins:0};
 const acctK=()=>'#'+(ACC?ACC.key:'guest');
 let ST=null, EQ=null;
 function loadProg(){ const s=store.get('sb.st'+acctK(),{}), e=store.get('sb.eq'+acctK(),{});
@@ -2461,11 +2566,11 @@ function mergeProg(st,eq,title){   // 서버(다른 기기)에 저장된 진행�
   if(eq&&typeof eq==='object'&&!store.get('sb.eq'+acctK(),null)){ if(GLOVE_SKINS[eq.g]) EQ.g=eq.g; if(NOTE_SKINS[eq.n]) EQ.n=eq.n; if(typeof title==='string') EQ.t=title.slice(0,16); ch=true; }
   saveProg(); applySkin(); return ch; }
 function bestSum(best){
-  const B={fc:0,ap:0,s:0,ext:0,hell:0,death:0,cleared:0,total:0}, seen={};
-  for(const [k,b] of Object.entries(best||{})){ const id=k.split('@')[0], sg=SONGS.find(x=>x.id===id); if(!sg||!b) continue;
+  const B={fc:0,ap:0,s:0,ext:0,hell:0,death:0,cleared:0,total:totalOf(best)}, seen={};
+  for(const [k,b] of Object.entries(best||{})){ if(!/@1$/.test(k)||!b) continue; const {id,song:sg,lv}=parseKey(k); if(!sg) continue;
     const l=num(b.l,6)|0, f=seen[id]||(seen[id]={});
     if(l>=5) f.fc=1; if(l>=6) f.ap=1; if(String(b.g||'')==='S') f.s=1;
-    if(l>=3){ f.c=1; if(sg.level>=11) f.death=1; else if(sg.level>=9) f.hell=1; else if(sg.level>=7) f.ext=1; } B.total+=num(b.s,MAXS); }
+    if(l>=3){ f.c=1; if(lv>=11) f.death=1; else if(lv>=9) f.hell=1; else if(lv>=7) f.ext=1; } }
   for(const f of Object.values(seen)){ B.fc+=f.fc||0; B.ap+=f.ap||0; B.s+=f.s||0; B.cleared+=f.c||0; B.ext+=f.ext||0; B.hell+=f.hell||0; B.death+=f.death||0; }
   return B; }
 function achState(S,best){ const B=bestSum(best); return ACHS.map(a=>{ const [c,g]=a.v(S||ST0,B); return {a,cur:Math.min(c,g),goal:g,ok:c>=g}; }); }
@@ -2535,7 +2640,8 @@ function calFrame(){
     $('calApply').classList.remove('hidden'); $('calDone').classList.remove('hidden'); setSel($('calList'),0,false);
   }
 }
-function setOffset(v){ offsetMs=v; store.set('sb.offset2',v); $('offset').value=v; $('offsetVal').textContent=v+'ms'; }
+function setOffset(v){ offsetMs=v; store.set('sb.offset2',v); calLabel(); }
+function calLabel(){ const b=$('calBtn'); if(b) b.querySelector('span').textContent='펀치 보정'+(offsetMs?` (지금 ${offsetMs>0?'+':''}${offsetMs}ms)`:''); }
 $('calPad').addEventListener('pointerdown',e=>{e.preventDefault(); calTap();});
 $('calBtn').onclick=startCalib;
 $('calAgain').onclick=startCalib;
@@ -2656,8 +2762,8 @@ function setSel(list,idx,sound=true){
   NAV.list=list; NAV.idx=idx;
   if(list.id==='songList'){ items[idx].scrollIntoView({block:'nearest'}); if(changed) pickSong(+items[idx].dataset.i); }
 }
-function activeList(){ for(const id of ['ulog','achv','duels','account','downloads','login','ranking','tutorial','settings','calib','pause','result','songs','menu']){ const o=$(id); if(o&&!o.classList.contains('hidden')) return o.querySelector('.list'); } return null; }
-document.addEventListener('pointerover',e=>{ const it=e.target.closest&&e.target.closest('.item'); if(!it) return; const l=it.closest('.list'); const i=navItems(l).indexOf(it); if(i>=0&&(NAV.list!==l||NAV.idx!==i)) setSel(l,i); });
+function activeList(){ for(const id of ['prac','ulog','achv','duels','account','downloads','login','ranking','tutorial','settings','calib','pause','result','songs','menu']){ const o=$(id); if(o&&!o.classList.contains('hidden')) return o.querySelector('.list'); } return null; }
+document.addEventListener('pointerover',e=>{ const it=e.target.closest&&e.target.closest('.item'); if(!it) return; const l=it.closest('.list'); if(!l) return; const i=navItems(l).indexOf(it); if(i>=0&&(NAV.list!==l||NAV.idx!==i)) setSel(l,i); });
 function uiTick(){ if(!actx) return; const t=actx.currentTime; tone(master,t,'sine',1500,0.05,0.035); noise(master,t,0.02,'highpass',6000,0.7,0.025); }
 function uiConfirm(){ if(!actx) return; const t=actx.currentTime; tone(master,t,'sine',520,0.35,0.07); tone(master,t+0.03,'sine',780,0.45,0.045); noise(master,t,0.25,'bandpass',900,0.8,0.05); }
 $('verTag').textContent='v'+APP_VER; $('logVer').textContent='v'+APP_VER;
@@ -2665,6 +2771,23 @@ $('logBtn').onclick=()=>{ uiTick(); openLog(); };
 $('ulogBack').onclick=()=>{ uiTick(); show('menu'); };
 $('ulogOff').onclick=()=>{ store.set('sb.seenVer',APP_VER); uiTick(); show('menu'); };   // 이번 버전 로그만 다시 안 띄움
 try{ localStorage.removeItem('sb.logOff'); }catch(_){}   // 예전 「영원히 안 보기」 설정은 지움
+
+/* ---------- 연습실 화면 ---------- */
+let pracSel={sec:-1,speed:0.75,loop:true};
+function openPractice(){
+  const x=SONGS[songIdx], lv=curLv(x), secs=secList(x);
+  if(pracSel.sec>=secs.length) pracSel.sec=-1;
+  $('prSong').innerHTML=`「${x.title}」 <span style="color:${tier(lv)[1]}">${tier(lv)[0]}</span>`;
+  const chip=(t,on,fn)=>{ const b=document.createElement('button'); b.type='button'; b.className='acchip'; b.setAttribute('aria-pressed',on); b.textContent=t; b.onclick=()=>{ uiTick(); fn(); openPractice(); }; return b; };
+  $('prSecs').replaceChildren(chip('처음부터 끝까지',pracSel.sec<0,()=>pracSel.sec=-1),...secs.map((q,i)=>chip(`${q.label} · ${q.b0+1}–${q.b1}`,pracSel.sec===i,()=>pracSel.sec=i)));
+  $('prSpeed').replaceChildren(...[0.5,0.75,1].map(v=>chip(`×${v}`,pracSel.speed===v,()=>pracSel.speed=v)));
+  $('prLoop').replaceChildren(chip('반복',pracSel.loop,()=>pracSel.loop=true),chip('한 번만',!pracSel.loop,()=>pracSel.loop=false));
+  if($('prac').classList.contains('hidden')){ show('prac'); clickGuard=performance.now()+300; }
+}
+$('prGo').onclick=()=>{ const x=SONGS[songIdx], secs=secList(x), q=pracSel.sec>=0?secs[pracSel.sec]:{b0:0,b1:x.bars}; PRAC={b0:q.b0,b1:q.b1,speed:pracSel.speed,loop:pracSel.loop}; uiConfirm(); startRun(); };
+$('prSongBtn').onclick=()=>{ uiTick(); PRAC=null; openSongs(); };
+$('prBack').onclick=()=>{ uiTick(); PRAC=null; show('menu'); };
+$('pracBtn').onclick=()=>{ uiTick(); openPractice(); };
 function enterMenu(){
   initAudio(); actx.resume();
   const t=actx.currentTime; tone(master,t,'sine',55,1.6,0.35); noise(master,t,1.2,'lowpass',400,0.7,0.25); tone(master,t,'sine',440,1.2,0.04); tone(master,t+0.05,'sine',660,1.4,0.03);
@@ -2675,32 +2798,47 @@ $('title').addEventListener('click',e=>{ e.preventDefault(); enterMenu(); });
 let clickGuard=0;
 document.addEventListener('click',e=>{ if(performance.now()<clickGuard&&e.target.closest&&e.target.closest('.item,.arr')){ e.stopPropagation(); e.preventDefault(); } },true);
 function updateMenu(){
-  const x=SONGS[songIdx], best=store.get('sb6.best.'+recKey(x.id),0);
-  $('bestLine').textContent=`${x.title} · ${tier(x.level)[0]}`+(rateMul!==1?` ×${rateMul}`:'')+(best?` — 내 최고 ${best.toLocaleString()}점`:'');
+  const x=SONGS[songIdx], lv=curLv(x), best=store.get('sb6.best.'+recKey(ckey(x,lv)),0);
+  $('bestLine').textContent=`${x.title} · ${tier(lv)[0]}`+(best?` — 내 최고 ${best.toLocaleString()}점`:'');
   const st=$('mStamp'); if(st) st.textContent=tier(x.level)[0]+(rateMul!==1?` ×${rateMul}`:'');
 }
 // 곡 선택 화면
 function pips(lv){ const c=tier(lv)[1]; let h=''; for(let i=1;i<=10;i++) h+=i<=lv?`<i class="on" style="background:${c};border-color:${c}"></i>`:'<i></i>'; return h; }
-function songInfo(x){
-  if(x._n==null){ const cur=SONGS[songIdx]; setSong(x); x._n=buildChart(x).length; setSong(cur); }
-  const rr_=rateMul;
-  const sec=Math.round(x.bars*x.spb*60/x.bpm/4/rr_); return (rr_!==1?`<b style="color:#ff9a4a">×${rr_} </b>`:'')+`${Math.round(x.bpm*rr_)} BPM · ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')} · ${x._n} 노트`+(x.level>=11?' · <b style="color:#ff2a4a">리미트 해제 · 극한 변속</b>':x.level>=9?' · <b style="color:#e8394f">엇박 · 변속</b>':x.level>=7?' · <b style="color:#e0703c">엇박</b>':'');
+function songInfo(x,lv){
+  const c=chartOf(x,lv), k=ckey(c);
+  if(nCache[k]==null){ const cur=SONGS[songIdx]; setSong(x); nCache[k]=buildChart(c).length; setSong(cur); }
+  const sec=Math.round(x.bars*x.spb*60/x.bpm/4); return `${Math.round(x.bpm)} BPM · ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')} · ${nCache[k]} 노트`+(c.level>=11?' · <b style="color:#ff2a4a">리미트 해제 · 극한 변속</b>':c.level>=9?' · <b style="color:#e8394f">변속</b>':'');
 }
 let tierF=store.get('sb.tierF','ALL');
 function renderTiers(){
   const names=['ALL',...TIERS.map(t=>t[0])];
-  $('tierBar').innerHTML=names.map(n=>{ const c=n==='ALL'?'#e3c47a':TIERS.find(t=>t[0]===n)[1], cnt=n==='ALL'?SONGS.length:SONGS.filter(x=>tier(x.level)[0]===n).length;
+  $('tierBar').innerHTML=names.map(n=>{ const c=n==='ALL'?'#e3c47a':TIERS.find(t=>t[0]===n)[1], cnt=n==='ALL'?SONGS.length:SONGS.filter(x=>chartLvs(x).some(l=>tier(l)[0]===n)).length;
     return `<button class="tchip${tierF===n?' on':''}" data-t="${n}" style="--tc:${c}">${n}<small>${cnt}</small></button>`; }).join('');
   $('tierBar').querySelectorAll('.tchip').forEach(b=>b.onclick=()=>{ tierF=b.dataset.t; store.set('sb.tierF',tierF); uiTick(); renderSongs(); setSel($('songList'),0,false); });
 }
-function renderSongs(){
-  renderTiers();
-  $('songList').innerHTML=SONGS.map((x,i)=>{ if(tierF!=='ALL'&&tier(x.level)[0]!==tierF) return ''; const best=store.get('sb6.best.'+recKey(x.id),0), lp=LAMPS[store.get('sb6.lamp.'+recKey(x.id),0)], rk=store.get('sb6.rank.'+recKey(x.id),'');
-    return `<button class="item song" data-i="${i}"><i class="lampbar" style="background:${lp?lp.c:'rgba(255,255,255,.08)'}"></i><span class="sl"><b>${x.title}</b><small>${x.composer} · ${x.year}</small><small class="info">${songInfo(x)}</small></span>`+
-      `<span class="sr"><span class="lv" style="color:${tier(x.level)[1]}">${tier(x.level)[0]}</span><span class="pips">${pips(x.level)}</span>`+
-      `<small>${best&&!(lp&&lp.n==='FAILED')?`<b class="rk">${rk}</b> ${best.toLocaleString()}`:(()=>{ const pg=store.get('sb6.prog.'+recKey(x.id),0); return pg?`<span class="prog">최고 ${pg}% 완료</span>`:'—'; })()}</small>${lp?`<small style="color:${lp.c};font-family:\"Pirata One\",serif;letter-spacing:.08em">${lp.n}</small>`:''}</span></button>`; }).join('');
-  $('songList').querySelectorAll('.song').forEach(b=>b.onclick=()=>{ songIdx=+b.dataset.i; store.set('sb.song',SONGS[songIdx].id); startRun(); });
+function songRow(x,i){
+  const lv=curLv(x), k=ckey(x,lv), best=store.get('sb6.best.'+recKey(k),0), lp=LAMPS[store.get('sb6.lamp.'+recKey(k),0)], rk=store.get('sb6.rank.'+recKey(k),'');
+  const chips=chartLvs(x).map(l=>{ const kk=ckey(x,l), g=store.get('sb6.rank.'+recKey(kk),''); return `<span class="dchip${l===lv?' on':''}" data-lv="${l}" role="button" tabindex="-1" style="--tc:${tier(l)[1]}">${tier(l)[0]}${g?`<i>${g}</i>`:''}</span>`; }).join('');
+  const sc=best&&!(lp&&lp.n==='FAILED')?`<b class="rk">${rk}</b> ${best.toLocaleString()}`:(()=>{ const pg=store.get('sb6.prog.'+recKey(k),0); return pg?`<span class="prog">최고 ${pg}% 완료</span>`:''; })();
+  return `<button class="item song" data-i="${i}"><i class="lampbar" style="background:${lp?lp.c:'rgba(255,255,255,.08)'}"></i><span class="sl"><b>${x.title}</b><small>${x.composer} · ${x.year}</small><small class="info">${songInfo(x,lv)}</small></span>`+
+    `<span class="sr"><small>${sc||'—'}</small>${lp?`<small style="color:${lp.c};font-family:'Pirata One',serif;letter-spacing:.06em">${lp.n}</small>`:''}</span><span class="dchips">${chips}</span></button>`;
 }
+function renderSongs(){
+  renderTiers(); renderChallenges();
+  $('songList').innerHTML=SONGS.map((x,i)=>tierF!=='ALL'&&!chartLvs(x).some(l=>tier(l)[0]===tierF)?'':songRow(x,i)).join('');
+  wireSongs();
+}
+function wireSongs(){
+  $('songList').querySelectorAll('.song').forEach(b=>{
+    b.onclick=e=>{ const c=e.target.closest('.dchip'); const x=SONGS[+b.dataset.i];
+      if(c){ e.stopPropagation(); setChart(x,+c.dataset.lv); uiTick(); refreshSongRow(+b.dataset.i); return; }
+      songIdx=+b.dataset.i; store.set('sb.song',x.id); PRAC=null; startRun(); }; });
+}
+function refreshSongRow(i){   // 난이도만 바꿨을 때 그 줄만 다시 그림
+  const old=$('songList').querySelector(`.song[data-i="${i}"]`); if(!old) return; const sel=old.classList.contains('sel');
+  const t=document.createElement('div'); t.innerHTML=songRow(SONGS[i],i); const nw=t.firstElementChild; if(sel) nw.classList.add('sel'); old.replaceWith(nw); wireSongs(); if(i===songIdx) updateMenu();
+}
+function cycleChart(d){ const x=SONGS[songIdx], ls=chartLvs(x), j=ls.indexOf(curLv(x)), n=ls[Math.max(0,Math.min(ls.length-1,j+d))]; if(n!==curLv(x)){ setChart(x,n); uiTick(); refreshSongRow(songIdx); } }
 let pickT=0;
 function pickSong(i){ if(i===songIdx&&menuSrc) return; songIdx=i; store.set('sb.song',SONGS[i].id); updateMenu(); clearTimeout(pickT); pickT=setTimeout(()=>menuMusic(true),220); }
 function openSongs(){ renderSongs(); show('songs'); setSel($('songList'),Math.max(0,[...$('songList').querySelectorAll('.song')].findIndex(b=>+b.dataset.i===songIdx)),false); clickGuard=performance.now()+300; menuMusic(true); }
@@ -2750,8 +2888,7 @@ $('tutGo').onclick=()=>{ store.set('sb.tut',1); if(tutStart){ tutStart=false; st
 $('tutBtn').onclick=()=>openTutorial(false);
 setJudge(judgeKey);
 applyGfx(gfx,false);
-const off=$('offset'); off.value=offsetMs; $('offsetVal').textContent=offsetMs+'ms';
-off.oninput=()=>setOffset(+off.value);
+calLabel();
 $('startBtn').onclick=openSongs;
 $('songBack').onclick=()=>{ show('menu'); updateMenu(); };
 $('setBtn').onclick=()=>openSettings('menu');
@@ -2760,11 +2897,11 @@ $('setBack').onclick=()=>show(setFrom);
 $('pauseBtn').onclick=pauseGame;
 $('resumeBtn').onclick=resumeGame;
 $('restartBtn').onclick=startRun;
-$('menuBtn').onclick=()=>{stopRun(); if(actx) actx.resume(); openSongs();};
-$('pauseMainBtn').onclick=()=>{stopRun(); if(actx) actx.resume(); updateMenu(); show('menu'); clickGuard=performance.now()+300; menuMusic(true);};   // 일시정지 → 메인 화면
+$('menuBtn').onclick=()=>{stopRun(); if(actx) actx.resume(); if(PRAC){ openPractice(); return; } openSongs();};
+$('pauseMainBtn').onclick=()=>{PRAC=null; stopRun(); if(actx) actx.resume(); updateMenu(); show('menu'); clickGuard=performance.now()+300; menuMusic(true);};   // 일시정지 → 메인 화면
 $('retryBtn').onclick=startRun;
-$('toMenuBtn').onclick=()=>{stopRun(); openSongs();};
-$('toMainBtn').onclick=()=>{stopRun(); updateMenu(); show('menu'); clickGuard=performance.now()+300; menuMusic(true);};   // 결과 → 바로 메인 화면
+$('toMenuBtn').onclick=()=>{stopRun(); if(PRAC){ openPractice(); return; } openSongs();};
+$('toMainBtn').onclick=()=>{PRAC=null; stopRun(); updateMenu(); show('menu'); clickGuard=performance.now()+300; menuMusic(true);};   // 결과 → 바로 메인 화면
 updateMenu();
 requestAnimationFrame(frame);
 // 전체화면 (지원하는 브라우저에서만)
@@ -2900,11 +3037,14 @@ $('lgOut').onclick=()=>{ setAcc(null); setLgMode('in'); $('lgId').value=''; rend
 $('acctChip').onclick=()=>{ uiTick(); renderLogin(); show('login'); };
 function guestNick(){ return ACC?ACC.id:''; }
 // ---------- 랭킹 ----------
-function rankList(key){   // key: "곡@속도" 또는 null(종합)
-  const out=[];
+function rankList(key,mode){   // key: "곡@1" 또는 null(종합) · mode: season | d | w
+  const out=[], sid=seasonId(), cd=mode==='d'||mode==='w'?challengeOf(mode).id:null, fr=window.rkFriends&&rkFriends();
   for(const [id,v] of NET.all){
-    let s=0, g='', l=0;
-    if(key){ const b=v.best&&v.best[key]; if(!b) continue; s=num(b.s,MAXS); g=String(b.g||'').slice(0,1); l=num(b.l,6)|0; }
+    let s=0, g='', l=0; if(fr&&!fr.has(id)) continue;
+    if(mode==='season'){ s=num(v.ss&&v.ss[sid]&&v.ss[sid].t,1e9); }
+    else if(mode==='d'){ s=v.dc&&v.dc.d===cd?num(v.dc.s,MAXS):0; }
+    else if(mode==='w'){ s=v.wc&&v.wc.w===cd?num(v.wc.s,MAXS):0; }
+    else if(key){ const b=v.best&&v.best[key]; if(!b) continue; s=num(b.s,MAXS); g=String(b.g||'').slice(0,1); l=num(b.l,6)|0; }
     else s=num(v.total,1e9);
     if(s>0) out.push({id,s,g,l,nick:cleanNick(v.nick)});
   }
@@ -2912,20 +3052,23 @@ function rankList(key){   // key: "곡@속도" 또는 null(종합)
   return out;
 }
 function placeOf(key,id){ const i=rankList(key).findIndex(x=>x.id===id); return i<0?null:i+1; }
-function rkKey(){ return rkMode==='total'?null:SONGS[rkIdx].id+'@'+rateMul; }
-function openRanking(){ rkIdx=songIdx; show('ranking'); renderRanking(); clickGuard=performance.now()+300; }
+let rkLv=null;
+function rkKey(){ if(rkMode!=='song') return null; const x=SONGS[rkIdx]; if(!chartLvs(x).includes(rkLv)) rkLv=curLv(x); return ckey(x,rkLv)+'@1'; }
+function openRanking(){ rkIdx=songIdx; rkLv=curLv(SONGS[songIdx]); show('ranking'); renderRanking(); clickGuard=performance.now()+300; }
 async function renderRanking(){
   if($('ranking').classList.contains('hidden')&&!openRanking.force) return;
   const tok=++rkTok, x=SONGS[rkIdx], key=rkKey();
   document.querySelectorAll('#ranking .rktabs .tchip').forEach(b=>b.classList.toggle('on',b.dataset.m===rkMode));
-  $('rkSongRow').style.display=rkMode==='total'?'none':'';
+  $('rkSongRow').style.display=rkMode==='song'?'':'none'; const fb=$('rkFr'); if(fb) fb.classList.toggle('on',!!window.rkOnlyFr);
   $('rkTitle').textContent=x.title;
-  const t=tier(x.level); $('rkSub').textContent=t[0]+(rateMul!==1?` · 곡 속도 ×${rateMul}`:''); $('rkSub').style.color=t[1];
+  key; $('rkSub').innerHTML=chartLvs(x).map(l=>`<span class="dchip${l===rkLv?' on':''}" data-lv="${l}" style="--tc:${tier(l)[1]}">${tier(l)[0]}</span>`).join(''); $('rkSub').style.color='';
+  $('rkSub').querySelectorAll('.dchip').forEach(c=>c.onclick=()=>{ rkLv=+c.dataset.lv; uiTick(); renderRanking(); });
   const list=$('rkList'), meBox=$('rkMe'), st=$('rkStatus');
   if(!NET.ready){ st.textContent='계정 확인 중…'; list.replaceChildren(); meBox.replaceChildren(); return; }
   if(!NET.db){ st.textContent='랭킹은 claude.ai에 로그인한 상태에서만 볼 수 있어요'; list.replaceChildren(); meBox.replaceChildren(); return; }
-  const rows=rankList(key), top=rows.slice(0,50), meI=NET.uid?rows.findIndex(r=>r.id===NET.uid):-1;
-  st.textContent=NET.err||(!NET.loaded?'불러오는 중…':rows.length?(rkMode==='total'?`종합 점수 = 곡별 최고 점수의 합 · ${rows.length}명`:`${rows.length}명 기록`):'아직 기록이 없어요 — 첫 번째 주인공이 되어보세요');
+  const rows=rankList(key,rkMode), top=rows.slice(0,50), meI=NET.uid?rows.findIndex(r=>r.id===NET.uid):-1;
+  const cinfo=rkMode==='d'||rkMode==='w'?challengeOf(rkMode):null, head=rkMode==='season'?`${seasonName(seasonId())} · ${seasonLeft()}일 남음 · 이번 달에 친 기록만 · `:cinfo?`${cinfo.song.title} ${tier(cinfo.lv)[0]} · 조건: ${cinfo.cond.t} · `:rkMode==='total'?'곡마다 최고 점수의 합 · ':'';
+  st.textContent=NET.err||(!NET.loaded?'불러오는 중…':head+(rows.length?`${rows.length}명`:'아직 기록이 없어요 — 첫 번째 주인공이 되어보세요'));
   const ids=[...new Set([...top.map(r=>r.id),...(meI>=50?[NET.uid]:[])])].filter(i=>!i.startsWith('g_'));
   const ps=NET.user&&ids.length?await NET.user.profiles(ids):{};
   if(tok!==rkTok) return;
@@ -2941,33 +3084,15 @@ async function renderRanking(){
     const gr=document.createElement('span'); gr.className='gr';
     if(rkMode!=='total'){ gr.textContent=r.g; const lp=LAMPS[r.l]; if(lp) gr.style.color=lp.c; gr.title=lp?lp.n:''; }
     li.append(no,im,nm,sc,gr); return li; };
-  $('rkReg').classList.toggle('hidden',!(NET.owner&&NET.db));
   list.replaceChildren(...top.map(mk));
   meBox.replaceChildren(...(meI>=50?[mk(rows[meI],meI)]:[]));
 }
-document.querySelectorAll('#ranking .rktabs .tchip').forEach(b=>b.onclick=()=>{ rkMode=b.dataset.m; uiTick(); renderRanking(); });
-$('rkPrev').onclick=()=>{ rkIdx=(rkIdx+SONGS.length-1)%SONGS.length; uiTick(); renderRanking(); };
-$('rkNext').onclick=()=>{ rkIdx=(rkIdx+1)%SONGS.length; uiTick(); renderRanking(); };
+document.querySelectorAll('#ranking .rktabs .tchip[data-m]').forEach(b=>b.onclick=()=>{ rkMode=b.dataset.m; uiTick(); renderRanking(); });
+$('rkFr').onclick=()=>{ window.rkOnlyFr=!window.rkOnlyFr; uiTick(); renderRanking(); };
+$('rkPrev').onclick=()=>{ rkIdx=(rkIdx+SONGS.length-1)%SONGS.length; rkLv=null; uiTick(); renderRanking(); };
+$('rkNext').onclick=()=>{ rkIdx=(rkIdx+1)%SONGS.length; rkLv=null; uiTick(); renderRanking(); };
 $('rkBack').onclick=()=>{ show('menu'); updateMenu(); };
 $('rankBtn').onclick=openRanking;
-$('rkRegOpen').onclick=()=>{ $('rkRegBox').classList.toggle('hidden'); $('rkRegMsg').textContent=''; };
-$('rkRegGo').onclick=async()=>{
-  const codes=($('rkRegText').value.match(/YH1\.[A-Za-z0-9_-]+\.[0-9a-f]{8}/g)||[]), msg=$('rkRegMsg');
-  if(!codes.length){ msg.textContent='기록 코드를 찾지 못했어요'; return; }
-  let ok=0, low=0, bad=0; const byDoc=new Map();
-  for(const c of codes){ const o=readCode(c); if(!o){ bad++; continue; } const id='g_'+o.g.replace(/[^A-Za-z0-9_-]/g,'').slice(0,60); if(!byDoc.has(id)) byDoc.set(id,[]); byDoc.get(id).push(o); }
-  msg.textContent='등록하는 중…';
-  for(const [id,list] of byDoc){
-    const cur=NET.all.get(id)?JSON.parse(JSON.stringify(NET.all.get(id))):{}; const best=Object.assign({},cur.best||{}); let nick=cleanNick(cur.nick), changed=false;
-    for(const o of list.sort((a,b)=>a.t-b.t)){ nick=o.n||nick; const old=best[o.k];
-      if(old&&num(old.s,MAXS)>=o.s){ low++; continue; } best[o.k]={s:o.s,g:o.r,l:o.l,a:o.a,t:o.t}; ok++; changed=true; }
-    if(!changed&&nick===cleanNick(cur.nick)) continue;
-    const doc={...cur,nick,best,total:Object.values(best).reduce((a,b)=>a+num(b.s,MAXS),0),v:1,via:'code'};
-    try{ await NET.db.doc('scores/'+id).set(doc); NET.all.set(id,doc); }catch(e){ msg.textContent='저장하지 못했어요 (권한 확인)'; return; }
-  }
-  msg.textContent=`등록 ${ok}개`+(low?` · 이미 더 높은 기록 ${low}개`:'')+(bad?` · 잘못된 코드 ${bad}개`:''); if(ok) $('rkRegText').value='';
-  renderRanking();
-};
 // 결과 화면에서 기록 등록
 function showCode(r,rank,lamp,acc,why){
   const nick=myName();
@@ -2975,23 +3100,28 @@ function showCode(r,rank,lamp,acc,why){
   $('rCode').value=code; $('rCodeBox').classList.remove('hidden'); $('rCodeCopy').textContent='코드 복사';
   $('rRankNote').textContent=(why?why+' · ':'')+'기록 코드를 방장에게 보내면 랭킹에 올라가요';
 }
-$('rCodeCopy').onclick=async()=>{ const c=$('rCode').value; let ok=false;
-  try{ await navigator.clipboard.writeText(c); ok=true; }catch(e){}
-  if(!ok){ const i=$('rCode'); i.focus(); i.select(); try{ ok=document.execCommand('copy'); }catch(e){} }
-  $('rCodeCopy').textContent=ok?'복사됨!':'길게 눌러 복사'; };
 async function netRecord(r,rank,lamp,acc){
-  const note=$('rRankNote'); note.textContent=''; $('rCodeBox').classList.add('hidden');
+  const note=$('rRankNote'); note.textContent='';
   if(!NET.ready) return;
+  if(r.prac){ note.textContent='연습실 기록은 랭킹 · 업적에 들어가지 않아요'; return; }
   if(r.G.nofail){ note.textContent='연습 게이지는 안 죽는 모드라 랭킹 · 업적에 들어가지 않아요'; return; }
   if(r.failed){ note.textContent='T.K.O. 기록은 랭킹에 오르지 않아요'; return; }
   if(!NET.db||!NET.uid){ showCode(r,rank,lamp,acc,'게스트 기록'); return; }
   if(NET.noWrite){ showCode(r,rank,lamp,acc,'이 링크에서는 직접 기록할 수 없어요'); return; }
-  const key=r.song.id+'@'+r.rate, best=Object.assign({},NET.mine&&NET.mine.best||{}), old=best[key];
-  if(old&&num(old.s,MAXS)>=r.score){ note.textContent=`랭킹 최고 기록 ${num(old.s,MAXS).toLocaleString()} · 현재 ${placeOf(key,NET.uid)||'-'}위`; return; }
-  best[key]={s:r.score,g:rank,l:lamp,a:Math.round(acc*10)/10,t:Date.now()};
-  const total=Object.values(best).reduce((a,b)=>a+num(b.s,MAXS),0);
+  const key=r.ck+'@1', mine=NET.mine||{}, best=Object.fromEntries(Object.entries(mine.best||{}).filter(([k])=>/@1$/.test(k))), old=best[key];   // 예전 곡 속도(×1.5·×2) 기록은 정리
+  const sid=seasonId(), ss=JSON.parse(JSON.stringify(mine.ss||{})), cur=ss[sid]||{b:{},t:0}, msgs=[]; let ch=false, dc=mine.dc||null, wc=mine.wc||null;
+  for(const k of Object.keys(ss).sort().slice(0,-3)) delete ss[k];   // 시즌 기록은 최근 3개만 보관
+  if(!(old&&num(old.s,MAXS)>=r.score)){ best[key]={s:r.score,g:rank,l:lamp,a:Math.round(acc*10)/10,t:Date.now()}; ch=true; msgs.push('best'); }
+  if(num(cur.b[key],MAXS)<r.score){ cur.b[key]=r.score; cur.t=totalOf(Object.fromEntries(Object.entries(cur.b).map(([k,v])=>[k,{s:v}]))); ss[sid]=cur; ch=true; msgs.push('season'); }
+  for(const kd of ['d','w']){ const c=challengeOf(kd); if(c.key!==key) continue; const pass=c.cond.ok(r,r.cnt,acc);
+    if(!pass){ msgs.push(`${c.name} 실패 · 조건: ${c.cond.t}`); continue; }
+    const prev=chState(mine,kd); if(!prev){ if(!ST) loadProg(); ST[kd==='d'?'dcDone':'wcDone']++; saveProg(); }
+    if(r.score>prev){ if(kd==='d') dc={d:c.id,s:r.score}; else wc={w:c.id,s:r.score}; ch=true; } msgs.push(`${c.name} 성공!`); }
+  const extra=msgs.filter(m=>m!=='best'&&m!=='season').join(' · ');
+  if(!ch){ note.textContent=`랭킹 최고 기록 ${num(old.s,MAXS).toLocaleString()} · 현재 ${placeOf(key,NET.uid)||'-'}위`+(extra?' · '+extra:''); return; }
   note.textContent='랭킹에 기록하는 중…';
-  try{ await saveMine({best,total}); note.textContent=`랭킹 등록! 이 곡 ${placeOf(key,NET.uid)}위`; }
+  try{ await saveMine({best,total:totalOf(best),ss,dc,wc});
+    note.textContent=(msgs.includes('best')?`랭킹 등록! 이 곡 ${placeOf(key,NET.uid)}위`:`시즌 기록 갱신 · ${seasonName(sid)}`)+(extra?' · '+extra:''); renderChallenges(); }
   catch(e){ NET.noWrite=true; showCode(r,rank,lamp,acc,'이 링크에서는 직접 기록할 수 없어요'); }
 }
 netInit();
@@ -3025,7 +3155,7 @@ function netInit(){
   NET.db=FBK.db; NET.owner=false; NET.accts=new Map();
   NET.profs=new Map();
   NET.user={ profiles: async ids=>Object.fromEntries(ids.map(i=>{ const pf=NET.profs.get(i)||{}; return [i,{id:i,nick:pf.nick||'',name:pf.nick||(NET.accts.get(i)||{}).gameId||'',avatarUrl:okPhoto(pf.photo)||(i===NET.uid&&NET.me?NET.me.avatarUrl:'')}]; })) };
-  FBK.db.collection('profiles').onSnapshot(s=>{ NET.profs.clear(); for(const d of s.docs) NET.profs.set(d.id,d.data()); NET.profsLoaded=true; profMerge(); renderAcct(); renderRanking(); renderAccount(); },()=>{});
+  FBK.db.collection('profiles').onSnapshot(s=>{ NET.profs.clear(); for(const d of s.docs) NET.profs.set(d.id,d.data()); NET.profsLoaded=true; MYFR=null; profMerge(); if(window.renderFriends) renderFriends(); renderAcct(); renderRanking(); renderAccount(); },()=>{});
   FBK.db.collection('accounts').onSnapshot(s=>{ NET.accts.clear(); for(const d of s.docs) NET.accts.set(d.id,d.data()); renderRanking(); },()=>{});
   subscribeScores();
   FBK.onAuth(async u=>{
@@ -3034,7 +3164,7 @@ function netInit(){
     NET.uid=u.uid; NET.me={id:u.uid,name:u.displayName||'',avatarUrl:u.photoURL||'',isOwner:false}; NET.noWrite=false;
     NET.mine=NET.all.get(u.uid)||null;
     let a=null; try{ a=await FBK.getAccount(u.uid); }catch(e){}
-    if(a){ ACC={id:a.gameId,key:a.key}; NET.acct=a; fbStep='done'; loadProg(); NET.progMerged=false; profMerge(); watchDuels(); renderAcct(); renderLogin();
+    if(a){ ACC={id:a.gameId,key:a.key}; NET.acct=a; fbStep='done'; loadProg(); NET.progMerged=false; profMerge(); watchDuels(); startOnline(); renderAcct(); renderLogin();
       if(!$('login').classList.contains('hidden')&&loginSeen) enterGame(); }
     else { ACC=null; fbStep='setid'; renderAcct(); renderLogin(); }   // 구글로 처음 들어옴 → 아이디 정하기
   });
@@ -3077,7 +3207,7 @@ async function doLogin(){
   try{
     if(fbStep==='setid'){
       const id=$('lgSetId').value.trim(); if(!ID_RE.test(id)){ err.textContent='아이디는 영문·숫자·한글·_ 2~16자예요'; return; }
-      err.textContent='아이디 확인 중…'; await FBK.claimId(id); ACC={id,key:id.toLowerCase()}; fbStep='done'; loadProg(); watchDuels(); err.textContent=''; renderAcct(); renderLogin(); enterGame(); return;
+      err.textContent='아이디 확인 중…'; await FBK.claimId(id); ACC={id,key:id.toLowerCase()}; fbStep='done'; loadProg(); watchDuels(); startOnline(); err.textContent=''; renderAcct(); renderLogin(); enterGame(); return;
     }
     const id=$('lgId').value.trim(), pw=$('lgPw').value;
     if(!ID_RE.test(id)){ err.textContent='아이디는 영문·숫자·한글·_ 2~16자예요'; return; }
@@ -3097,13 +3227,13 @@ function saveMine(patch){
   const run_=async()=>{
     const cur=NET.mine?JSON.parse(JSON.stringify(NET.mine)):{};
     const best=patch.best||cur.best||{};
-    const next={nick:ACC.id,best,total:Object.values(best).reduce((a,b)=>a+num(b.s,MAXS),0),v:1};
+    const next={nick:ACC.id,best,total:totalOf(best),v:1}; for(const k of ['ss','dc','wc']){ const v=patch[k]!==undefined?patch[k]:cur[k]; if(v) next[k]=v; }
     await NET.db.doc('scores/'+NET.uid).set(next);
     NET.mine=next; NET.all.set(NET.uid,next);
   };
   const p=NET.chain.then(run_,run_); NET.chain=p.catch(()=>{}); return p;
 }
-function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $('rRankNote').textContent='랭킹 저장에 실패했어요 · 인터넷 연결을 확인하고 다시 해보세요'; }
+function showCode(){ NET.noWrite=false; $('rRankNote').textContent='랭킹 저장에 실패했어요 · 인터넷 연결을 확인하고 다시 해보세요'; }
 // 메뉴: 앱 다운로드 (APK · 데스크톱 · 설치형 웹앱)
 (function appDownloads(){
   if($('dlBtn')) return;
@@ -3113,9 +3243,6 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
   ov.innerHTML=`<div class="panel" style="width:min(480px,94vw)"><h2>앱 다운로드</h2><div class="orn"></div>
   <div class="dlist">
     <a class="dl" href="download/RhythmGame.apk" download><b>Android 앱 (APK)</b><small>폰에서 받아 설치 · 「출처를 알 수 없는 앱 허용」 필요</small></a>
-    <a class="dl" href="download/RhythmGame-Windows.zip" download><b>Windows 앱</b><small>압축 풀고 RhythmGame.exe 실행 · 경고 창이 뜨면 「추가 정보 → 실행」</small></a>
-    <a class="dl" href="download/RhythmGame-Mac.zip" download><b>Mac 앱</b><small>압축 풀고 우클릭 → 열기</small></a>
-    <a class="dl" href="download/RhythmGame-Linux.zip" download><b>Linux 앱</b><small>압축 풀고 RhythmGame 실행 (WebKitGTK 필요)</small></a>
     <div class="dl"><b>설치형 웹앱 (추천)</b><small>크롬·엣지 주소창의 설치 아이콘 또는 메뉴 ⋮ → 「앱 설치」 / 아이폰은 공유 → 「홈 화면에 추가」 · 구글 로그인도 돼요</small></div>
   </div>
   <div class="lgsub">앱 안에서는 구글 로그인이 막혀 있어요. 아이디 + 비밀번호로 로그인하세요.</div>
@@ -3128,7 +3255,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123151936'; let pending=false, NEWNAME='';
+  const CUR='20261123233712'; let pending=false, NEWNAME='';
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent=NEWNAME?`새 버전 v${NEWNAME}로 업데이트하는 중…`:'새 버전으로 업데이트하는 중…';
@@ -3285,7 +3412,7 @@ function photoOf(uid){ const p=NET.profs&&NET.profs.get(uid); return okPhoto(p&&
 function profDoc(patch){
   if(!ST) loadProg(); const p=myProf(), base=p.nick||ACC.id.slice(0,12);
   return {nick:patch.nick!=null?patch.nick:(/^[-A-Za-z0-9가-힣_. ]{2,12}$/.test(base)?base:ACC.id.slice(0,12).padEnd(2,'_')),
-    photo:patch.photo!=null?patch.photo:okPhoto(p.photo), title:EQ.t||'', eq:{g:EQ.g,n:EQ.n}, st:Object.assign({},ST)};
+    photo:patch.photo!=null?patch.photo:okPhoto(p.photo), title:EQ.t||'', eq:{g:EQ.g,n:EQ.n}, st:Object.assign({},ST), fr:patch.fr!=null?patch.fr:[...myFriends()]};
 }
 async function putProfile(patch={}){ await FBK.saveProfile(profDoc(patch)); }
 let progTimer=0;
@@ -3298,7 +3425,8 @@ function renderProgUI(){
   if(!EQ) loadProg(); const list=myAch(), okN=list.filter(x=>x.ok).length;
   const chip=(label,on,lock,title,cb,dot)=>{ const b=document.createElement('button'); b.type='button'; b.className='acchip'+(lock?' lock':''); b.setAttribute('aria-pressed',!!on);
     if(dot) b.appendChild(dot); b.appendChild(document.createTextNode(label)); if(title) b.title=title; b.onclick=()=>{ if(lock){ $('acSkMsg').textContent=title; return; } uiTick(); cb(); renderProgUI(); renderAccount(); renderAcct(); }; return b; };
-  const titles=[chip('없음',!EQ.t,false,'',()=>equip('t',''))].concat(isDev(NET.uid)?[Object.assign(chip(DEV_TITLE,EQ.t===DEV_TITLE,false,'',()=>equip('t',DEV_TITLE)),{className:'acchip dev'})]:[],list.filter(x=>x.ok).map(x=>chip(x.a.t,EQ.t===x.a.t,false,'',()=>equip('t',x.a.t))));
+  const sT=seasonTitles(); if(sT.length&&ST&&!ST.seasonTop){ ST.seasonTop=1; saveProg(); achCheck(false); }
+  const titles=[chip('없음',!EQ.t,false,'',()=>equip('t',''))].concat(sT.map(t=>chip(t,EQ.t===t,false,'',()=>equip('t',t)))).concat(isDev(NET.uid)?[Object.assign(chip(DEV_TITLE,EQ.t===DEV_TITLE,false,'',()=>equip('t',DEV_TITLE)),{className:'acchip dev'})]:[],list.filter(x=>x.ok).map(x=>chip(x.a.t,EQ.t===x.a.t,false,'',()=>equip('t',x.a.t))));
   $('acTitles').replaceChildren(...titles);
   const reqName=id=>{ const a=ACHS.find(q=>q.id===id); return a?`업적 「${a.n}」(${a.d}) 달성 시 해금`:''; };
   $('acGloves').replaceChildren(...Object.entries(GLOVE_SKINS).map(([k,v])=>{ const d=document.createElement('i'); d.style.background=`radial-gradient(circle at 35% 30%,#fff3d6 0,${v.c[0]} 35%,${v.c[1]} 70%,#0d0a08)`; d.style.boxShadow=`0 0 0 1.5px ${v.b}`;
@@ -3313,7 +3441,7 @@ function renderProgUI(){
 }
 /* ---------- 친구 대결 ---------- */
 NET.duels=[]; let CH_PENDING=null;
-function songOfKey(k){ const [id,rt]=String(k).split('@'); return {song:SONGS.find(x=>x.id===id),rate:+rt||1}; }
+function songOfKey(k){ const p=parseKey(k); return {song:p.song,rate:1,lv:p.lv}; }
 function watchDuels(){
   if(NET.duelUnsub||!NET.uid) return; let first=true;
   NET.duelUnsub=FBK.watchChallenges(NET.uid,(list,err)=>{ if(!list) return;
@@ -3338,7 +3466,12 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
   const mb=document.createElement('button'); mb.className='item mtile'; mb.id='duelBtn'; mb.innerHTML='<svg class="gi" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75l.063-.062c21.827 21.93 44.04 43.923 66.405 66.25c-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53l68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938l-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593c-43.852-43.8-86.462-85.842-130.125-125.47c-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562l56.81-56.812l13.22 13.187l-56.438 56.44l24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906l200.56 200.53a403 403 0 0 1-13.405 13.032L148.875 153.53zm-76.69 113.28l-28.5 28.532l68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717l28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313c17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655l-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844l-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594c-15.068-18.587-28.38-38.758-39.5-60.625z"/></svg><span>대결</span><em class="dbadge hidden" id="duelBadge">0</em>'; $('rankBtn').after(mb);
   const ov=document.createElement('div'); ov.id='duels'; ov.className='ov ov-panel hidden';
   ov.innerHTML=`<div class="panel acpanel"><h2>대결</h2><div class="orn"></div>
-  <section class="acsec" style="border-top:0;margin-top:8px;padding-top:0"><h3>도전장 보내기</h3>
+  <section class="acsec" style="border-top:0;margin-top:8px;padding-top:0"><h3>실시간 대결 <small class="acnote">같은 곡을 동시에 치며 점수를 실시간으로 비교해요</small></h3>
+    <div id="rtBox"></div><div class="dulist" id="rtInv"></div>
+    <div class="acrow" id="rtJoinRow"><input id="rtCode" maxlength="5" autocomplete="off" spellcheck="false" placeholder="방 코드 5자리"><button type="button" class="tchip" id="rtJoin">참가</button><button type="button" class="tchip" id="rtMake">방 만들기</button></div>
+    <div class="acmsg" id="rtMsg"></div></section>
+  <section class="acsec"><h3>친구</h3><div class="acrow"><input id="frId" maxlength="16" autocomplete="off" spellcheck="false" placeholder="친구 게임 아이디"><button type="button" class="tchip" id="frAdd">친구 추가</button></div><div class="acmsg" id="frMsg"></div><div class="dulist" id="frList"></div></section>
+  <section class="acsec"><h3>도전장 보내기</h3>
     <div class="acrow"><input id="duTo" maxlength="16" autocomplete="off" spellcheck="false" placeholder="친구 게임 아이디"><button type="button" class="tchip" id="duSend">보내기</button></div>
     <small id="duSong"></small><div class="acmsg" id="duMsg"></div></section>
   <section class="acsec"><h3>받은 도전장</h3><div class="dulist" id="duIn"></div></section>
@@ -3360,18 +3493,18 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
 .pcard .pn{font:400 26px "Pirata One","Bong Myung",serif;color:var(--gold2)}.pcard .pt{font-size:12.5px;color:#f3d995}.pcard .pi{font-size:12.5px;color:var(--muted);margin-top:2px}
 .rkrow{cursor:pointer}`;
   document.head.appendChild(st);
-  const open=()=>{ if(!ACC) return show('login'); show('duels'); $('duMsg').textContent=''; renderDuels(); clickGuard=performance.now()+300; };
+  const open=()=>{ if(!ACC) return show('login'); show('duels'); $('duMsg').textContent=''; renderDuels(); if(window.renderFriends) renderFriends(); clickGuard=performance.now()+300; };
   mb.onclick=()=>{ uiTick(); open(); }; window.openDuels=open;
   $('duBack').onclick=()=>{ uiTick(); show('menu'); };
   $('duTo').addEventListener('keydown',e=>{ if(e.key==='Enter') $('duSend').click(); });
   $('duSend').onclick=async()=>{ const id=$('duTo').value.trim(), m=$('duMsg'); m.classList.remove('ok');
     if(!ID_RE.test(id)){ m.textContent='아이디는 영문·숫자·한글·_ 2~16자예요'; return; }
     m.textContent='보내는 중…';
-    try{ const uid=await FBK.lookupUid(id); if(!uid) throw {code:'no-user'}; await sendDuel(uid,SONGS[songIdx].id+'@'+rateMul); $('duTo').value=''; m.textContent=`${id}님에게 도전장을 보냈어요!`; m.classList.add('ok'); }
+    try{ const uid=await FBK.lookupUid(id); if(!uid) throw {code:'no-user'}; await sendDuel(uid,ckey(SONGS[songIdx],curLv(SONGS[songIdx]))+'@1'); $('duTo').value=''; m.textContent=`${id}님에게 도전장을 보냈어요!`; m.classList.add('ok'); }
     catch(e){ m.textContent=duelErr(e); } };
   // 랭킹에서 이름을 누르면 선수 카드
   const pc=document.createElement('div'); pc.id='pcardOv'; pc.className='ov ov-panel hidden';
-  pc.innerHTML='<div class="panel pcard" style="width:min(380px,92vw)"><div id="pcBody"></div><div class="acmsg" id="pcMsg"></div><nav class="list" style="display:flex;gap:8px;margin-top:14px"><button class="item" id="pcDuel" style="flex:1;justify-content:center"><span>도전장 보내기</span></button><button class="item" id="pcBack" style="flex:1;justify-content:center"><span>닫기</span></button></nav></div>';
+  pc.innerHTML='<div class="panel pcard" style="width:min(380px,92vw)"><div id="pcBody"></div><div class="acmsg" id="pcMsg"></div><nav class="list" style="display:flex;gap:8px;margin-top:14px"><button class="item" id="pcFr" style="flex:1;justify-content:center"><span>친구 추가</span></button><button class="item" id="pcDuel" style="flex:1;justify-content:center"><span>도전장</span></button><button class="item" id="pcBack" style="flex:1;justify-content:center"><span>닫기</span></button></nav></div>';
   document.body.appendChild(pc);
   $('pcBack').onclick=()=>{ uiTick(); pc.classList.add('hidden'); };
   const rowClick=e=>{ const li=e.target.closest&&e.target.closest('.rkrow'); if(!li||!li.dataset.uid||li.dataset.uid.startsWith('g_')) return; openPlayer(li.dataset.uid); };
@@ -3379,31 +3512,33 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
   function openPlayer(uid){
     uiTick(); const p=NET.profs.get(uid)||{}, sc=NET.all.get(uid)||{}, rows=rankList(null), ri=rows.findIndex(r=>r.id===uid);
     const ach=achState(p.st||{},sc.best||{}).filter(x=>x.ok).length, ph=photoOf(uid), nk=nickOf(uid);
-    const key=SONGS[rkIdx].id+'@'+rateMul, sb=sc.best&&sc.best[key], mineB=NET.mine&&NET.mine.best&&NET.mine.best[key];
+    const key=rkKey()||(ckey(SONGS[rkIdx],curLv(SONGS[rkIdx]))+'@1'), kinfo=parseKey(key), sb=sc.best&&sc.best[key], mineB=NET.mine&&NET.mine.best&&NET.mine.best[key];
     $('pcBody').innerHTML=`<div class="pav">${ph?`<img src="${ph}" alt="">`:''}</div>${p.title&&(p.title!==DEV_TITLE||isDev(uid))?`<div class="pt${p.title===DEV_TITLE?' dev':''}">「${p.title.replace(/[<>&]/g,'')}」</div>`:''}<div class="pn"></div><div class="pi">@${idOf(uid)}</div>
-      <dl class="acinfo" style="margin-top:12px"><dt>종합 점수</dt><dd>${Math.round(num(sc.total,1e9)).toLocaleString()}</dd><dt>종합 순위</dt><dd>${ri>=0?ri+1+'위':'—'}</dd><dt>업적</dt><dd>${ach} / ${ACHS.length}</dd><dt>${SONGS[rkIdx].title} ×${rateMul}</dt><dd>${sb?num(sb.s,MAXS).toLocaleString():'기록 없음'}</dd></dl>`;
+      <dl class="acinfo" style="margin-top:12px"><dt>종합 점수</dt><dd>${Math.round(num(sc.total,1e9)).toLocaleString()}</dd><dt>종합 순위</dt><dd>${ri>=0?ri+1+'위':'—'}</dd><dt>업적</dt><dd>${ach} / ${ACHS.length}</dd><dt>${SONGS[rkIdx].title} ${tier(kinfo.lv)[0]}</dt><dd>${sb?num(sb.s,MAXS).toLocaleString():'기록 없음'}</dd></dl>`;
     $('pcBody').querySelector('.pn').textContent=nk; if(!ph) $('pcBody').querySelector('.pav').textContent=nk.slice(0,1).toUpperCase();
-    const me=uid===NET.uid; $('pcDuel').classList.toggle('hidden',me||!ACC);
-    $('pcMsg').classList.remove('ok'); $('pcMsg').classList.toggle('info',!!mineB); $('pcMsg').textContent=me?'':mineB?`「${SONGS[rkIdx].title}」 ×${rateMul} 내 기록 ${num(mineB.s,MAXS).toLocaleString()}점으로 도전해요`:`이 곡 ×${rateMul} 내 기록이 있어야 도전장을 보낼 수 있어요`;
+    const me=uid===NET.uid; $('pcDuel').classList.toggle('hidden',me||!ACC); $('pcFr').classList.toggle('hidden',me||!ACC);
+    const isF=myFriends().has(uid); $('pcFr').querySelector('span').textContent=isF?'친구 삭제':'친구 추가';
+    $('pcFr').onclick=async()=>{ try{ await setFriend(uid,!isF); $('pcMsg').classList.add('ok'); $('pcMsg').textContent=isF?'친구에서 뺐어요':'친구로 추가했어요'; openPlayer(uid); }catch(e){ $('pcMsg').textContent=FBK.errMsg(e); } };
+    $('pcMsg').classList.remove('ok'); $('pcMsg').classList.toggle('info',!!mineB); $('pcMsg').textContent=me?'':mineB?`「${SONGS[rkIdx].title}」 ${tier(kinfo.lv)[0]} 내 기록 ${num(mineB.s,MAXS).toLocaleString()}점으로 도전해요`:`이 곡 ${tier(kinfo.lv)[0]} 내 기록이 있어야 도전장을 보낼 수 있어요`;
     $('pcDuel').onclick=async()=>{ $('pcMsg').textContent='보내는 중…'; try{ await sendDuel(uid,key); $('pcMsg').classList.remove('info'); $('pcMsg').textContent='도전장을 보냈어요!'; $('pcMsg').classList.add('ok'); }catch(e){ $('pcMsg').classList.remove('info'); $('pcMsg').textContent=duelErr(e); } };
     pc.classList.remove('hidden');
   }
 })();
 function renderDuels(){
   if(!$('duels')||$('duels').classList.contains('hidden')) return;
-  const cur=SONGS[songIdx]; $('duSong').textContent=`보낼 곡: 「${cur.title}」 ${tier(cur.level)[0]} · 곡 속도 ×${rateMul} (곡 선택 화면에서 바꿀 수 있어요) · 내 랭킹 기록으로 도전해요`;
-  const item=(d,mine)=>{ const other=mine?d.to:d.from, {song,rate}=songOfKey(d.key), ph=photoOf(other), nk=nickOf(other);
+  const cur=SONGS[songIdx]; $('duSong').textContent=`보낼 곡: 「${cur.title}」 ${tier(curLv(cur))[0]} (곡 선택 화면에서 바꿀 수 있어요) · 내 랭킹 기록으로 도전해요`;
+  const item=(d,mine)=>{ const other=mine?d.to:d.from, {song,rate,lv}=songOfKey(d.key), ph=photoOf(other), nk=nickOf(other);
     const e=document.createElement('div'); e.className='du';
     const av=ph?Object.assign(document.createElement('img'),{src:ph,alt:''}):Object.assign(document.createElement('div'),{className:'ini',textContent:nk.slice(0,1).toUpperCase()});
     const mid=document.createElement('div'); const b=document.createElement('b'); b.textContent=nk; const sm=document.createElement('small');
     const myS=mine?d.fromScore:d.toScore, thS=mine?d.toScore:d.fromScore;
-    sm.textContent=`${song?song.title:'?'} ×${rate} · ${d.status==='open'?(mine?`내 ${num(d.fromScore,MAXS).toLocaleString()} · 상대 도전 대기 중`:`상대 ${num(d.fromScore,MAXS).toLocaleString()}점을 넘어라`):d.status==='declined'?'거절됨':`나 ${num(myS,MAXS).toLocaleString()} : ${num(thS,MAXS).toLocaleString()} 상대`}`;
+    sm.textContent=`${song?song.title:'?'} ${tier(lv||1)[0]} · ${d.status==='open'?(mine?`내 ${num(d.fromScore,MAXS).toLocaleString()} · 상대 도전 대기 중`:`상대 ${num(d.fromScore,MAXS).toLocaleString()}점을 넘어라`):d.status==='declined'?'거절됨':`나 ${num(myS,MAXS).toLocaleString()} : ${num(thS,MAXS).toLocaleString()} 상대`}`;
     mid.append(b,sm);
     const right=document.createElement('div'); right.className='acts';
     if(d.status==='done'){ const w=myS>thS, l=myS<thS; const r=document.createElement('div'); r.className='res '+(w?'w':l?'l':'d'); r.textContent=w?'WIN':l?'LOSE':'DRAW'; right.append(r); }
     const btn=(t,fn)=>{ const x=document.createElement('button'); x.type='button'; x.className='tchip'; x.textContent=t; x.onclick=fn; right.append(x); };
     if(!mine&&d.status==='open'){
-      btn('도전',()=>{ if(!song) return; uiConfirm(); CH_PENDING={id:d.id,key:d.key,from:d.fromScore,t:Date.now()}; songIdx=SONGS.indexOf(song); rateMul=rate; store.set('sb.rate',rateMul); try{ syncSeg('rateSeg','r',rateMul); }catch(_){} updateMenu(); startRun(); });
+      btn('도전',()=>{ if(!song) return; uiConfirm(); CH_PENDING={id:d.id,key:d.key,from:d.fromScore,t:Date.now()}; songIdx=SONGS.indexOf(song); setChart(song,lv); updateMenu(); startRun(); });
       btn('거절',async()=>{ try{ await FBK.declineChallenge(d.id); }catch(e){ toast(FBK.errMsg(e)); } });
     } else btn('지우기',async()=>{ try{ await FBK.deleteChallenge(d.id); }catch(e){ toast(FBK.errMsg(e)); } });
     e.append(av,mid,right); return e; };
@@ -3412,7 +3547,7 @@ function renderDuels(){
 }
 // 대결로 친 곡이 끝나면 점수를 보내고 결과 표시
 window.afterRunHook=async(r)=>{
-  const key=r.song.id+'@'+r.rate;
+  const key=r.ck+'@1';
   if(CH_PENDING&&CH_PENDING.key===key&&r.G&&r.G.nofail){ $('rRankNote').textContent='연습 게이지로는 대결 점수가 인정되지 않아요 · 일반이나 하드로 다시 도전하세요'; return; }   // 도전장은 남겨 둠
   if(CH_PENDING&&CH_PENDING.key===key&&Date.now()-CH_PENDING.t<3600e3){
     const c=CH_PENDING; CH_PENDING=null; const note=$('rRankNote'), w=r.score>c.from, l=r.score<c.from;
@@ -3437,6 +3572,106 @@ window.afterRunHook=async(r)=>{
   window.openAchv=()=>{ if(!ACC) return show('login'); uiTick(); show('achv'); $('acSkMsg').textContent=''; renderProgUI(); clickGuard=performance.now()+300; };
   tb.onclick=()=>openAchv(); $('achBack').onclick=()=>{ uiTick(); show('menu'); };
 })();
+
+/* ================= 친구 · 접속 표시 · 실시간 1:1 대결 ================= */
+NET.pres=new Map(); NET.skew=0; let MYFR=null, RT=null, rtTimer=0, presTimer=0;
+function myFriends(){ if(MYFR) return MYFR; const p=myProf(); return new Set(Array.isArray(p.fr)?p.fr:[]); }
+window.rkFriends=()=>window.rkOnlyFr&&ACC?new Set([...myFriends(),NET.uid]):null;
+const online=uid=>{ const t=NET.pres.get(uid); return !!t&&Date.now()+NET.skew-t<180e3; };
+const agoTxt=uid=>{ const t=NET.pres.get(uid); if(!t) return '접속 기록 없음'; const m=Math.floor((Date.now()+NET.skew-t)/60e3); return m<3?'접속 중':m<60?`${m}분 전`:m<1440?`${Math.floor(m/60)}시간 전`:`${Math.floor(m/1440)}일 전`; };
+async function setFriend(uid,on){ const s=new Set(myFriends()); on?s.add(uid):s.delete(uid); MYFR=s; await putProfile({fr:[...s]}); renderFriends(); }
+function seasonTitles(){ const prev=prevSeason(), rows=[...NET.all].map(([id,v])=>({id,t:num(v&&v.ss&&v.ss[prev]&&v.ss[prev].t,1e9)})).filter(x=>x.t>0).sort((a,b)=>b.t-a.t), i=rows.findIndex(x=>x.id===NET.uid); return i>=0&&i<3?[`${seasonName(prev)} ${i+1}위`]:[]; }
+function startOnline(){
+  if(presTimer||!NET.uid) return;
+  const ping=async()=>{ if(document.hidden||!NET.uid) return; try{ const k=await FBK.ping(); if(k!=null) NET.skew=k; }catch(e){} };
+  ping(); presTimer=setInterval(ping,120e3); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) ping(); });
+  FBK.watchPresence(m=>{ NET.pres=m; renderFriends(); });
+  let first=true; FBK.roomInvites(NET.uid,list=>{ const before=new Set((NET.rtInv||[]).map(r=>r.id)); NET.rtInv=list;
+    if(!first) for(const r of list) if(!before.has(r.id)) toast(`⚡ ${nickOf(r.host)}님이 실시간 대결에 초대했어요!`); first=false; renderRT(); });
+}
+function frItem(uid){
+  const e=document.createElement('div'); e.className='du'; const ph=photoOf(uid), nk=nickOf(uid);
+  const av=ph?Object.assign(document.createElement('img'),{src:ph,alt:''}):Object.assign(document.createElement('div'),{className:'ini',textContent:nk.slice(0,1).toUpperCase()});
+  const mid=document.createElement('div'), b=document.createElement('b'), sm=document.createElement('small'); b.textContent=nk; sm.innerHTML=`<i class="dot${online(uid)?' on':''}"></i>${agoTxt(uid)} · @${idOf(uid)}`; mid.append(b,sm);
+  const acts=document.createElement('div'); acts.className='acts';
+  const btn=(t,fn)=>{ const x=document.createElement('button'); x.type='button'; x.className='tchip'; x.textContent=t; x.onclick=fn; acts.append(x); };
+  if(online(uid)) btn('같이 치기',async()=>{ try{ await rtCreate(uid); toast(`${nk}님에게 실시간 대결 초대를 보냈어요`); }catch(err){ $('frMsg').textContent=rtErr(err); } });
+  btn('도전장',async()=>{ try{ await sendDuel(uid,ckey(SONGS[songIdx],curLv(SONGS[songIdx]))+'@1'); $('frMsg').classList.add('ok'); $('frMsg').textContent=`${nk}님에게 도전장을 보냈어요`; }catch(err){ $('frMsg').classList.remove('ok'); $('frMsg').textContent=duelErr(err); } });
+  btn('삭제',()=>setFriend(uid,false).catch(()=>{}));
+  e.append(av,mid,acts); return e;
+}
+window.renderFriends=function(){
+  const box=$('frList'); if(!box||$('duels').classList.contains('hidden')) return;
+  const list=[...myFriends()].sort((a,b)=>(online(b)-online(a))||nickOf(a).localeCompare(nickOf(b)));
+  box.replaceChildren(...list.map(frItem)); renderRT();
+};
+$('frAdd').onclick=async()=>{ const id=$('frId').value.trim(), m=$('frMsg'); m.classList.remove('ok'); if(!ID_RE.test(id)){ m.textContent='아이디는 영문·숫자·한글·_ 2~16자예요'; return; }
+  try{ const uid=await FBK.lookupUid(id); if(!uid) throw {code:'no-user'}; if(uid===NET.uid) throw {code:'self'}; await setFriend(uid,true); $('frId').value=''; m.classList.add('ok'); m.textContent=`${id}님을 친구로 추가했어요`; }catch(e){ m.textContent=duelErr(e); } };
+$('frId').addEventListener('keydown',e=>{ if(e.key==='Enter') $('frAdd').click(); });
+// ----- 실시간 대결 -----
+const rtErr=e=>({'no-room':'그런 방이 없어요','room-full':'이미 시작했거나 꽉 찬 방이에요','own':'내가 만든 방이에요'})[e&&e.code]||FBK.errMsg(e);
+function genCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let c=''; for(let i=0;i<5;i++) c+=A[Math.floor(Math.random()*A.length)]; return c; }
+async function rtCreate(inv){ await rtLeave(); const code=genCode(), key=ckey(SONGS[songIdx],curLv(SONGS[songIdx]))+'@1'; await FBK.roomCreate(code,key,inv||null); rtAttach(code,'h'); }
+async function rtJoin(code){ code=String(code).trim().toUpperCase(); const r=await FBK.roomGet(code); if(!r) throw {code:'no-room'}; if(r.host===NET.uid) throw {code:'own'}; if(r.state!=='wait'||r.guest) throw {code:'room-full'}; await rtLeave(); await FBK.roomJoin(code); rtAttach(code,'g'); }
+function rtAttach(code,role){ RT={code,role,room:null,started:false,won:false}; RT.unsub=FBK.roomWatch(code,rtOn); renderRT(); }
+async function rtLeave(){ if(!RT) return; const c=RT; RT=null; try{ c.unsub&&c.unsub(); }catch(e){} clearInterval(rtTimer);
+  if(c.room&&(c.role==='h'||c.room.state==='done'||c.room.state==='wait'||c.room.state==='ready')) FBK.roomDel(c.code).catch(()=>{}); renderRT(); }
+function rtOn(room){
+  if(!RT) return; if(!room){ if(!RT.started) toast('대결 방이 닫혔어요'); RT.room=null; RT.closed=true; renderRT(); return; }
+  RT.room=room; const {song,lv}=songOfKey(room.key);
+  if(song&&actx&&!song._m) loadSong(song,1).catch(()=>{});   // 미리 불러와서 동시에 시작
+  if(room.state==='play'&&room.goMs&&!RT.started){ RT.started=true; const delay=Math.max(500,3500-(Date.now()+NET.skew-room.goMs));
+    countdown(delay,()=>{ if(!RT) return; songIdx=SONGS.indexOf(song); setChart(song,lv); PRAC=null; startRun(); }); }
+  if(run&&run.rt){ run.rt.opp=RT.role==='h'?room.gs:room.hs; run.rt.oppDone=RT.role==='h'?room.gd:room.hd; }
+  rtResult(); renderRT();
+}
+function countdown(ms,cb){
+  let el=$('rtCount'); if(!el){ el=document.createElement('div'); el.id='rtCount'; document.body.appendChild(el); }
+  const end=performance.now()+ms; el.classList.remove('hidden');
+  const tick=()=>{ const left=end-performance.now(); if(left<=0){ el.classList.add('hidden'); cb(); return; } el.textContent=Math.ceil(left/1000); requestAnimationFrame(tick); }; tick();
+}
+window.onRunStart=r=>{
+  if(!RT||!RT.started||!RT.room||RT.bound===RT.code) return; if(r.ck+'@1'!==RT.room.key) return;
+  RT.bound=RT.code; const opp=RT.role==='h'?RT.room.guest:RT.room.host; r.rt={code:RT.code,role:RT.role,opp:0,name:nickOf(opp)};
+  clearInterval(rtTimer); rtTimer=setInterval(()=>{ if(!run||!run.rt||run.ended||!RT){ clearInterval(rtTimer); return; } FBK.roomSet(RT.code,RT.role==='h'?{hs:run.score}:{gs:run.score}).catch(()=>{}); },1500);
+};
+function rtResult(){
+  if(!RT||!RT.room||!RT.fin) return; const room=RT.room, me=RT.role==='h'?room.hs:room.gs, op=RT.role==='h'?room.gs:room.hs, opDone=RT.role==='h'?room.gd:room.hd, note=$('rRankNote');
+  if(!opDone){ RT.finNote&&(note.textContent=RT.finNote+' · 상대가 아직 치는 중…'); return; }
+  const w=me>op, l=me<op; note.textContent=`실시간 대결 ${w?'승리!':l?'패배…':'무승부'} 나 ${me.toLocaleString()} : ${op.toLocaleString()} 상대`; note.style.color=w?'#8fd19e':l?'#e8768a':'';
+  if(w&&!RT.won){ RT.won=true; if(!ST) loadProg(); ST.rtWins++; saveProg(); achCheck(false); confettiBurst(90); }
+  if(RT.role==='h'&&room.state!=='done') FBK.roomSet(RT.code,{state:'done'}).catch(()=>{});
+}
+const prevHook=window.afterRunHook;
+window.afterRunHook=async(r,rank,lamp)=>{
+  if(r.rt&&RT&&RT.code===r.rt.code){ clearInterval(rtTimer); RT.fin=true; RT.finNote=$('rRankNote').textContent;
+    try{ await FBK.roomSet(RT.code,RT.role==='h'?{hs:r.score,hd:true}:{gs:r.score,gd:true}); }catch(e){} rtResult(); return; }
+  if(prevHook) return prevHook(r,rank,lamp);
+};
+function renderRT(){
+  const box=$('rtBox'); if(!box) return; const inv=$('rtInv');
+  inv.replaceChildren(...(NET.rtInv||[]).filter(r=>!RT||r.id!==RT.code).map(r=>{ const e=document.createElement('div'); e.className='du'; const {song,lv}=songOfKey(r.key);
+    e.innerHTML=`<div class="ini">⚡</div><div><b></b><small>${song?song.title:'?'} ${tier(lv||1)[0]} · 방 ${r.id}</small></div>`; e.querySelector('b').textContent=`${nickOf(r.host)}님의 초대`;
+    const a=document.createElement('div'); a.className='acts'; const bt=document.createElement('button'); bt.type='button'; bt.className='tchip'; bt.textContent='참가'; bt.onclick=()=>rtJoin(r.id).catch(err=>{ $('rtMsg').textContent=rtErr(err); }); a.append(bt); e.append(a); return e; }));
+  $('rtJoinRow').classList.toggle('hidden',!!RT);
+  if(!RT){ box.innerHTML=''; return; }
+  const room=RT.room, {song,lv}=room?songOfKey(room.key):{}, opp=room?(RT.role==='h'?room.guest:room.host):null;
+  let st=RT.closed?'방이 닫혔어요':!room?'방 여는 중…':room.state==='wait'?(room.inv?`${nickOf(room.inv)}님을 기다리는 중…`:'친구에게 방 코드를 알려주세요 · 상대를 기다리는 중…'):room.state==='ready'?(RT.role==='h'?`${nickOf(opp)}님이 들어왔어요!`:'방장이 시작하기를 기다리는 중…'):room.state==='play'?'대결 중':'대결 끝';
+  box.innerHTML=`<div class="rtcard"><div><span class="rtcode">${RT.code}</span><small>${song?song.title+' '+tier(lv)[0]:''}</small></div><p>${st}</p><div class="acts"></div></div>`;
+  const acts=box.querySelector('.acts'), bt=(t,fn)=>{ const x=document.createElement('button'); x.type='button'; x.className='tchip'; x.textContent=t; x.onclick=fn; acts.append(x); };
+  if(room&&RT.role==='h'&&room.state==='ready') bt('시작',()=>FBK.roomStart(RT.code).catch(e=>{ $('rtMsg').textContent=FBK.errMsg(e); }));
+  bt(room&&room.state==='done'||RT.closed?'닫기':'나가기',()=>rtLeave());
+}
+$('rtMake').onclick=async()=>{ $('rtMsg').textContent=''; try{ await rtCreate(null); }catch(e){ $('rtMsg').textContent=rtErr(e); } };
+$('rtJoin').onclick=async()=>{ $('rtMsg').textContent=''; try{ await rtJoin($('rtCode').value); $('rtCode').value=''; }catch(e){ $('rtMsg').textContent=rtErr(e); } };
+$('rtCode').addEventListener('keydown',e=>{ if(e.key==='Enter') $('rtJoin').click(); });
+{ const st=document.createElement('style'); st.textContent=`
+.du .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5a524a;margin-right:5px;vertical-align:1px}.du .dot.on{background:#7fd68f;box-shadow:0 0 6px #7fd68f}
+.rtcard{padding:12px 14px;border:1px solid rgba(156,196,232,.4);border-radius:var(--r-md);background:rgba(20,28,40,.35)}
+.rtcard>div:first-child{display:flex;align-items:baseline;gap:10px}.rtcode{font:400 26px "Pirata One",serif;color:#cfe3ff;letter-spacing:.12em}.rtcard small{color:var(--muted);font-size:12px}
+.rtcard p{margin:6px 0 8px;font-size:13.5px;color:var(--ink)}.rtcard .acts{display:flex;gap:6px}
+#rtCount{position:fixed;inset:0;z-index:98;display:flex;align-items:center;justify-content:center;font:400 min(40vw,220px) "Pirata One",serif;color:#f3d995;background:rgba(5,4,3,.55);text-shadow:0 6px 0 rgba(0,0,0,.6);pointer-events:none}
+#rtCount.hidden{display:none}`; document.head.appendChild(st); }
 
 if('serviceWorker' in navigator&&location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
