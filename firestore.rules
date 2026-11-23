@@ -70,7 +70,7 @@ service cloud.firestore {
         && request.resource.data.doneAt == request.time
         && ((request.resource.data.status == 'declined' && request.resource.data.toScore == null)
           || (request.resource.data.status == 'done' && request.resource.data.toScore is number
-              && request.resource.data.toScore >= 0 && request.resource.data.toScore <= 1100000));
+              && request.resource.data.toScore >= 0 && request.resource.data.toScore <= 1500000));
       allow delete: if signedIn() && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
     }
     match /{document=**} { allow read, write: if false; }

@@ -497,8 +497,9 @@ html,body{font-synthesis:none}
     <div class="prow"><span>배속 <small class="hint" id="spHint">노트 낙하 속도</small></span><div class="seg" id="speedSeg"><button data-s="0.75">0.75</button><button data-s="1">1.0</button><button data-s="1.25">1.25</button><button data-s="1.5">1.5</button><button data-s="2">2.0</button></div></div>
     <div class="prow"><span>곡 속도 <small class="hint">노래 + 노트 함께</small></span><div class="seg" id="rateSeg"><button data-r="1">1.0</button><button data-r="1.5">1.5</button><button data-r="2">2.0</button></div></div>
     <div class="prow"><span>번쩍임 효과 <small class="hint">DEATH 연출 · 광과민 주의</small></span><div class="seg" id="flashSeg"><button data-f="on">켜기</button><button data-f="safe">약하게</button></div></div>
-    <div class="prow"><span>체력 게이지</span><div class="seg" id="gaugeSeg"><button data-g="easy">연습</button><button data-g="normal">일반</button><button data-g="hard">하드</button></div></div>
-    <div class="prow"><span>판정 범위</span><div class="seg" id="judgeSeg"><button data-j="loose">널널하게</button><button data-j="normal">중간</button><button data-j="strict">강하게</button></div></div>
+    <div class="prow"><span>체력 게이지 <small class="hint" id="gHint"></small></span><div class="seg" id="gaugeSeg"><button data-g="easy">연습</button><button data-g="normal">일반</button><button data-g="hard">하드</button></div></div>
+    <div class="prow"><span>판정 범위 <small class="hint" id="jHint"></small></span><div class="seg" id="judgeSeg"><button data-j="loose">널널하게</button><button data-j="normal">중간</button><button data-j="strict">강하게</button></div></div>
+    <div class="keymsg" id="mulTotal"></div>
     <div class="prow"><span>그래픽 품질</span><div class="seg" id="gfx"><button data-q="high">고급</button><button data-q="mid">보통</button><button data-q="low">끄기</button></div></div>
     <div class="prow"><span>싱크 보정</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="offset" min="-250" max="250" step="5"><output id="offsetVal">0ms</output></span></div>
     <div class="prow"><span>음악 볼륨</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="mvol" min="0" max="100" step="5"><output id="mvolVal">80</output></span></div>
@@ -640,7 +641,10 @@ let offsetMs=store.get('sb.offset2',0);
 // 배속 (노트가 내려오는 속도만 바꾸고 판정 타이밍은 그대로)
 const SPEEDS=[0.75,1,1.25,1.5,2]; let speedMul=store.get('sb.speed',1); if(!SPEEDS.includes(speedMul)) speedMul=1;
 // 배속(노트 낙하 속도)별 점수 배율: 느리게 보면 쉬우니 감점, 빠르면 가산 (만점도 그만큼 커짐)
-const SPEED_SCORE={0.75:0.85,1:1,1.25:1.02,1.5:1.04,2:1.06}, spMul=v=>SPEED_SCORE[v]||1, MAXS=1.1e6;   // 1배 넘으면 만점도 늘어남 (2배속 만점 106만)
+const SPEED_SCORE={0.75:0.85,1:1,1.25:1.02,1.5:1.04,2:1.06}, spMul=v=>SPEED_SCORE[v]||1, MAXS=1.5e6;   // 1배 넘으면 만점도 늘어남
+// 체력 게이지 · 판정 범위 배율: 쉬운 설정은 감점, 어려운 설정은 가산 (배속과 곱해짐 · 최대 ×1.06×1.05×1.05)
+const GAUGE_SCORE={easy:0.9,normal:1,hard:1.05}, JUDGE_SCORE={loose:0.9,normal:1,strict:1.05};
+function scoreMul(){ return +(spMul(speedMul)*(GAUGE_SCORE[gaugeKey]||1)*(JUDGE_SCORE[judgeKey]||1)).toFixed(4); }
 // 체력 게이지: 맞히면 회복, 놓치면 감소, 0이 되면 패배
 const GAUGES={easy:{name:'연습',hit:{PERFECT:2,GREAT:1.5,GOOD:0.8},miss:2,swing:1,def:7,chip:0.5,nofail:true},
               normal:{name:'일반',hit:{PERFECT:1.2,GREAT:0.9,GOOD:0.3},miss:4,swing:2.5,def:9,chip:1.5},
@@ -1081,7 +1085,7 @@ function startRun(){
   const duck=actx.createGain(); duck.connect(bus);
   const notes=buildChart(song);
   let minGap=1; { const lastEnd=[-9,-9,-9,-9]; for(const n of notes){ const g=n.t-lastEnd[n.lane]; if(g>0.01) minGap=Math.min(minGap,g); lastEnd[n.lane]=n.hold?n.end:n.t; } }
-  run={rate:rateMul,d:{approach:LVP[song.level][1]/rateMul,name:tier(song.level)[0]},minGap,song,notes,first:0,bus,duck,songStart:actx.currentTime+0.6,nextStep:0,score:0,sMul:spMul(speedMul),combo:0,maxCombo:0,
+  run={rate:rateMul,d:{approach:LVP[song.level][1]/rateMul,name:tier(song.level)[0]},minGap,song,notes,first:0,bus,duck,songStart:actx.currentTime+0.6,nextStep:0,score:0,sMul:scoreMul(),combo:0,maxCombo:0,
        cnt:{PERFECT:0,GREAT:0,GOOD:0,MISS:0},dts:[],hits:[],fast:0,slow:0,pts:0,maxPts:notes.length+notes.filter(q=>q.hold).length,life:100,lifeLag:100,G:GAUGES[gaugeKey],gaugeKey,failed:false,empty:0,charges:0,holds:[null,null,null,null],hp:100,hpLag:100,disp:0,ko:false,koT:0,paused:false,ended:false,lastTick:0};
   bgC=null;   // 곡 난이도에 맞는 배경으로 다시 그림
   run.sv=buildSV(song); run.death=song.level>=11; run.dfx=null; run.svLast=1; run.svT=-9;
@@ -1112,7 +1116,7 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 /* ---------- 버전 · 업데이트 로그 (버전 규칙: 대규모 업데이트.신규 기능.버그 수정) ---------- */
-const CHANGELOG=[{"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
+const CHANGELOG=[{"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
 function renderLog(){
   $('ulogList').replaceChildren(...CHANGELOG.map((e,i)=>{ const d=document.createElement('section'); d.className='ulv';
     const h=document.createElement('h3'); h.textContent='v'+e.v; const sm=document.createElement('small'); sm.textContent=e.d; h.append(sm);
@@ -2704,14 +2708,19 @@ function goBack(){
   if(!$('songs').classList.contains('hidden')){ show('menu'); updateMenu(); return; }
 }
 document.querySelectorAll('#gfx button').forEach(b=>b.onclick=()=>{applyGfx(b.dataset.q); uiTick();});
-document.querySelectorAll('#judgeSeg button').forEach(b=>b.onclick=()=>{setJudge(b.dataset.j); uiTick();});
+document.querySelectorAll('#judgeSeg button').forEach(b=>b.onclick=()=>{setJudge(b.dataset.j); lockMul(); uiTick();});
 function syncSeg(id,attr,val){ document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[attr])===String(val))); }
 document.querySelectorAll('#flashSeg button').forEach(b=>b.onclick=()=>{ flashSafe=b.dataset.f==='safe'; store.set('sb.flashSafe',flashSafe); syncSeg('flashSeg','f',b.dataset.f); uiTick(); });
 document.querySelectorAll('#rateSeg button').forEach(b=>b.onclick=()=>{ rateMul=+b.dataset.r; store.set('sb.rate',rateMul); syncSeg('rateSeg','r',rateMul); updateMenu(); uiTick(); });
-function spHint(){ const m=spMul(speedMul), e=$('spHint'); if(e) e.textContent='노트 낙하 속도 · 점수 ×'+m+(m<1?` (느려서 감점 · 만점 ${(1e6*m).toLocaleString()})`:m>1?` (만점 ${(1e6*m).toLocaleString()}점)`:''); }
+function spHint(){
+  const f=(id,m,base)=>{ const e=$(id); if(e) e.textContent=(base?base+' · ':'')+'점수 ×'+m; };
+  f('spHint',spMul(speedMul),'노트 낙하 속도'); f('gHint',GAUGE_SCORE[gaugeKey]||1,''); f('jHint',JUDGE_SCORE[judgeKey]||1,'');
+  const t=scoreMul(), e=$('mulTotal'); if(e) e.textContent=`지금 설정의 점수 배율 ×${t} · 만점 ${Math.round(1e6*t).toLocaleString()}점`+(t<1?' (쉬운 설정이라 감점)':t>1?' (어려운 설정이라 가산)':'');
+}
+function lockMul(){ if(run) run.sMul=Math.min(run.sMul,scoreMul()); spHint(); }
 document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>{ speedMul=+b.dataset.s; store.set('sb.speed',speedMul); syncSeg('speedSeg','s',speedMul); spHint(); uiTick();
-  if(run){ run.sMul=Math.min(run.sMul,spMul(speedMul)); } });   // 곡 도중 바꾸면 그 판은 가장 낮은 배율로
-document.querySelectorAll('#gaugeSeg button').forEach(b=>b.onclick=()=>{ gaugeKey=b.dataset.g; store.set('sb.gauge',gaugeKey); syncSeg('gaugeSeg','g',gaugeKey); uiTick(); });
+  lockMul(); });   // 곡 도중 바꾸면 그 판은 가장 낮은 배율로
+document.querySelectorAll('#gaugeSeg button').forEach(b=>b.onclick=()=>{ gaugeKey=b.dataset.g; store.set('sb.gauge',gaugeKey); syncSeg('gaugeSeg','g',gaugeKey); lockMul(); uiTick(); });
 document.querySelectorAll('#keySeg button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.k; uiTick();
   if(i<0){ KEYCODES=DEF_KEYS.slice(); try{ localStorage.removeItem('sb.keys'); }catch(_){} keyCap=-1; setKeyMsg('기본 키(D F J K)로 되돌렸어요'); }
   else { keyCap=keyCap===i?-1:i; setKeyMsg(keyCap>=0?'지정할 키를 누르세요 (취소: Esc)':''); }
@@ -3105,7 +3114,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123144959'; let pending=false, NEWNAME='';
+  const CUR='20261123145553'; let pending=false, NEWNAME='';
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent=NEWNAME?`새 버전 v${NEWNAME}로 업데이트하는 중…`:'새 버전으로 업데이트하는 중…';
