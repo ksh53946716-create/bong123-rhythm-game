@@ -271,6 +271,34 @@ html,body{font-synthesis:none}
 .rach{display:flex;flex-direction:column;gap:4px;margin:8px auto 0;padding:8px 14px;border:1px solid var(--gold);background:linear-gradient(90deg,rgba(80,60,20,.55),rgba(30,22,10,.75));text-align:center;animation:fadeIn .6s 1s both;max-width:min(440px,94vw)}
 .rach b{display:block;font-size:14px;color:#f3d995}.rach span{font-size:12px;color:var(--ink)}
 .devtag{margin-left:6px;padding:0 5px;border:1px solid #ff6a4a;color:#ffb08a;font:400 10px/15px "Pirata One",serif;letter-spacing:.08em;vertical-align:2px;background:rgba(120,20,10,.45)}
+/* ===== 메인 메뉴: 주인공은 「싸움 시작」 하나, 나머지는 얇은 금선 타일 ===== */
+.ov-menu{gap:28px}
+.mtop{position:absolute;z-index:2;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:stretch}
+.mtop .acct{position:static}
+.mgear{all:unset;box-sizing:border-box;width:38px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:rgba(8,6,5,.55);color:var(--gold2);cursor:pointer;transition:border-color .2s,color .2s}
+.mgear svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mgear:hover,.mgear:focus-visible{border-color:var(--gold2);color:#f3d995}
+.mlist{gap:12px;width:min(420px,100%)}
+.mlist .item{letter-spacing:.02em}
+.mlist .item::after{display:none}
+.mcta{flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;padding:18px 22px;border:1px solid rgba(227,196,122,.55);background:linear-gradient(100deg,rgba(60,45,18,.72),rgba(14,11,8,.62));color:#f3e6c4}
+.mcta::before{background:linear-gradient(100deg,rgba(227,196,122,.22),rgba(227,196,122,.04))}
+.mcta .mc1{font-size:28px;font-weight:700;line-height:1.1;color:#f6e3b0}
+.mcta .mc2{font-size:12.5px;color:rgba(239,230,210,.62);line-height:1.4}
+.mcta.sel{border-color:#f0d58e;box-shadow:0 0 26px rgba(227,196,122,.18)}
+.mcta.sel .mc1{color:#fff3cf}
+.mtiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mtile{flex-direction:column;justify-content:center;align-items:center;gap:7px;padding:14px 6px 12px;border:1px solid rgba(216,181,106,.24);background:rgba(8,6,5,.55);font-size:15px;color:rgba(239,230,210,.75)}
+.mtile svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;color:var(--gold2)}
+.mtile::before{background:rgba(216,181,106,.1)}
+.mtile.sel{border-color:rgba(240,213,142,.75);color:#fff3cf}
+.mtile .dbadge{position:absolute;top:6px;right:8px;margin:0}
+@media (max-width:520px){
+  .ov-menu{background:linear-gradient(0deg,rgba(5,4,3,.94) 0%,rgba(5,4,3,.7) 30%,rgba(5,4,3,0) 52%),linear-gradient(180deg,rgba(5,4,3,.55),rgba(5,4,3,0) 30%)!important;justify-content:space-between!important;padding-top:calc(76px + env(safe-area-inset-top,0px))!important}
+  .mcta .mc1{font-size:24px}.mcta{padding:15px 18px}
+  .mtile{font-size:14px;padding:12px 4px 10px}
+}
+@media (max-height:560px){ .ov-menu{gap:12px} .mcta{padding:10px 16px}.mcta .mc1{font-size:21px} .mtile{padding:8px 4px;flex-direction:row;gap:6px} .mtile svg{width:18px;height:18px} }
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/app-192.png"><link rel="apple-touch-icon" href="icons/app-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
 <body>
@@ -286,18 +314,17 @@ html,body{font-synthesis:none}
 </div>
 
 <div id="menu" class="ov ov-menu hidden">
-  <button class="acct" id="acctChip" type="button"><img id="acctImg" alt=""><span id="acctName">게스트</span></button>
-  <div class="brand"><div class="logo">Bong's Game</div><div class="sub">Rhythm Boxing</div></div>
-  <nav class="list" id="mainList">
-    <button class="item" id="startBtn"><span>곡 선택 · 싸움 시작</span></button>
-    <button class="item" id="rankBtn"><span>랭킹</span></button>
-    <button class="item" id="calBtn"><span>펀치 보정</span></button>
-    <button class="item" id="setBtn"><span>설정</span></button>
-  </nav>
-  <div class="foot">
-    <div class="best" id="bestLine"></div>
-    <div class="keys"><span class="kb kk0">D</span><span class="kb kk1">F</span> 왼손 · <span class="kb kk2">J</span><span class="kb kk3">K</span> 오른손 · 바깥 칸 = <b>얼굴</b>, 안쪽 칸 = <b>몸통</b> · 긴 노트는 <b>꾹 누르다 떼기</b> · <span class="kb">ESC</span> 일시정지<br>모바일: 화면을 네 칸으로 나눠 터치 · <span class="kb">↑↓</span> 메뉴 이동 <span class="kb">ENTER</span> 선택</div>
+  <div class="mtop">
+    <button class="acct" id="acctChip" type="button"><img id="acctImg" alt=""><span id="acctName">게스트</span></button>
+    <button class="mgear" id="setBtn" type="button" aria-label="설정" title="설정"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
+  <div class="brand"><div class="logo">Bong's Game</div><div class="sub">Rhythm Boxing</div></div>
+  <nav class="list mlist" id="mainList">
+    <button class="item mcta" id="startBtn"><span class="mc1">싸움 시작</span><small class="mc2" id="bestLine"></small></button>
+    <div class="mtiles">
+      <button class="item mtile" id="rankBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 18.5h17M4.5 18.5 3 8l5.2 4.2L12 5l3.8 7.2L21 8l-1.5 10.5"/></svg><span>랭킹</span></button>
+    </div>
+  </nav>
 </div>
 
 <div id="login" class="ov ov-panel hidden">
@@ -384,8 +411,8 @@ html,body{font-synthesis:none}
     <div class="prow"><span>키 설정 <small class="hint">누른 뒤 원하는 키 입력 · 바깥=얼굴 안쪽=몸통</small></span><div class="seg" id="keySeg"><button data-k="0">D</button><button data-k="1">F</button><button data-k="2">J</button><button data-k="3">K</button><button data-k="-1">기본</button></div></div>
     <div class="keymsg" id="keyMsg"></div>
     <div class="prow" id="fsRow"><span>전체화면</span><div class="seg"><button id="fsBtn" aria-pressed="false">전환</button></div></div>
-    <div class="howto">네 칸으로 떨어지는 노트가 아래 <b>금빛 판정선</b>에 닿을 때 해당 키(<b class="kkall">D F J K</b>)를 누르세요.<br>꼬리가 달린 노트는 <b>꾹 눌러 힘을 모으고</b>, 꼬리가 고리에 닿을 때 손을 떼면 <b>차징 펀치</b>.<br><b style="color:#ff6b7a">빨간 노트</b>는 상대의 공격 — 놓치면 맞아서 체력이 크게 줄어요.<br>박자가 어긋나면 메뉴의 <b>펀치 보정</b>으로 맞추세요.</div>
-    <nav class="list" id="setList"><button class="item" id="tutBtn"><span>조작법 보기</span></button><button class="item" id="setBack"><span>돌아가기</span></button></nav>
+    <div class="howto">네 칸으로 떨어지는 노트가 아래 <b>금빛 판정선</b>에 닿을 때 해당 키(<b class="kkall">D F J K</b>)를 누르세요.<br>꼬리가 달린 노트는 <b>꾹 눌러 힘을 모으고</b>, 꼬리가 고리에 닿을 때 손을 떼면 <b>차징 펀치</b>.<br><b style="color:#ff6b7a">빨간 노트</b>는 상대의 공격 — 놓치면 맞아서 체력이 크게 줄어요.<br>박자가 어긋나면 아래 <b>펀치 보정</b>으로 맞추세요.</div>
+    <nav class="list" id="setList"><button class="item" id="calBtn"><span>펀치 보정</span></button><button class="item" id="tutBtn"><span>조작법 보기</span></button><button class="item" id="setBack"><span>돌아가기</span></button></nav>
   </div>
 </div>
 
@@ -987,7 +1014,7 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 function show(id){
-  for(const o of ['title','menu','songs','pause','result','calib','settings','tutorial','login','ranking','downloads','account','duels','pcardOv']){ const e=$(o); if(e) e.classList.toggle('hidden',o!==id); }
+  for(const o of ['title','menu','songs','pause','result','calib','settings','tutorial','login','ranking','downloads','account','duels','pcardOv','achv']){ const e=$(o); if(e) e.classList.toggle('hidden',o!==id); }
   if(document.activeElement) document.activeElement.blur();
   const l=id&&$(id).querySelector('.list'); if(l) setSel(l,0,false);
 }
@@ -2389,7 +2416,7 @@ $('calPad').addEventListener('pointerdown',e=>{e.preventDefault(); calTap();});
 $('calBtn').onclick=startCalib;
 $('calAgain').onclick=startCalib;
 $('calApply').onclick=()=>{ if(cal) setOffset(cal.result); endCalib(); show('menu'); menuMusic(true); };
-$('calClose').onclick=()=>{ endCalib(); show('menu'); menuMusic(true); };
+$('calClose').onclick=()=>{ endCalib(); openSettings(setFrom==='pause'?'menu':setFrom||'menu'); menuMusic(true); };
 
 
 /* ================= 시네마틱 후처리 (WebGL): 블룸 · 빛줄기 · 색보정 · 색수차 · 필름 그레인 ================= */
@@ -2505,7 +2532,7 @@ function setSel(list,idx,sound=true){
   NAV.list=list; NAV.idx=idx;
   if(list.id==='songList'){ items[idx].scrollIntoView({block:'nearest'}); if(changed) pickSong(+items[idx].dataset.i); }
 }
-function activeList(){ for(const id of ['duels','account','downloads','login','ranking','tutorial','settings','calib','pause','result','songs','menu']){ const o=$(id); if(o&&!o.classList.contains('hidden')) return o.querySelector('.list'); } return null; }
+function activeList(){ for(const id of ['achv','duels','account','downloads','login','ranking','tutorial','settings','calib','pause','result','songs','menu']){ const o=$(id); if(o&&!o.classList.contains('hidden')) return o.querySelector('.list'); } return null; }
 document.addEventListener('pointerover',e=>{ const it=e.target.closest&&e.target.closest('.item'); if(!it) return; const l=it.closest('.list'); const i=navItems(l).indexOf(it); if(i>=0&&(NAV.list!==l||NAV.idx!==i)) setSel(l,i); });
 function uiTick(){ if(!actx) return; const t=actx.currentTime; tone(master,t,'sine',1500,0.05,0.035); noise(master,t,0.02,'highpass',6000,0.7,0.025); }
 function uiConfirm(){ if(!actx) return; const t=actx.currentTime; tone(master,t,'sine',520,0.35,0.07); tone(master,t+0.03,'sine',780,0.45,0.045); noise(master,t,0.25,'bandpass',900,0.8,0.05); }
@@ -2552,7 +2579,7 @@ function setLoading(on,fail){
   if(on){ el.dataset.o=el.textContent; el.textContent='불러오는 중…'; } else el.textContent=fail?'불러오기 실패 · 다시 시도':(el.dataset.o||el.textContent);
 }
 let setFrom='menu';
-function openSettings(from){ setFrom=from; show('settings'); }
+function openSettings(from){ setFrom=from; show('settings'); const inRun=from==='pause'; for(const id of ['calBtn','dlBtn']){ const b=$(id); if(b) b.classList.toggle('hidden',inRun); } }   // 곡 도중엔 펀치 보정·앱 다운로드 숨김
 function goBack(){
   if(!$('login').classList.contains('hidden')){ if(ACC) enterGame(); return; }
   if(!$('ranking').classList.contains('hidden')){ show('menu'); updateMenu(); return; }
@@ -2943,7 +2970,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 (function appDownloads(){
   if($('dlBtn')) return;
   const b=document.createElement('button'); b.className='item'; b.id='dlBtn'; b.innerHTML='<span>앱 다운로드</span>';
-  $('setBtn').before(b);
+  $('tutBtn').before(b);
   const ov=document.createElement('div'); ov.id='downloads'; ov.className='ov ov-panel hidden';
   ov.innerHTML=`<div class="panel" style="width:min(480px,94vw)"><h2>앱 다운로드</h2><div class="orn"></div>
   <div class="dlist">
@@ -2959,11 +2986,11 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
   const st=document.createElement('style'); st.textContent='.dlist{display:flex;flex-direction:column;gap:8px;margin:14px 0 8px}.dl{display:flex;flex-direction:column;gap:3px;padding:11px 14px;border:1px solid var(--line);background:rgba(8,6,5,.45);color:var(--ink);text-decoration:none}a.dl:hover{border-color:var(--gold2)}.dl b{font-weight:600}.dl small{font-size:11.5px;color:var(--muted)}';
   document.head.appendChild(st);
   b.onclick=()=>{ uiTick(); for(const o of document.querySelectorAll('.ov')) o.classList.add('hidden'); ov.classList.remove('hidden'); };
-  $('dlBack').onclick=()=>{ ov.classList.add('hidden'); show('menu'); };
+  $('dlBack').onclick=()=>{ ov.classList.add('hidden'); openSettings(setFrom||'menu'); };
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123133435'; let pending=false;
+  const CUR='20261123140935'; let pending=false;
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent='새 버전으로 업데이트하는 중…';
@@ -2995,9 +3022,6 @@ function renderAccount(){}
   <section class="acsec"><h3>닉네임</h3>
     <div class="acrow"><input id="acNickIn" maxlength="12" autocomplete="off" spellcheck="false" placeholder="2~12자"><button type="button" class="tchip" id="acNickSave">변경</button></div>
     <small>랭킹과 계정 화면에 보이는 이름이에요. 로그인할 때는 게임 아이디를 써요.</small><div class="acmsg" id="acNickMsg"></div></section>
-  <section class="acsec"><h3>칭호 <small class="acnote">업적을 달성하면 생겨요</small></h3><div class="acchips" id="acTitles"></div></section>
-  <section class="acsec"><h3>꾸미기</h3><div class="acsk"><span>글러브</span><div class="acchips" id="acGloves"></div></div><div class="acsk"><span>노트</span><div class="acchips" id="acNotes"></div></div><div class="acmsg" id="acSkMsg"></div></section>
-  <section class="acsec"><h3>업적 <small class="acnote" id="acAchN"></small></h3><div class="acachs" id="acAchs"></div></section>
   <section class="acsec"><h3>계정 정보</h3><dl class="acinfo" id="acInfo"></dl></section>
   <section class="acsec" id="acPwSec"><h3 id="acPwTitle">비밀번호</h3><div id="acPwBody"></div><div class="acmsg" id="acPwMsg"></div></section>
   <nav class="list"><button class="item" id="acBack"><span>돌아가기</span></button><button class="item" id="acOut"><span>로그아웃</span></button></nav></div>`;
@@ -3046,9 +3070,10 @@ function renderAccount(){}
 .acach small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
 .acach .bar{height:3px;margin-top:6px;background:rgba(255,255,255,.08)}.acach .bar i{display:block;height:100%;background:var(--gold2)}
 @media (max-width:520px){ .acachs{grid-template-columns:1fr} }
+#achv .acsec:first-of-type{border-top:0;margin-top:6px;padding-top:0}
 @media (max-width:520px){ .achead{gap:14px}.acav{width:78px;height:78px}.acnick{font-size:24px} }`;
   document.head.appendChild(st);
-  const mb=document.createElement('button'); mb.className='item'; mb.id='acctBtn'; mb.innerHTML='<span>계정</span>'; $('setBtn').before(mb);
+  const mb=document.createElement('button'); mb.id='acctBtn'; mb.className='hidden';   // 메뉴에서는 오른쪽 위 프로필 칩으로 들어감
   const msg=(id,t,ok)=>{ const m=$(id); m.textContent=t||''; m.classList.toggle('ok',!!ok); };
   window.openAccount=()=>{ if(!ACC){ renderLogin(); show('login'); return; } uiTick(); show('account'); $('acNickIn').value=myNick(); for(const i of ['acPhotoMsg','acNickMsg','acPwMsg']) msg(i,''); renderAccount(true); clickGuard=performance.now()+300; };
   mb.onclick=()=>openAccount(); $('acctChip').onclick=()=>openAccount();
@@ -3060,7 +3085,6 @@ function renderAccount(){}
     const ph=myPhoto(), nick=myNick();
     $('acImg').style.display=ph?'':'none'; if(ph) $('acImg').src=ph; $('acInit').textContent=ph?'':nick.slice(0,1).toUpperCase();
     $('acNick').textContent=nick; $('acIdTag').textContent='@'+ACC.id; $('acTitle').textContent=EQ&&EQ.t?'「'+EQ.t+'」':''; $('acTitle').classList.toggle('dev',EQ&&EQ.t===DEV_TITLE);
-    renderProgUI();
     $('acPhotoDel').classList.toggle('hidden',!myProf().photo);
     const pv=FBK.providers(), g=pv.includes('google.com'), pw=pv.includes('password');
     const mine=NET.mine||{}, best=mine.best||{}, played=Object.keys(best).length;
@@ -3068,7 +3092,7 @@ function renderAccount(){}
     const cleared=Object.values(best).filter(b=>num(b.l,6)>=2).length;
     const info=[['게임 아이디',ACC.id+' (로그인용 · 변경 불가)'],['로그인 방식',[g?'Google':'',pw?'아이디 + 비밀번호':''].filter(Boolean).join(' · ')||'—'],
       ['가입일',fmtDate((NET.acct&&NET.acct.at)||((NET.accts&&NET.accts.get(NET.uid))||{}).at)],['종합 점수',Math.round(num(mine.total,1e9)).toLocaleString()],['종합 순위',ri>=0?`${ri+1}위 / ${rows.length}명`:'기록 없음'],
-      ['기록한 곡',`${played}곡 (클리어 ${cleared})`]];
+      ['기록한 곡',`${played}곡 (클리어 ${cleared})`],['업적',`${myAch().filter(x=>x.ok).length} / ${ACHS.length}`]];
     if(g&&FBK.user()&&FBK.user().email) info.splice(2,0,['Google 계정',FBK.user().email]);
     $('acInfo').replaceChildren(...info.flatMap(([k,v])=>{ const dt=document.createElement('dt'), dd=document.createElement('dd'); dt.textContent=k; dd.textContent=v; return [dt,dd]; }));
     if(full){
@@ -3135,7 +3159,7 @@ function profMerge(){   // 다른 기기에서 쌓은 기록·꾸미기 불러�
 function renderProgUI(){
   if(!EQ) loadProg(); const list=myAch(), okN=list.filter(x=>x.ok).length;
   const chip=(label,on,lock,title,cb,dot)=>{ const b=document.createElement('button'); b.type='button'; b.className='acchip'+(lock?' lock':''); b.setAttribute('aria-pressed',!!on);
-    if(dot) b.appendChild(dot); b.appendChild(document.createTextNode(label)); if(title) b.title=title; b.onclick=()=>{ if(lock){ $('acSkMsg').textContent=title; return; } uiTick(); cb(); renderAccount(); }; return b; };
+    if(dot) b.appendChild(dot); b.appendChild(document.createTextNode(label)); if(title) b.title=title; b.onclick=()=>{ if(lock){ $('acSkMsg').textContent=title; return; } uiTick(); cb(); renderProgUI(); renderAccount(); renderAcct(); }; return b; };
   const titles=[chip('없음',!EQ.t,false,'',()=>equip('t',''))].concat(isDev(NET.uid)?[Object.assign(chip(DEV_TITLE,EQ.t===DEV_TITLE,false,'',()=>equip('t',DEV_TITLE)),{className:'acchip dev'})]:[],list.filter(x=>x.ok).map(x=>chip(x.a.t,EQ.t===x.a.t,false,'',()=>equip('t',x.a.t))));
   $('acTitles').replaceChildren(...titles);
   const reqName=id=>{ const a=ACHS.find(q=>q.id===id); return a?`업적 「${a.n}」(${a.d}) 달성 시 해금`:''; };
@@ -3173,7 +3197,7 @@ async function sendDuel(toUid,key){
 const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 있어야 도전장을 보낼 수 있어요','self':'나에게는 보낼 수 없어요','dup':'이미 같은 곡으로 보낸 도전장이 있어요','no-user':'그런 아이디가 없어요'})[e&&e.code]||FBK.errMsg(e);
 (function duelPage(){
   if($('duels')) return;
-  const mb=document.createElement('button'); mb.className='item'; mb.id='duelBtn'; mb.innerHTML='<span>대결 <em class="dbadge hidden" id="duelBadge">0</em></span>'; $('rankBtn').after(mb);
+  const mb=document.createElement('button'); mb.className='item mtile'; mb.id='duelBtn'; mb.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l10 10M20 4 10 14M6.5 15.5l-3 3M17.5 15.5l3 3M5 13l6 6M19 13l-6 6"/></svg><span>대결</span><em class="dbadge hidden" id="duelBadge">0</em>'; $('rankBtn').after(mb);
   const ov=document.createElement('div'); ov.id='duels'; ov.className='ov ov-panel hidden';
   ov.innerHTML=`<div class="panel acpanel"><h2>대결</h2><div class="orn"></div>
   <section class="acsec" style="border-top:0;margin-top:8px;padding-top:0"><h3>도전장 보내기</h3>
@@ -3257,6 +3281,23 @@ window.afterRunHook=async(r)=>{
     catch(e){ note.textContent='대결 결과를 보내지 못했어요: '+FBK.errMsg(e); }
   }
 };
+
+/* ---------- 업적 화면 (칭호 · 꾸미기 · 업적 목록) ---------- */
+(function achvPage(){
+  if($('achv')) return;
+  const ov=document.createElement('div'); ov.id='achv'; ov.className='ov ov-panel hidden';
+  ov.innerHTML=`<div class="panel acpanel"><h2>업적</h2><div class="orn"></div>
+  <section class="acsec"><h3>칭호 <small class="acnote">업적을 달성하면 생겨요</small></h3><div class="acchips" id="acTitles"></div></section>
+  <section class="acsec"><h3>꾸미기</h3><div class="acsk"><span>글러브</span><div class="acchips" id="acGloves"></div></div><div class="acsk"><span>노트</span><div class="acchips" id="acNotes"></div></div><div class="acmsg" id="acSkMsg"></div></section>
+  <section class="acsec"><h3>업적 <small class="acnote" id="acAchN"></small></h3><div class="acachs" id="acAchs"></div></section>
+  <nav class="list"><button class="item" id="achBack"><span>돌아가기</span></button></nav></div>`;
+  document.body.appendChild(ov);
+  const tb=document.createElement('button'); tb.className='item mtile'; tb.id='achBtn';
+  tb.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="15" r="5"/><path d="M9 10.6 6.5 3.5h4L12 7.5l1.5-4h4L15 10.6"/></svg><span>업적</span>';
+  ($('duelBtn')||$('rankBtn')).after(tb);
+  window.openAchv=()=>{ if(!ACC) return show('login'); uiTick(); show('achv'); $('acSkMsg').textContent=''; renderProgUI(); clickGuard=performance.now()+300; };
+  tb.onclick=()=>openAchv(); $('achBack').onclick=()=>{ uiTick(); show('menu'); };
+})();
 
 if('serviceWorker' in navigator&&location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
