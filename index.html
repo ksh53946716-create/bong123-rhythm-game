@@ -387,6 +387,11 @@ html,body{font-synthesis:none}
 #ulogList{flex:1 1 auto;min-height:0;overflow-y:auto;margin-right:-8px;padding-right:8px}
 .ulognav{display:flex!important;flex-direction:row!important;gap:8px;flex:none;padding-top:10px;border-top:1px solid rgba(201,163,90,.14)}
 .ulognav .item{white-space:nowrap;font-size:15px!important;padding:11px 8px!important}
+.bonusnote{margin:4px 0 10px;padding:12px 14px;border:1px solid rgba(201,163,90,.3);border-radius:var(--r-md);background:rgba(201,163,90,.07)}
+.bonusnote>b{display:block;font-size:15px;color:#e8cf8e;margin-bottom:4px}
+.bonusnote p{margin:0;font-size:13px;line-height:1.6;color:rgba(234,222,196,.78)}.bonusnote p b{color:#efe0b8;font-weight:600}
+.bonusnow{margin-top:8px;font-size:13px;color:#e8cf8e}
+.hint.up{color:#9fd3a0}.hint.down{color:#e0897c}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/app-192.png"><link rel="apple-touch-icon" href="icons/app-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
 <body>
@@ -494,12 +499,12 @@ html,body{font-synthesis:none}
   <div class="panel">
     <h2>설정</h2>
     <div class="orn"></div>
+    <div class="bonusnote"><b>점수 보너스</b><p><b>배속</b> · <b>체력 게이지</b> · <b>판정 범위</b>를 어렵게 할수록 점수가 더 나와요 (최대 +17%). 쉽게 하면 그만큼 깎여요. 세 배율은 곱해지고, 랭킹에도 이 점수로 올라가요.</p><div class="bonusnow" id="mulTotal"></div></div>
     <div class="prow"><span>배속 <small class="hint" id="spHint">노트 낙하 속도</small></span><div class="seg" id="speedSeg"><button data-s="0.75">0.75</button><button data-s="1">1.0</button><button data-s="1.25">1.25</button><button data-s="1.5">1.5</button><button data-s="2">2.0</button></div></div>
     <div class="prow"><span>곡 속도 <small class="hint">노래 + 노트 함께</small></span><div class="seg" id="rateSeg"><button data-r="1">1.0</button><button data-r="1.5">1.5</button><button data-r="2">2.0</button></div></div>
     <div class="prow"><span>번쩍임 효과 <small class="hint">DEATH 연출 · 광과민 주의</small></span><div class="seg" id="flashSeg"><button data-f="on">켜기</button><button data-f="safe">약하게</button></div></div>
     <div class="prow"><span>체력 게이지 <small class="hint" id="gHint"></small></span><div class="seg" id="gaugeSeg"><button data-g="easy">연습</button><button data-g="normal">일반</button><button data-g="hard">하드</button></div></div>
     <div class="prow"><span>판정 범위 <small class="hint" id="jHint"></small></span><div class="seg" id="judgeSeg"><button data-j="loose">널널하게</button><button data-j="normal">중간</button><button data-j="strict">강하게</button></div></div>
-    <div class="keymsg" id="mulTotal"></div>
     <div class="prow"><span>그래픽 품질</span><div class="seg" id="gfx"><button data-q="high">고급</button><button data-q="mid">보통</button><button data-q="low">끄기</button></div></div>
     <div class="prow"><span>싱크 보정</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="offset" min="-250" max="250" step="5"><output id="offsetVal">0ms</output></span></div>
     <div class="prow"><span>음악 볼륨</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="mvol" min="0" max="100" step="5"><output id="mvolVal">80</output></span></div>
@@ -1116,7 +1121,7 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 /* ---------- 버전 · 업데이트 로그 (버전 규칙: 대규모 업데이트.신규 기능.버그 수정) ---------- */
-const CHANGELOG=[{"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
+const CHANGELOG=[{"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
 function renderLog(){
   $('ulogList').replaceChildren(...CHANGELOG.map((e,i)=>{ const d=document.createElement('section'); d.className='ulv';
     const h=document.createElement('h3'); h.textContent='v'+e.v; const sm=document.createElement('small'); sm.textContent=e.d; h.append(sm);
@@ -2713,9 +2718,9 @@ function syncSeg(id,attr,val){ document.querySelectorAll(`#${id} button`).forEac
 document.querySelectorAll('#flashSeg button').forEach(b=>b.onclick=()=>{ flashSafe=b.dataset.f==='safe'; store.set('sb.flashSafe',flashSafe); syncSeg('flashSeg','f',b.dataset.f); uiTick(); });
 document.querySelectorAll('#rateSeg button').forEach(b=>b.onclick=()=>{ rateMul=+b.dataset.r; store.set('sb.rate',rateMul); syncSeg('rateSeg','r',rateMul); updateMenu(); uiTick(); });
 function spHint(){
-  const f=(id,m,base)=>{ const e=$(id); if(e) e.textContent=(base?base+' · ':'')+'점수 ×'+m; };
+  const f=(id,m,base)=>{ const e=$(id); if(!e) return; const pc=Math.round((m-1)*100); e.textContent=(base?base+' · ':'')+(pc>0?`점수 보너스 +${pc}%`:pc<0?`점수 ${pc}%`:'점수 기본'); e.classList.toggle('up',pc>0); e.classList.toggle('down',pc<0); };
   f('spHint',spMul(speedMul),'노트 낙하 속도'); f('gHint',GAUGE_SCORE[gaugeKey]||1,''); f('jHint',JUDGE_SCORE[judgeKey]||1,'');
-  const t=scoreMul(), e=$('mulTotal'); if(e) e.textContent=`지금 설정의 점수 배율 ×${t} · 만점 ${Math.round(1e6*t).toLocaleString()}점`+(t<1?' (쉬운 설정이라 감점)':t>1?' (어려운 설정이라 가산)':'');
+  const t=scoreMul(), e=$('mulTotal'), pc=Math.round((t-1)*1000)/10; if(e) e.textContent=`지금 설정: ${pc>0?'보너스 +'+pc+'%':pc<0?pc+'%':'기본 점수'} · 만점 ${Math.round(1e6*t).toLocaleString()}점`;
 }
 function lockMul(){ if(run) run.sMul=Math.min(run.sMul,scoreMul()); spHint(); }
 document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>{ speedMul=+b.dataset.s; store.set('sb.speed',speedMul); syncSeg('speedSeg','s',speedMul); spHint(); uiTick();
@@ -3114,7 +3119,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123145553'; let pending=false, NEWNAME='';
+  const CUR='20261123145742'; let pending=false, NEWNAME='';
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent=NEWNAME?`새 버전 v${NEWNAME}로 업데이트하는 중…`:'새 버전으로 업데이트하는 중…';
