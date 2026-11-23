@@ -501,7 +501,7 @@ html,body{font-synthesis:none}
   <div class="panel">
     <h2>설정</h2>
     <div class="orn"></div>
-    <div class="bonusnote"><b>점수 보너스</b><p><b>배속</b> · <b>체력 게이지</b> · <b>판정 범위</b>를 어렵게 할수록 점수가 더 나와요 (최대 +17%). 쉽게 하면 그만큼 깎여요. 세 배율은 곱해지고, 랭킹에도 이 점수로 올라가요.</p><div class="bonusnow" id="mulTotal"></div></div>
+    <div class="bonusnote"><b>점수 보너스</b><p><b>배속</b> · <b>체력 게이지</b> · <b>판정 범위</b>를 어렵게 할수록 점수가 더 나와요 (최대 +17%). 쉽게 하면 그만큼 깎여요. 세 배율은 곱해지고, 랭킹에도 이 점수로 올라가요. 단, <b>연습 게이지</b>는 안 죽는 모드라 랭킹 · 업적에 기록되지 않아요.</p><div class="bonusnow" id="mulTotal"></div></div>
     <div class="prow"><span>배속 <small class="hint" id="spHint">노트 낙하 속도</small></span><div class="seg" id="speedSeg"><button data-s="0.75">0.75</button><button data-s="1">1.0</button><button data-s="1.25">1.25</button><button data-s="1.5">1.5</button><button data-s="2">2.0</button></div></div>
     <div class="prow"><span>곡 속도 <small class="hint">노래 + 노트 함께</small></span><div class="seg" id="rateSeg"><button data-r="1">1.0</button><button data-r="1.5">1.5</button><button data-r="2">2.0</button></div></div>
     <div class="prow"><span>번쩍임 효과 <small class="hint">DEATH 연출 · 광과민 주의</small></span><div class="seg" id="flashSeg"><button data-f="on">켜기</button><button data-f="safe">약하게</button></div></div>
@@ -1123,7 +1123,7 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 /* ---------- 버전 · 업데이트 로그 (버전 규칙: 대규모 업데이트.신규 기능.버그 수정) ---------- */
-const CHANGELOG=[{"v": "1.03.02", "d": "2026-11-23", "items": ["「다시 보지 않기」를 한 번 누르면 다음 업데이트 로그까지 영영 안 뜨던 문제를 고쳤어요 · 이제 그 버전만 안 뜨고, 새 업데이트가 나오면 다시 떠요"]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
+const CHANGELOG=[{"v": "1.04.00", "d": "2026-11-23", "items": ["연습 게이지(안 죽는 모드)로 친 판은 랭킹 · 내 최고 기록 · 업적에 들어가지 않아요", "연습 게이지로는 친구 대결 점수도 인정되지 않아요 (도전장은 남아 있어서 다시 도전할 수 있어요)"]}, {"v": "1.03.02", "d": "2026-11-23", "items": ["「다시 보지 않기」를 한 번 누르면 다음 업데이트 로그까지 영영 안 뜨던 문제를 고쳤어요 · 이제 그 버전만 안 뜨고, 새 업데이트가 나오면 다시 떠요"]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
 function renderLog(){
   $('ulogList').replaceChildren(...CHANGELOG.map((e,i)=>{ const d=document.createElement('section'); d.className='ulv';
     const h=document.createElement('h3'); h.textContent='v'+e.v; const sm=document.createElement('small'); sm.textContent=e.d; h.append(sm);
@@ -2371,9 +2371,10 @@ function showResults(){
   const L_=LAMPS[lamp]; $('rLamp').textContent=L_.n; $('rLamp').style.color=L_.c; $('rLamp').style.borderColor=L_.c;
   $('rScore').textContent=r.score.toLocaleString();
   const id=r.song.id, best=store.get('sb6.best.'+recKey(id),0), ranks='DCBAS';
-  $('rBest').classList.toggle('hidden',!(r.score>best)); if(r.score>best) store.set('sb6.best.'+recKey(id),r.score);
-  if(lamp>store.get('sb6.lamp.'+recKey(id),0)) store.set('sb6.lamp.'+recKey(id),lamp);
-  if(!r.failed&&ranks.indexOf(rank)>ranks.indexOf(store.get('sb6.rank.'+recKey(id),'')||'')) store.set('sb6.rank.'+recKey(id),rank);
+  const practice=!!r.G.nofail;   // 연습 게이지: 안 죽으니 기록 · 랭킹 · 업적에 넣지 않음
+  $('rBest').classList.toggle('hidden',practice||!(r.score>best)); if(!practice&&r.score>best) store.set('sb6.best.'+recKey(id),r.score);
+  if(!practice&&lamp>store.get('sb6.lamp.'+recKey(id),0)) store.set('sb6.lamp.'+recKey(id),lamp);
+  if(!practice&&!r.failed&&ranks.indexOf(rank)>ranks.indexOf(store.get('sb6.rank.'+recKey(id),'')||'')) store.set('sb6.rank.'+recKey(id),rank);
   $('rAch').classList.add('hidden'); $('rAch').innerHTML='';
   Promise.resolve(netRecord(r,rank,lamp,acc)).catch(()=>{}).finally(()=>{ try{ progAfterRun(r); if(window.afterRunHook) afterRunHook(r,rank,lamp); }catch(e){ console.warn(e); } });
   const holds=r.notes.filter(n=>n.hold).length;
@@ -2479,6 +2480,7 @@ function equip(kind,id){ if(!EQ) loadProg(); if(kind==='g'&&GLOVE_SKINS[id]&&unl
 // 한 판 끝날 때: 누적 기록 갱신 → 새로 달성한 업적 알림
 function progAfterRun(r){
   if(!ST) loadProg();
+  if(r.G.nofail) return;   // 연습 게이지는 업적에 넣지 않음
   ST.plays++; if(!r.failed) ST.clears++; if(r.ko) ST.kos++; if(r.tiredKO) ST.tiredKO++;
   ST.maxCombo=Math.max(ST.maxCombo,r.maxCombo); ST.charges+=r.charges; ST.defs+=r.dodges+r.guards; ST.rageHits+=r.rageHits||0;
   saveProg(); achCheck(true);
@@ -2725,8 +2727,8 @@ document.querySelectorAll('#flashSeg button').forEach(b=>b.onclick=()=>{ flashSa
 document.querySelectorAll('#rateSeg button').forEach(b=>b.onclick=()=>{ rateMul=+b.dataset.r; store.set('sb.rate',rateMul); syncSeg('rateSeg','r',rateMul); updateMenu(); uiTick(); });
 function spHint(){
   const f=(id,m,base)=>{ const e=$(id); if(!e) return; const pc=Math.round((m-1)*100); e.textContent=(base?base+' · ':'')+(pc>0?`점수 보너스 +${pc}%`:pc<0?`점수 ${pc}%`:'점수 기본'); e.classList.toggle('up',pc>0); e.classList.toggle('down',pc<0); };
-  f('spHint',spMul(speedMul),'노트 낙하 속도'); f('gHint',GAUGE_SCORE[gaugeKey]||1,''); f('jHint',JUDGE_SCORE[judgeKey]||1,'');
-  const t=scoreMul(), e=$('mulTotal'), pc=Math.round((t-1)*1000)/10; if(e) e.textContent=`지금 설정: ${pc>0?'보너스 +'+pc+'%':pc<0?pc+'%':'기본 점수'} · 만점 ${Math.round(1e6*t).toLocaleString()}점`;
+  f('spHint',spMul(speedMul),'노트 낙하 속도'); f('gHint',GAUGE_SCORE[gaugeKey]||1,''); if(gaugeKey==='easy'){ const g=$('gHint'); if(g){ g.textContent='안 죽는 연습 모드 · 랭킹 · 업적 제외'; g.classList.add('down'); g.classList.remove('up'); } } f('jHint',JUDGE_SCORE[judgeKey]||1,'');
+  const t=scoreMul(), e=$('mulTotal'), pc=Math.round((t-1)*1000)/10; if(e) e.textContent=gaugeKey==='easy'?'지금 설정: 연습 게이지라 랭킹 · 업적에 기록되지 않아요':`지금 설정: ${pc>0?'보너스 +'+pc+'%':pc<0?pc+'%':'기본 점수'} · 만점 ${Math.round(1e6*t).toLocaleString()}점`;
 }
 function lockMul(){ if(run) run.sMul=Math.min(run.sMul,scoreMul()); spHint(); }
 document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>{ speedMul=+b.dataset.s; store.set('sb.speed',speedMul); syncSeg('speedSeg','s',speedMul); spHint(); uiTick();
@@ -2980,6 +2982,7 @@ $('rCodeCopy').onclick=async()=>{ const c=$('rCode').value; let ok=false;
 async function netRecord(r,rank,lamp,acc){
   const note=$('rRankNote'); note.textContent=''; $('rCodeBox').classList.add('hidden');
   if(!NET.ready) return;
+  if(r.G.nofail){ note.textContent='연습 게이지는 안 죽는 모드라 랭킹 · 업적에 들어가지 않아요'; return; }
   if(r.failed){ note.textContent='T.K.O. 기록은 랭킹에 오르지 않아요'; return; }
   if(!NET.db||!NET.uid){ showCode(r,rank,lamp,acc,'게스트 기록'); return; }
   if(NET.noWrite){ showCode(r,rank,lamp,acc,'이 링크에서는 직접 기록할 수 없어요'); return; }
@@ -3125,7 +3128,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123150357'; let pending=false, NEWNAME='';
+  const CUR='20261123151936'; let pending=false, NEWNAME='';
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent=NEWNAME?`새 버전 v${NEWNAME}로 업데이트하는 중…`:'새 버전으로 업데이트하는 중…';
@@ -3410,6 +3413,7 @@ function renderDuels(){
 // 대결로 친 곡이 끝나면 점수를 보내고 결과 표시
 window.afterRunHook=async(r)=>{
   const key=r.song.id+'@'+r.rate;
+  if(CH_PENDING&&CH_PENDING.key===key&&r.G&&r.G.nofail){ $('rRankNote').textContent='연습 게이지로는 대결 점수가 인정되지 않아요 · 일반이나 하드로 다시 도전하세요'; return; }   // 도전장은 남겨 둠
   if(CH_PENDING&&CH_PENDING.key===key&&Date.now()-CH_PENDING.t<3600e3){
     const c=CH_PENDING; CH_PENDING=null; const note=$('rRankNote'), w=r.score>c.from, l=r.score<c.from;
     try{ await FBK.answerChallenge(c.id,r.score); note.textContent=`대결 ${w?'승리!':l?'패배…':'무승부'} 나 ${r.score.toLocaleString()} : ${num(c.from,MAXS).toLocaleString()} 상대`; note.style.color=w?'#8fd19e':l?'#e8768a':''; if(w) confettiBurst(90); }
