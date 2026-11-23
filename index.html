@@ -289,8 +289,8 @@ html,body{font-synthesis:none}
 .mcta.sel .mc1{color:#fff3cf}
 .mtiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mtile{flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:14px 6px 12px;border:1px solid rgba(216,181,106,.24);background:rgba(8,6,5,.55);font-size:15px;color:rgba(239,230,210,.75)}
-.mtile svg.gi{width:32px;height:32px;fill:url(#mgold);filter:drop-shadow(0 1px 0 rgba(0,0,0,.8)) drop-shadow(0 0 8px rgba(227,196,122,.18));transition:transform .2s ease-out,filter .2s}
-.mtile.sel svg.gi,.mtile:hover svg.gi{transform:translateY(-1px);filter:drop-shadow(0 1px 0 rgba(0,0,0,.8)) drop-shadow(0 0 12px rgba(240,213,142,.45))}
+.mtile svg.gi{width:32px;height:32px;color:#d9b25f;fill:currentColor;filter:drop-shadow(0 1px 0 rgba(0,0,0,.8)) drop-shadow(0 0 8px rgba(227,196,122,.18));transition:transform .2s ease-out,filter .2s}
+.mtile.sel svg.gi,.mtile:hover svg.gi{color:#f6dc98;transform:translateY(-1px);filter:drop-shadow(0 1px 0 rgba(0,0,0,.8)) drop-shadow(0 0 12px rgba(240,213,142,.45))}
 .mtile::before{background:rgba(216,181,106,.1)}
 .mtile.sel{border-color:rgba(240,213,142,.75);color:#fff3cf}
 .mtile .dbadge{position:absolute;top:6px;right:8px;margin:0}
@@ -301,6 +301,28 @@ html,body{font-synthesis:none}
 }
 @media (max-height:560px){ .ov-menu{gap:12px} .mcta{padding:10px 16px}.mcta .mc1{font-size:21px} .mtile{padding:8px 4px;flex-direction:row;gap:6px} .mtile svg.gi{width:22px;height:22px} }
 .credit{margin:10px 4px 0;font-size:11px;color:var(--muted);text-align:right}.credit a{color:var(--gold2)}
+/* ===== 부드럽게: 모서리 둥글림 체계 (큰 판 18 · 버튼 14 · 입력칸 10 · 작은 칩은 알약형) + 메뉴 타일은 성당 창문 모양 아치 ===== */
+:root{--r-lg:18px;--r-md:14px;--r-sm:10px}
+.panel{border-radius:var(--r-lg)}
+.panel::before,.panel::after{display:none}
+.item::before{border-radius:inherit}
+.panel .item{border-radius:var(--r-md)}
+.panel .item.song{border-radius:var(--r-md)}
+.mcta{border-radius:var(--r-lg)}
+.mtile{border-radius:50% 50% var(--r-md) var(--r-md)/30px 30px var(--r-md) var(--r-md);padding-top:20px!important}
+.mtile .dbadge{top:10px;right:50%;transform:translateX(26px)}
+.mtop .acct{border-radius:999px;padding-right:14px}
+.mgear{width:38px;height:38px;border-radius:50%}
+.tchip{border-radius:999px;padding-left:11px;padding-right:11px}
+.seg button:first-child{border-radius:999px 0 0 999px;padding-left:16px}
+.seg button:last-child{border-radius:0 999px 999px 0;padding-right:16px}
+.seg button:only-child{border-radius:999px}
+.lgform input:not([type=checkbox]),.acrow input,.acpw input{border-radius:var(--r-sm)}
+.acchip{border-radius:999px!important}
+.acach,.du,.dl,.rach,.lgbox{border-radius:var(--r-md)}
+.acav{box-shadow:0 0 0 4px rgba(8,6,5,.6),0 0 30px rgba(216,181,106,.22)}
+.btoast{border-radius:999px}
+.rkrow{border-radius:var(--r-sm)}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/app-192.png"><link rel="apple-touch-icon" href="icons/app-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
 <body>
@@ -2994,7 +3016,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123141428'; let pending=false;
+  const CUR='20261123141817'; let pending=false;
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent='새 버전으로 업데이트하는 중…';
