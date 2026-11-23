@@ -1,0 +1,39 @@
+rules_version = '2';
+// 최윤혁의 리듬게임 — 서버 보안 규칙 (브라우저에서 우회 불가: Firebase 서버가 직접 검사)
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function validKey(k) { return k is string && k.matches('^[a-z0-9가-힣_]{2,16}$'); }
+
+    // 아이디 선점표: 한 번 만들면 바꾸거나 지울 수 없음 → 아이디 중복 불가
+    match /names/{key} {
+      allow read: if true;
+      allow create: if signedIn() && validKey(key)
+        && request.resource.data.keys().hasOnly(['uid', 'key'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.key == key
+        && !exists(/databases/$(database)/documents/accounts/$(request.auth.uid));
+      allow update, delete: if false;
+    }
+    // 계정 정보: 본인만, 처음 한 번만 만들 수 있고 아이디는 위 선점표와 일치해야 함
+    match /accounts/{uid} {
+      allow read: if true;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['gameId', 'key', 'provider', 'at'])
+        && validKey(request.resource.data.key) && request.resource.data.gameId.lower() == request.resource.data.key
+        && getAfter(/databases/$(database)/documents/names/$(request.resource.data.key)).data.uid == uid;
+      allow update, delete: if false;
+    }
+    // 랭킹 기록: 누구나 읽고, 본인 기록만 쓰기 (닉네임은 자기 계정 아이디로 고정)
+    match /scores/{uid} {
+      allow read: if true;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/accounts/$(uid))
+        && request.resource.data.keys().hasOnly(['nick', 'best', 'total', 'v'])
+        && request.resource.data.nick == get(/databases/$(database)/documents/accounts/$(uid)).data.gameId
+        && request.resource.data.best is map && request.resource.data.best.size() <= 400
+        && request.resource.data.total is number && request.resource.data.total >= 0 && request.resource.data.total <= 400000000;
+      allow delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
