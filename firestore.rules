@@ -1,5 +1,5 @@
 rules_version = '2';
-// 최윤혁의 리듬게임 — 서버 보안 규칙 (브라우저에서 우회 불가: Firebase 서버가 직접 검사)
+// Bong's Game — 서버 보안 규칙 (브라우저에서 우회 불가: Firebase 서버가 직접 검사)
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
@@ -32,6 +32,19 @@ service cloud.firestore {
         && request.resource.data.nick == get(/databases/$(database)/documents/accounts/$(uid)).data.gameId
         && request.resource.data.best is map && request.resource.data.best.size() <= 400
         && request.resource.data.total is number && request.resource.data.total >= 0 && request.resource.data.total <= 400000000;
+      allow delete: if false;
+    }
+    // 프로필: 닉네임(2~12자) + 사진(작은 JPEG/PNG/WebP, 약 110KB 이하). 본인만 쓰기, 누구나 읽기
+    match /profiles/{uid} {
+      allow read: if true;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/accounts/$(uid))
+        && request.resource.data.keys().hasOnly(['nick', 'photo', 'at'])
+        && request.resource.data.nick is string && request.resource.data.nick.size() >= 2 && request.resource.data.nick.size() <= 12
+        && request.resource.data.nick.matches('^[-A-Za-z0-9가-힣_. ]+$')
+        && request.resource.data.photo is string && request.resource.data.photo.size() <= 150000
+        && (request.resource.data.photo == '' || request.resource.data.photo.matches('^data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$'))
+        && request.resource.data.at == request.time;
       allow delete: if false;
     }
     match /{document=**} { allow read, write: if false; }
