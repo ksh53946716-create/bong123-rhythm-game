@@ -4,6 +4,8 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function validKey(k) { return k is string && k.matches('^[a-z0-9가-힣_]{2,16}$'); }
+    // 개발자 계정 (게임 아이디 KSH): 「개발자」 칭호와 예약된 닉네임은 이 계정만 쓸 수 있음
+    function isDev() { return request.auth.uid in ['9R3rJTrsOyS1crzNgMlcBxHhAZx1']; }
 
     // 아이디 선점표: 한 번 만들면 바꾸거나 지울 수 없음 → 아이디 중복 불가
     match /names/{key} {
@@ -41,6 +43,8 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/accounts/$(uid))
         && request.resource.data.keys().hasOnly(['nick', 'photo', 'at', 'title', 'eq', 'st'])
         && request.resource.data.get('title', '') is string && request.resource.data.get('title', '').size() <= 16
+        && (request.resource.data.get('title', '') != '개발자' || isDev())
+        && (!(request.resource.data.nick in ['개발자', '운영자', '관리자']) || isDev())
         && request.resource.data.get('eq', {}) is map && request.resource.data.get('eq', {}).keys().hasOnly(['g', 'n'])
         && request.resource.data.get('st', {}) is map && request.resource.data.get('st', {}).size() <= 16
         && request.resource.data.nick is string && request.resource.data.nick.size() >= 2 && request.resource.data.nick.size() <= 12

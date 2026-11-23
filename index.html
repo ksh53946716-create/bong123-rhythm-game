@@ -270,8 +270,9 @@ html,body{font-synthesis:none}
 #keySeg button[aria-pressed=true]{animation:breath 1s ease-in-out infinite}
 .rach{display:flex;flex-direction:column;gap:4px;margin:8px auto 0;padding:8px 14px;border:1px solid var(--gold);background:linear-gradient(90deg,rgba(80,60,20,.55),rgba(30,22,10,.75));text-align:center;animation:fadeIn .6s 1s both;max-width:min(440px,94vw)}
 .rach b{display:block;font-size:14px;color:#f3d995}.rach span{font-size:12px;color:var(--ink)}
+.devtag{margin-left:6px;padding:0 5px;border:1px solid #ff6a4a;color:#ffb08a;font:400 10px/15px "Pirata One",serif;letter-spacing:.08em;vertical-align:2px;background:rgba(120,20,10,.45)}
 </style>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/app-192.png"><link rel="apple-touch-icon" href="icons/app-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
 <body>
 <canvas id="c"></canvas>
 <button id="pauseBtn" class="hidden" aria-label="일시정지">II</button>
@@ -397,6 +398,7 @@ html,body{font-synthesis:none}
       <button class="item" id="restartBtn"><span>처음부터</span></button>
       <button class="item" id="pauseSetBtn"><span>설정</span></button>
       <button class="item" id="menuBtn"><span>곡 선택</span></button>
+      <button class="item" id="pauseMainBtn"><span>메인 화면</span></button>
     </nav>
   </div>
 </div>
@@ -638,38 +640,28 @@ function addOffbeats(song,notes){
   out.sort((a,b)=>a.t-b.t||a.lane-b.lane);
   return out;
 }
-// HELL 변속: 노트 낙하 속도가 계속 바뀜 (순간 변속 + 서서히 가속/감속). 판정 타이밍은 그대로
+// HELL·DEATH 변속: 노트 낙하 속도가 불규칙한 지점에서 바뀜 (곡마다 고정). 판정 타이밍은 그대로
 function buildSV(song){
-  if(song.level<7) return null;
-  if(song.level<9){   // EXTREME: 8박마다 빨라짐(광폭화) · 느려짐(탈진) · 원래대로를 오감
-    const rnd=seeded(song.bpm*97+song.bars*5+song.level), K=[{t:0,v:1}], t0=INTRO_END*BAR, blk=8*SPB;
-    const fin=(song.sections.find(q=>q[1]==='fin')||[END_BAR])[0]*BAR, VS=[0.75,1,1.3];
-    K.push({t:t0,v:1}); let v=1;
-    for(let t=t0+blk;t+blk<=fin+1e-6;t+=blk){
-      let nv; do{ nv=VS[Math.floor(rnd()*VS.length)]; }while(nv===v);
-      if(rnd()<0.55) K.push({t,v},{t,v:nv}); else K.push({t,v},{t:t+SPB*2,v:nv});   // 순간 변속 / 2박에 걸쳐
-      v=nv;
-    }
-    K.push({t:fin,v},{t:fin,v:1});
-    const X=[0]; for(let i=1;i<K.length;i++) X.push(X[i-1]+(K[i].t-K[i-1].t)*(K[i].v+K[i-1].v)/2);
-    return {K,X};
-  }
-  const rnd=seeded(song.bpm*131+song.bars*7+song.level), K=[{t:0,v:1}], t0=INTRO_END*BAR;
-  const death=song.level>=11, fin=(song.sections.find(q=>q[1]==='fin')||[END_BAR])[0]*BAR, blk=4*SPB, VS=death?[0.35,0.5,0.7,1,1.4,1.9,2.6]:[0.6,0.75,0.9,1,1.15,1.3];
-  K.push({t:t0,v:1}); let v=1;
-  for(let t=t0;t+blk<=fin+1e-6;t+=blk){
+  if(song.level<9) return null;   // 변속은 HELL · DEATH만
+  // 곡마다 고정된 무작위: 곡 id로 씨앗을 만들어서 몇 번을 플레이해도 바뀌는 지점과 속도가 같음
+  let h=0; for(const ch of String(song.id)) h=(Math.imul(h,31)+ch.charCodeAt(0))|0;
+  const rnd=seeded(h^(song.level*7919)), K=[{t:0,v:1}], t0=INTRO_END*BAR;
+  const death=song.level>=11, fin=(song.sections.find(q=>q[1]==='fin')||[END_BAR])[0]*BAR, VS=death?[0.35,0.5,0.7,1,1.4,1.9,2.6]:[0.6,0.75,0.9,1,1.15,1.3];
+  const LEN=death?[1,1.5,2,2,3,4,6]:[2,3,3,4,5,6,8,12];   // 한 구간 길이(박) – 불규칙하게
+  K.push({t:t0,v:1}); let v=1, t=t0;
+  for(;;){
+    const seg=LEN[Math.floor(rnd()*LEN.length)]*SPB; if(t+seg>fin+1e-6) break;
     let nv; do{ nv=VS[Math.floor(rnd()*VS.length)]; }while(Math.abs(nv-v)<(death?0.35:0.2));
     const mode=rnd();
-    if(mode<0.5){ K.push({t,v:nv},{t:t+blk,v:nv}); }                              // 순간 변속
-    else if(mode<(death?0.85:0.92)){ K.push({t:t+blk,v:nv}); }                                  // 서서히
-    else { K.push({t,v:death?0.2:0.5},{t:t+SPB,v:death?0.2:0.5},{t:t+SPB,v:death?2.8:1.3},{t:t+blk,v:nv}); } // 급정거 → 급가속
-    v=nv;
+    if(mode<0.5||seg<SPB*2){ K.push({t,v:nv},{t:t+seg,v:nv}); }                    // 순간 변속
+    else if(mode<(death?0.85:0.92)){ K.push({t:t+seg,v:nv}); }                        // 서서히
+    else { K.push({t,v:death?0.2:0.5},{t:t+SPB,v:death?0.2:0.5},{t:t+SPB,v:death?2.8:1.3},{t:t+seg,v:nv}); } // 급정거 → 급가속
+    v=nv; t+=seg;
   }
   K.push({t:fin,v},{t:fin,v:1});
-  const X=[0]; for(let i=1;i<K.length;i++) X.push(X[i-1]+(K[i].t-K[i-1].t)*(K[i].v+K[i-1].v)/2);
+  const X=[0]; for(let q=1;q<K.length;q++) X.push(X[q-1]+(K[q].t-K[q-1].t)*(K[q].v+K[q-1].v)/2);
   return {K,X};
 }
-
 /* ---------- 상대 페이즈: 변속 구간에서 빨라지면 광폭화, 느려지면 탈진 ---------- */
 const MOODS={rage:{name:'광폭화',en:'RAGE',sub:'공격이 거세진다 — 맞으면 더 아프다!',col:'#ff4a3a'},tired:{name:'탈진',en:'EXHAUSTED',sub:'숨이 찼다 — 지금 때리면 더 아프다!',col:'#8fc4ff'}};
 function moodUpdate(now,pt,dt){
@@ -2304,6 +2296,8 @@ const ACHS=[
   {id:'total_10m',n:'전설',d:'종합 점수 1,000만',t:'전설',v:(S,B)=>[B.total,1e7]},
   {id:'ch_win',n:'도전자 사냥꾼',d:'친구 대결 1승',t:'도전자 사냥꾼',v:(S)=>[S.chWins,1]},
   {id:'ch_5',n:'결투왕',d:'친구 대결 5승',t:'결투왕',v:(S)=>[S.chWins,5]}];
+const DEV_UIDS=['9R3rJTrsOyS1crzNgMlcBxHhAZx1'], DEV_TITLE='개발자', RESERVED_NICK=['개발자','운영자','관리자'];   // 개발자 전용 칭호 (서버 규칙도 같은 계정만 허용)
+const isDev=uid=>!!uid&&DEV_UIDS.includes(uid);
 const ST0={plays:0,clears:0,kos:0,maxCombo:0,charges:0,defs:0,rageHits:0,tiredKO:0,chWins:0};
 const acctK=()=>'#'+(ACC?ACC.key:'guest');
 let ST=null, EQ=null;
@@ -2331,7 +2325,7 @@ function applySkin(){
   if(!EQ) return; const g=GLOVE_SKINS[EQ.g]||GLOVE_SKINS.classic, n=NOTE_SKINS[EQ.n]||NOTE_SKINS.classic;
   GLOVE[0]=g.c[0]; GLOVE[1]=g.c[1]; GLOVE_BAND=g.b; for(let i=0;i<4;i++) LCOL[i]=n.c[i]; COL[0]=n.c[0]; COL[1]=n.c[3];
 }
-function equip(kind,id){ if(!EQ) loadProg(); if(kind==='g'&&GLOVE_SKINS[id]&&unlocked(GLOVE_SKINS[id].req)) EQ.g=id; else if(kind==='n'&&NOTE_SKINS[id]&&unlocked(NOTE_SKINS[id].req)) EQ.n=id; else if(kind==='t') EQ.t=String(id||'').slice(0,16); else return false;
+function equip(kind,id){ if(!EQ) loadProg(); if(kind==='g'&&GLOVE_SKINS[id]&&unlocked(GLOVE_SKINS[id].req)) EQ.g=id; else if(kind==='n'&&NOTE_SKINS[id]&&unlocked(NOTE_SKINS[id].req)) EQ.n=id; else if(kind==='t'&&(id!==DEV_TITLE||isDev(NET&&NET.uid))) EQ.t=String(id||'').slice(0,16); else return false;
   saveProg(); applySkin(); if(window.onProgSave) onProgSave(); return true; }
 // 한 판 끝날 때: 누적 기록 갱신 → 새로 달성한 업적 알림
 function progAfterRun(r){
@@ -2603,6 +2597,7 @@ $('pauseBtn').onclick=pauseGame;
 $('resumeBtn').onclick=resumeGame;
 $('restartBtn').onclick=startRun;
 $('menuBtn').onclick=()=>{stopRun(); if(actx) actx.resume(); openSongs();};
+$('pauseMainBtn').onclick=()=>{stopRun(); if(actx) actx.resume(); updateMenu(); show('menu'); clickGuard=performance.now()+300; menuMusic(true);};   // 일시정지 → 메인 화면
 $('retryBtn').onclick=startRun;
 $('toMenuBtn').onclick=()=>{stopRun(); openSongs();};
 $('toMainBtn').onclick=()=>{stopRun(); updateMenu(); show('menu'); clickGuard=performance.now()+300; menuMusic(true);};   // 결과 → 바로 메인 화면
@@ -2775,6 +2770,7 @@ async function renderRanking(){
     const no=document.createElement('span'); no.className='no'; no.textContent=String(i+1);
     const im=document.createElement('img'); im.alt=''; const p=ps[r.id]; if(p&&p.avatarUrl) im.src=p.avatarUrl;
     const nm=document.createElement('span'); nm.className='nm'; nm.textContent=(p&&p.nick)||r.nick||(p&&p.name)||'익명 복서';
+    if(isDev(r.id)){ const dv=document.createElement('small'); dv.className='devtag'; dv.textContent='DEV'; nm.append(dv); }
     if(p&&p.nick&&r.nick&&p.nick!==r.nick){ const rid=document.createElement('small'); rid.className='rid'; rid.textContent='@'+r.nick; nm.append(rid); }   // 닉네임 옆에 실제 아이디(사칭 방지)
     if(r.id.startsWith('g_')){ const tg=document.createElement('span'); tg.className='tag'; tg.textContent='코드'; nm.append(tg); }
     const sc=document.createElement('span'); sc.className='sc'; sc.textContent=Math.round(r.s).toLocaleString();
@@ -2967,7 +2963,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123131522'; let pending=false;
+  const CUR='20261123133435'; let pending=false;
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent='새 버전으로 업데이트하는 중…';
@@ -3038,6 +3034,8 @@ function renderAccount(){}
 .acchip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--line);background:rgba(8,6,5,.5);color:var(--ink);font:500 13px "Bong Myung","Gowun Batang",serif;cursor:pointer}
 .acchip[aria-pressed=true]{border-color:var(--gold2);background:rgba(120,90,30,.35);color:#f3d995;box-shadow:0 0 12px rgba(227,196,122,.25)}
 .acchip.lock{opacity:.42;cursor:not-allowed}
+.acchip.dev{border-color:#ff6a4a;color:#ffcfae;background:linear-gradient(90deg,rgba(140,30,15,.5),rgba(90,60,20,.5))}.acchip.dev[aria-pressed=true]{box-shadow:0 0 14px rgba(255,106,74,.45)}
+.actitle.dev,.pt.dev{background:linear-gradient(90deg,#ffb08a,#ffe6a8,#ff7a5a);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
 .acchip i{display:inline-block;width:16px;height:16px;border-radius:50%;flex:none}
 .acchip i.nt{width:22px;height:9px;border-radius:3px}
 .acsk{display:flex;align-items:flex-start;gap:10px;margin-top:8px}.acsk>span{flex:none;width:44px;padding-top:7px;font-size:13px;color:var(--muted)}
@@ -3061,7 +3059,7 @@ function renderAccount(){}
     if(!ACC||$('account').classList.contains('hidden')) return;
     const ph=myPhoto(), nick=myNick();
     $('acImg').style.display=ph?'':'none'; if(ph) $('acImg').src=ph; $('acInit').textContent=ph?'':nick.slice(0,1).toUpperCase();
-    $('acNick').textContent=nick; $('acIdTag').textContent='@'+ACC.id; $('acTitle').textContent=EQ&&EQ.t?'「'+EQ.t+'」':'';
+    $('acNick').textContent=nick; $('acIdTag').textContent='@'+ACC.id; $('acTitle').textContent=EQ&&EQ.t?'「'+EQ.t+'」':''; $('acTitle').classList.toggle('dev',EQ&&EQ.t===DEV_TITLE);
     renderProgUI();
     $('acPhotoDel').classList.toggle('hidden',!myProf().photo);
     const pv=FBK.providers(), g=pv.includes('google.com'), pw=pv.includes('password');
@@ -3092,6 +3090,7 @@ function renderAccount(){}
   const NICK_RE=/^[-A-Za-z0-9가-힣_. ]{2,12}$/;
   $('acNickSave').onclick=async()=>{ const v=$('acNickIn').value.trim().replace(/\s+/g,' ');
     if(!NICK_RE.test(v)) return msg('acNickMsg','닉네임은 한글·영문·숫자·공백·_ . - 로 2~12자예요');
+    if(RESERVED_NICK.includes(v)&&!isDev(NET.uid)) return msg('acNickMsg','이 닉네임은 쓸 수 없어요');
     if(v===myNick()) return msg('acNickMsg','지금 닉네임과 같아요');
     msg('acNickMsg','저장하는 중…'); try{ await putProfile({nick:v}); msg('acNickMsg','닉네임을 바꿨어요',true); }catch(e){ msg('acNickMsg',FBK.errMsg(e)); } };
   $('acNickIn').addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter') $('acNickSave').click(); });
@@ -3137,7 +3136,7 @@ function renderProgUI(){
   if(!EQ) loadProg(); const list=myAch(), okN=list.filter(x=>x.ok).length;
   const chip=(label,on,lock,title,cb,dot)=>{ const b=document.createElement('button'); b.type='button'; b.className='acchip'+(lock?' lock':''); b.setAttribute('aria-pressed',!!on);
     if(dot) b.appendChild(dot); b.appendChild(document.createTextNode(label)); if(title) b.title=title; b.onclick=()=>{ if(lock){ $('acSkMsg').textContent=title; return; } uiTick(); cb(); renderAccount(); }; return b; };
-  const titles=[chip('없음',!EQ.t,false,'',()=>equip('t',''))].concat(list.filter(x=>x.ok).map(x=>chip(x.a.t,EQ.t===x.a.t,false,'',()=>equip('t',x.a.t))));
+  const titles=[chip('없음',!EQ.t,false,'',()=>equip('t',''))].concat(isDev(NET.uid)?[Object.assign(chip(DEV_TITLE,EQ.t===DEV_TITLE,false,'',()=>equip('t',DEV_TITLE)),{className:'acchip dev'})]:[],list.filter(x=>x.ok).map(x=>chip(x.a.t,EQ.t===x.a.t,false,'',()=>equip('t',x.a.t))));
   $('acTitles').replaceChildren(...titles);
   const reqName=id=>{ const a=ACHS.find(q=>q.id===id); return a?`업적 「${a.n}」(${a.d}) 달성 시 해금`:''; };
   $('acGloves').replaceChildren(...Object.entries(GLOVE_SKINS).map(([k,v])=>{ const d=document.createElement('i'); d.style.background=`radial-gradient(circle at 35% 30%,#fff3d6 0,${v.c[0]} 35%,${v.c[1]} 70%,#0d0a08)`; d.style.boxShadow=`0 0 0 1.5px ${v.b}`;
@@ -3219,7 +3218,7 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
     uiTick(); const p=NET.profs.get(uid)||{}, sc=NET.all.get(uid)||{}, rows=rankList(null), ri=rows.findIndex(r=>r.id===uid);
     const ach=achState(p.st||{},sc.best||{}).filter(x=>x.ok).length, ph=photoOf(uid), nk=nickOf(uid);
     const key=SONGS[rkIdx].id+'@'+rateMul, sb=sc.best&&sc.best[key], mineB=NET.mine&&NET.mine.best&&NET.mine.best[key];
-    $('pcBody').innerHTML=`<div class="pav">${ph?`<img src="${ph}" alt="">`:''}</div>${p.title?`<div class="pt">「${p.title.replace(/[<>&]/g,'')}」</div>`:''}<div class="pn"></div><div class="pi">@${idOf(uid)}</div>
+    $('pcBody').innerHTML=`<div class="pav">${ph?`<img src="${ph}" alt="">`:''}</div>${p.title&&(p.title!==DEV_TITLE||isDev(uid))?`<div class="pt${p.title===DEV_TITLE?' dev':''}">「${p.title.replace(/[<>&]/g,'')}」</div>`:''}<div class="pn"></div><div class="pi">@${idOf(uid)}</div>
       <dl class="acinfo" style="margin-top:12px"><dt>종합 점수</dt><dd>${Math.round(num(sc.total,1e9)).toLocaleString()}</dd><dt>종합 순위</dt><dd>${ri>=0?ri+1+'위':'—'}</dd><dt>업적</dt><dd>${ach} / ${ACHS.length}</dd><dt>${SONGS[rkIdx].title} ×${rateMul}</dt><dd>${sb?num(sb.s,1e6).toLocaleString():'기록 없음'}</dd></dl>`;
     $('pcBody').querySelector('.pn').textContent=nk; if(!ph) $('pcBody').querySelector('.pav').textContent=nk.slice(0,1).toUpperCase();
     const me=uid===NET.uid; $('pcDuel').classList.toggle('hidden',me||!ACC);
