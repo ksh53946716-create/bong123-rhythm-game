@@ -1,5 +1,5 @@
 // 오프라인 캐시: 게임 화면은 최신판 우선, 음악은 한 번 받으면 저장해서 재사용
-const V='rhythm-20261123145742', SHELL=['./','./index.html','./fbk.bundle.js','./firebase-config.js','./manifest.json','./icons/app-192.png'];
+const V='rhythm-20261123150357', SHELL=['./','./index.html','./fbk.bundle.js','./firebase-config.js','./manifest.json','./icons/app-192.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
 self.addEventListener('fetch',e=>{

@@ -392,6 +392,7 @@ html,body{font-synthesis:none}
 .bonusnote p{margin:0;font-size:13px;line-height:1.6;color:rgba(234,222,196,.78)}.bonusnote p b{color:#efe0b8;font-weight:600}
 .bonusnow{margin-top:8px;font-size:13px;color:#e8cf8e}
 .hint.up{color:#9fd3a0}.hint.down{color:#e0897c}
+.uloghint{flex:none;font-size:12px;color:var(--muted);text-align:center;padding-top:8px}.uloghint:empty{display:none}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/app-192.png"><link rel="apple-touch-icon" href="icons/app-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
 <body>
@@ -409,6 +410,7 @@ html,body{font-synthesis:none}
 
 <div id="ulog" class="ov ov-panel hidden">
   <div class="panel ulogp"><h2>업데이트 로그</h2><div id="ulogList"></div>
+  <div class="uloghint" id="ulogHint"></div>
   <nav class="list ulognav"><button class="item" id="ulogOff"><span>다시 보지 않기</span></button><button class="item" id="ulogBack"><span>닫기</span></button></nav></div>
 </div>
 <div id="menu" class="ov ov-menu hidden">
@@ -1121,16 +1123,19 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 /* ---------- 버전 · 업데이트 로그 (버전 규칙: 대규모 업데이트.신규 기능.버그 수정) ---------- */
-const CHANGELOG=[{"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
+const CHANGELOG=[{"v": "1.03.02", "d": "2026-11-23", "items": ["「다시 보지 않기」를 한 번 누르면 다음 업데이트 로그까지 영영 안 뜨던 문제를 고쳤어요 · 이제 그 버전만 안 뜨고, 새 업데이트가 나오면 다시 떠요"]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
 function renderLog(){
   $('ulogList').replaceChildren(...CHANGELOG.map((e,i)=>{ const d=document.createElement('section'); d.className='ulv';
     const h=document.createElement('h3'); h.textContent='v'+e.v; const sm=document.createElement('small'); sm.textContent=e.d; h.append(sm);
     if(i===0){ const em=document.createElement('em'); em.textContent='현재 버전'; h.append(em); }
     const ul=document.createElement('ul'); for(const t of e.items){ const li=document.createElement('li'); li.textContent=t; ul.append(li); } d.append(h,ul); return d; }));
 }
-function openLog(){ renderLog(); $('ulogOff').querySelector('span').textContent=store.get('sb.logOff',false)?'새 버전마다 다시 보기':'다시 보지 않기'; show('ulog'); store.set('sb.seenVer',APP_VER); clickGuard=performance.now()+300; }
+// 새 버전이 나오면 로비에 들어갈 때 자동으로 뜸 · 「다시 보지 않기」는 이번 버전만 (다음 업데이트 때 다시 뜸) · 「닫기」는 이번 실행 동안만 안 뜸
+function logSeen(){ return store.get('sb.seenVer','')===APP_VER; }
+function openLog(){ renderLog(); $('ulogOff').classList.toggle('hidden',logSeen()); $('ulogHint').textContent=logSeen()?'':'「다시 보지 않기」를 눌러도 다음 업데이트 때는 다시 떠요'; show('ulog'); try{ sessionStorage.setItem('sb.logShown',APP_VER); }catch(_){} clickGuard=performance.now()+300; }
 function show(id){
-  if(id==='menu'&&store.get('sb.seenVer','')!==APP_VER&&!store.get('sb.logOff',false)&&!show.logBusy){ show.logBusy=true; setTimeout(()=>{ show.logBusy=false; if(!$('menu').classList.contains('hidden')) openLog(); },450); }   // 새 버전이면 로비에서 한 번 자동으로
+  let shownNow=''; try{ shownNow=sessionStorage.getItem('sb.logShown')||''; }catch(_){}
+  if(id==='menu'&&!logSeen()&&shownNow!==APP_VER&&!show.logBusy){ show.logBusy=true; setTimeout(()=>{ show.logBusy=false; if(!$('menu').classList.contains('hidden')) openLog(); },450); }   // 새 버전이면 로비에서 한 번 자동으로
   for(const o of ['title','menu','songs','pause','result','calib','settings','tutorial','login','ranking','downloads','account','duels','pcardOv','achv','ulog']){ const e=$(o); if(e) e.classList.toggle('hidden',o!==id); }
   if(document.activeElement) document.activeElement.blur();
   const l=id&&$(id).querySelector('.list'); if(l) setSel(l,0,false);
@@ -2656,7 +2661,8 @@ function uiConfirm(){ if(!actx) return; const t=actx.currentTime; tone(master,t,
 $('verTag').textContent='v'+APP_VER; $('logVer').textContent='v'+APP_VER;
 $('logBtn').onclick=()=>{ uiTick(); openLog(); };
 $('ulogBack').onclick=()=>{ uiTick(); show('menu'); };
-$('ulogOff').onclick=()=>{ const off=!store.get('sb.logOff',false); store.set('sb.logOff',off); uiTick(); show('menu'); };   // 다시 보지 않기 ↔ 다시 보기 (로비의 「업데이트 로그」로는 언제든 열 수 있음)
+$('ulogOff').onclick=()=>{ store.set('sb.seenVer',APP_VER); uiTick(); show('menu'); };   // 이번 버전 로그만 다시 안 띄움
+try{ localStorage.removeItem('sb.logOff'); }catch(_){}   // 예전 「영원히 안 보기」 설정은 지움
 function enterMenu(){
   initAudio(); actx.resume();
   const t=actx.currentTime; tone(master,t,'sine',55,1.6,0.35); noise(master,t,1.2,'lowpass',400,0.7,0.25); tone(master,t,'sine',440,1.2,0.04); tone(master,t+0.05,'sine',660,1.4,0.03);
@@ -3119,7 +3125,7 @@ function showCode(){ NET.noWrite=false; $('rCodeBox').classList.add('hidden'); $
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261123145742'; let pending=false, NEWNAME='';
+  const CUR='20261123150357'; let pending=false, NEWNAME='';
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent=NEWNAME?`새 버전 v${NEWNAME}로 업데이트하는 중…`:'새 버전으로 업데이트하는 중…';
