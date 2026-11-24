@@ -448,6 +448,15 @@ html,body{font-synthesis:none}
 .ptier small{display:inline!important;margin-top:0!important}
 .lfp{font-size:14px;line-height:1.65;color:var(--ink);margin:4px 0 12px}.lfp b{color:#f3d995}.lfp small{display:block;margin-top:6px;font-size:12.5px;color:var(--muted)}
 .lfpick{display:flex;justify-content:center;padding:14px;border:1px dashed rgba(156,196,232,.5);border-radius:var(--r-md);cursor:pointer;color:#cfe3ff;font-size:15px}.lfpick input{display:none}.lfpick:hover{border-color:#9cc4e8;background:rgba(40,60,90,.2)}
+
+/* 최상급 보상 (DEATH 3곡 정복) */
+@keyframes topglow{0%,100%{color:#ff4a5e;text-shadow:0 0 8px rgba(255,42,74,.55)}50%{color:#ffd98a;text-shadow:0 0 10px rgba(255,217,138,.6)}}
+.acchip.top{border-color:#ff2a4a!important;background:linear-gradient(90deg,rgba(90,6,20,.7),rgba(60,30,6,.7))!important;animation:topglow 2.6s ease-in-out infinite}
+.acchip.top.lock{animation:none;opacity:.55}
+.acach.top{border-color:rgba(255,42,74,.55)!important;background:linear-gradient(90deg,rgba(80,6,18,.45),rgba(50,26,6,.35))!important}
+.acach.top.ok b{animation:topglow 2.6s ease-in-out infinite}
+.topb{font-style:normal;margin-left:6px;padding:0 6px;border:1px solid #ff2a4a;border-radius:999px;font:400 10.5px/16px "Pirata One",serif;color:#ffd98a;letter-spacing:.06em;vertical-align:1px}
+#acTitle.top,.pt.top{animation:topglow 2.6s ease-in-out infinite}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0e0b08"><link rel="icon" href="icons/app-192.png"><link rel="apple-touch-icon" href="icons/app-192.png"><meta name="apple-mobile-web-app-capable" content="yes"></head>
 <body>
@@ -816,9 +825,9 @@ const COURSES=[{id:'vivaldi',name:'비발디 사계 메들리',fixed:['spring','
 function hashStr(t){ let hh=0; for(const ch of t) hh=(Math.imul(hh,31)+ch.charCodeAt(0))|0; return hh; }
 function courseList(c){   // 코스 곡: 달마다 바뀜 (모두에게 같음) · 고정 코스는 항상 같은 순서
   if(c.fixed) return c.fixed.map(id=>SONGS.find(x=>x.id===id)).filter(Boolean).map(x=>({id:x.id,lv:x.level}));
-  const rnd=seeded(hashStr(c.id+seasonId())), pool=SONGS.filter(x=>chartLvs(x).some(l=>tier(l)[0]===c.tier)&&x.level<11&&!x.local), out=[];
+  const rnd=seeded(hashStr(c.id+seasonId())), pool=SONGS.filter(x=>chartLvs(x).some(l=>tier(l)[0]===c.tier)&&!(c.death&&DEATH_IDS.includes(x.id))&&x.level<11&&!x.local), out=[];
   while(out.length<Math.min(c.n,pool.length)){ const x=pool[Math.floor(rnd()*pool.length)]; if(!out.some(o=>o.id===x.id)) out.push({id:x.id,lv:chartLvs(x).find(l=>tier(l)[0]===c.tier)}); }
-  if(c.death){ const dx=SONGS.find(x=>x.level>=11); if(dx) out.push({id:dx.id,lv:dx.level}); }   // 보스 러시 마지막 = DEATH
+  if(c.death){ const ds=SONGS.filter(x=>chartLvs(x).includes(11)), dx=ds[Math.floor(rnd()*ds.length)]; if(dx) out.push({id:dx.id,lv:11}); }   // 보스 러시 마지막 = DEATH (3곡 중 이번 달 곡)
   return out;
 }
 const SV_LV=[3,4,5,6,7,8,9,9,10,10,11];
@@ -891,7 +900,15 @@ function secList(x){   // [{label,b0,b1}] – 같은 이름은 번호를 붙임
     const b0=S[i][0], b1=S[i+1][0]; if(b1<=b0) continue; out.push({label:(SEC_NAME[nm]||nm)+(cnt[nm]>1?' '+n[nm]:''),b0,b1}); }
   return out; }
 /* ---------- 곡마다 여러 난이도(채보): 같은 곡을 EASY~원래 난이도까지 ---------- */
-function chartLvs(x){ const L=x.level; if(L>=9) return [4,6,8,L]; if(L>=7) return [2,4,6,L]; const a=[2,4,6]; a[Math.min(2,Math.floor((L-1)/2))]=L; return [...new Set(a)].sort((p,q)=>p-q); }
+const DEATH_IDS=['fantaisie','bee','campanella'];   // DEATH 채보가 있는 곡 (3곡)
+function chartLvs(x){ const L=x.level; let a;
+  if(L>=11) a=[4,6,8,10,L];                 // DEATH 곡: HELL 채보도
+  else if(L>=9) a=[4,6,8,L];
+  else if(L>=7) a=[2,4,6,L,9];              // EXTREME 곡에 HELL 채보 추가
+  else if(L>=5) a=[2,4,L,L+2];              // HARD 곡에 EXTREME 채보 추가
+  else { a=[2,4,6]; a[Math.min(2,Math.floor((L-1)/2))]=L; }
+  if(DEATH_IDS.includes(x.id)&&!a.includes(11)) a.push(11);
+  return [...new Set(a)].sort((p,q)=>p-q); }
 function chartOf(x,lv){ return (lv==null||lv===x.level)?x:Object.create(x,{level:{value:lv,enumerable:true,writable:true},_base:{value:x}}); }
 const baseOf=x=>x._base||x;
 function ckey(x,lv){ const b=baseOf(x); lv=lv==null?x.level:lv; return lv===b.level?b.id:b.id+'#'+lv; }   // 기록 키: 원래 난이도는 곡 id 그대로 (예전 기록 호환)
@@ -1346,7 +1363,7 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 /* ---------- 버전 · 업데이트 로그 (버전 규칙: 대규모 업데이트.신규 기능.버그 수정) ---------- */
-const CHANGELOG=[{"v": "2.04.01", "d": "2026-11-24", "items": ["행성 중 「화성」을 홀스트의 관현악 총보 그대로 다시 만들었어요 – 오케스트라 전 파트가 원곡대로 연주되고, 노트는 주선율(트럼펫 · 호른 · 테너튜바 · 바순)과 5/4 오스티나토 리듬을 따라가요", "「라 캄파넬라」를 리스트의 피아노 악보 그대로 다시 만들었어요 – 왼손 · 오른손이 원곡대로 연주되고, 노트는 오른손 선율과 높은 종소리(D#)를 번갈아 따라가요", "두 곡 모두 음원과 노트 타이밍을 다시 맞췄어요"]}, {"v": "2.04.00", "d": "2026-11-24", "items": ["새 곡 38곡 추가 – 클래식 · 민요 · 옛 미국 대중음악은 악보를 보고 직접 편곡했고, Kevin MacLeod 곡 5곡은 원곡 음원을 분석해서 박자 · 노트를 맞췄어요", "비발디 「사계」 완성 – 「여름」 3악장 · 「가을」 · 「겨울」이 들어와서 봄 · 여름 · 가을 · 겨울을 모두 칠 수 있어요", "모드에 「비발디 사계 메들리」 추가 – 봄 → 여름 → 가을 → 겨울을 체력이 이어진 채로 연달아 쳐요 (매달 바뀌지 않는 고정 코스)", "클래식: 볼레로 · 윌리엄 텔 서곡 · 발퀴레의 기행 · 죽음의 무도 · 랩소디 인 블루 · 라 캄파넬라 · 헝가리 광시곡 2번 · 헝가리 무곡 5번 · 행성 중 「화성」 · 트레팍 · 사탕 요정의 춤 · 백조의 호수 · 디에스 이레 · 위풍당당 행진곡 · 라데츠키 행진곡 · 하바네라 · 아침 기분", "민요 · 옛 노래: 아리랑 · 코로베이니키 · 하바 나길라 · 라 쿠카라차 · 그린슬리브스 · 성자의 행진 · 푸니쿨리 푸니쿨라 · 징글벨 · 캐럴 「종소리」 · 생일 축하합니다 · 야구장에 데려가 줘 · 세인트루이스 블루스 · 타이거 래그", "Kevin MacLeod (incompetech.com): Monkeys Spinning Monkeys · Sneaky Snitch · Fluffing a Duck · Local Forecast – Elevator · Pixel Peeker Polka – 곡 정보에 출처와 라이선스(CC BY 4.0)를 적었어요"]}, {"v": "2.03.01", "d": "2026-11-24", "items": ["「NO BATIDÃO」을 뺐어요 · 기기에 저장해 둔 음악 파일도 자동으로 지워져요"]}, {"v": "2.03.00", "d": "2026-11-24", "items": ["새 곡 「NO BATIDÃO」 (EXTREME · 130 BPM) – 음원 파일을 분석해서 박자 · 노트를 맞췄어요", "저작권 때문에 음원은 사이트에 없고, 처음 칠 때 내 기기에 있는 음악 파일을 고르면 그 파일로 재생해요 (기기에만 저장 · 다음부터 바로 시작)"]}, {"v": "2.02.00", "d": "2026-11-24", "items": ["타격감: 펀치가 들어가는 순간 화면이 아주 잠깐 멈추고(히트스톱), 안드로이드 폰은 진동해요 · 설정에서 끌 수 있어요", "메인의 「모드」: 연습실 · 메들리(MEDIUM · HARD · EXTREME) · 보스 러시 · 서바이벌", "메들리 · 보스 러시: 3~4곡을 이어서, 체력이 다음 곡으로 이어져요 · 코스는 매달 바뀌고 전용 랭킹", "서바이벌: 곡의 클라이맥스 구간이 라운드마다 점점 어려워져요 · 이번 주 순서는 모두 같고 전용 랭킹", "출석: 하루 한 번 출석 도장 · 7일 연속이면 칭호 「개근상」, 30일이면 노트 「불씨」", "시즌 보상 단계(무료): 칠 때마다 XP가 쌓여 20단계까지 · 5 · 10 · 15 · 20단계마다 시즌 칭호, 20단계는 글러브 「왕실」", "업적 6개 · 글러브 2종 · 노트 1종 추가"]}, {"v": "2.01.00", "d": "2026-11-24", "items": ["연습실에서는 체력이 줄지 않아요 (안 죽어요)", "연습이 끝나면 마디마다 몇 개 놓쳤는지 막대로 보여주고, 가장 많이 놓친 2마디만 바로 다시 연습할 수 있어요", "실수 없이 치면 속도를 올려서 다시 칠 수 있어요"]}, {"v": "2.00.00", "d": "2026-11-24", "items": ["곡마다 여러 난이도: 같은 곡을 EASY · MEDIUM · HARD (+ 원래 난이도)로 골라서 칠 수 있어요 · 곡 선택에서 난이도 이름을 누르거나 ← → 키", "연습실: 구간을 골라 반복하고, ×0.5 · ×0.75로 느리게 칠 수 있어요 (메인의 「연습」)", "결과 화면에 가장 많이 놓친 구간을 알려주고, 바로 그 구간을 연습할 수 있어요", "고스트: 플레이 중에 내 최고 기록보다 앞서는지 뒤처지는지 보여줘요", "시즌 랭킹: 매달 새 시즌 · 지난 시즌 3위 안에 들면 시즌 칭호", "오늘의 도전 · 이번 주 도전: 날마다(주마다) 정해지는 곡과 조건, 전용 랭킹", "친구 목록과 접속 표시 · 랭킹에서 「친구만」 보기", "실시간 1:1 대결: 방을 만들거나 친구를 초대해서 같은 곡을 동시에 치고 점수를 실시간으로 비교", "업적 5개 추가 (오늘의 도전 · 주간 도전 · 시즌 입상 · 실시간 대결)", "정리: 곡 속도(×1.5 · ×2) 옵션과 따로 나뉜 랭킹, 친구 기록 코드, 싱크 보정 슬라이더 · 그래픽 품질 설정(자동으로 조절), 데스크톱 앱 다운로드를 없앴어요 · 펀치 보정은 설정 안에 있어요", "종합 점수는 곡마다 가장 높은 난이도 점수 하나만 더해요"]}, {"v": "1.04.00", "d": "2026-11-23", "items": ["연습 게이지(안 죽는 모드)로 친 판은 랭킹 · 내 최고 기록 · 업적에 들어가지 않아요", "연습 게이지로는 친구 대결 점수도 인정되지 않아요 (도전장은 남아 있어서 다시 도전할 수 있어요)"]}, {"v": "1.03.02", "d": "2026-11-23", "items": ["「다시 보지 않기」를 한 번 누르면 다음 업데이트 로그까지 영영 안 뜨던 문제를 고쳤어요 · 이제 그 버전만 안 뜨고, 새 업데이트가 나오면 다시 떠요"]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
+const CHANGELOG=[{"v": "2.05.00", "d": "2026-11-24", "items": ["EXTREME 채보 24개 → 41개: HARD 곡 16곡에 EXTREME 채보를 새로 만들었어요", "HELL 채보 12개 → 25개: EXTREME 곡 12곡과 「즉흥 환상곡」에 HELL 채보를 새로 만들었어요", "DEATH 1곡 → 3곡: 「왕벌의 비행」 · 「라 캄파넬라」에 DEATH 채보 추가 (보스 러시 마지막 DEATH도 달마다 3곡 중에서 바뀌어요)", "새 업적 「명계 정복」 – DEATH 3곡을 모두 클리어하면 최상급 칭호 「명계의 지배자」, 최상급 글러브 「명계」, 최상급 노트 스킨 「심연」을 받아요", "최상급 보상은 칭호가 핏빛 ↔ 금빛으로 빛나고, 글러브 띠와 노트 레인 색이 플레이 중에 일렁여요"]}, {"v": "2.04.01", "d": "2026-11-24", "items": ["행성 중 「화성」을 홀스트의 관현악 총보 그대로 다시 만들었어요 – 오케스트라 전 파트가 원곡대로 연주되고, 노트는 주선율(트럼펫 · 호른 · 테너튜바 · 바순)과 5/4 오스티나토 리듬을 따라가요", "「라 캄파넬라」를 리스트의 피아노 악보 그대로 다시 만들었어요 – 왼손 · 오른손이 원곡대로 연주되고, 노트는 오른손 선율과 높은 종소리(D#)를 번갈아 따라가요", "두 곡 모두 음원과 노트 타이밍을 다시 맞췄어요"]}, {"v": "2.04.00", "d": "2026-11-24", "items": ["새 곡 38곡 추가 – 클래식 · 민요 · 옛 미국 대중음악은 악보를 보고 직접 편곡했고, Kevin MacLeod 곡 5곡은 원곡 음원을 분석해서 박자 · 노트를 맞췄어요", "비발디 「사계」 완성 – 「여름」 3악장 · 「가을」 · 「겨울」이 들어와서 봄 · 여름 · 가을 · 겨울을 모두 칠 수 있어요", "모드에 「비발디 사계 메들리」 추가 – 봄 → 여름 → 가을 → 겨울을 체력이 이어진 채로 연달아 쳐요 (매달 바뀌지 않는 고정 코스)", "클래식: 볼레로 · 윌리엄 텔 서곡 · 발퀴레의 기행 · 죽음의 무도 · 랩소디 인 블루 · 라 캄파넬라 · 헝가리 광시곡 2번 · 헝가리 무곡 5번 · 행성 중 「화성」 · 트레팍 · 사탕 요정의 춤 · 백조의 호수 · 디에스 이레 · 위풍당당 행진곡 · 라데츠키 행진곡 · 하바네라 · 아침 기분", "민요 · 옛 노래: 아리랑 · 코로베이니키 · 하바 나길라 · 라 쿠카라차 · 그린슬리브스 · 성자의 행진 · 푸니쿨리 푸니쿨라 · 징글벨 · 캐럴 「종소리」 · 생일 축하합니다 · 야구장에 데려가 줘 · 세인트루이스 블루스 · 타이거 래그", "Kevin MacLeod (incompetech.com): Monkeys Spinning Monkeys · Sneaky Snitch · Fluffing a Duck · Local Forecast – Elevator · Pixel Peeker Polka – 곡 정보에 출처와 라이선스(CC BY 4.0)를 적었어요"]}, {"v": "2.03.01", "d": "2026-11-24", "items": ["「NO BATIDÃO」을 뺐어요 · 기기에 저장해 둔 음악 파일도 자동으로 지워져요"]}, {"v": "2.03.00", "d": "2026-11-24", "items": ["새 곡 「NO BATIDÃO」 (EXTREME · 130 BPM) – 음원 파일을 분석해서 박자 · 노트를 맞췄어요", "저작권 때문에 음원은 사이트에 없고, 처음 칠 때 내 기기에 있는 음악 파일을 고르면 그 파일로 재생해요 (기기에만 저장 · 다음부터 바로 시작)"]}, {"v": "2.02.00", "d": "2026-11-24", "items": ["타격감: 펀치가 들어가는 순간 화면이 아주 잠깐 멈추고(히트스톱), 안드로이드 폰은 진동해요 · 설정에서 끌 수 있어요", "메인의 「모드」: 연습실 · 메들리(MEDIUM · HARD · EXTREME) · 보스 러시 · 서바이벌", "메들리 · 보스 러시: 3~4곡을 이어서, 체력이 다음 곡으로 이어져요 · 코스는 매달 바뀌고 전용 랭킹", "서바이벌: 곡의 클라이맥스 구간이 라운드마다 점점 어려워져요 · 이번 주 순서는 모두 같고 전용 랭킹", "출석: 하루 한 번 출석 도장 · 7일 연속이면 칭호 「개근상」, 30일이면 노트 「불씨」", "시즌 보상 단계(무료): 칠 때마다 XP가 쌓여 20단계까지 · 5 · 10 · 15 · 20단계마다 시즌 칭호, 20단계는 글러브 「왕실」", "업적 6개 · 글러브 2종 · 노트 1종 추가"]}, {"v": "2.01.00", "d": "2026-11-24", "items": ["연습실에서는 체력이 줄지 않아요 (안 죽어요)", "연습이 끝나면 마디마다 몇 개 놓쳤는지 막대로 보여주고, 가장 많이 놓친 2마디만 바로 다시 연습할 수 있어요", "실수 없이 치면 속도를 올려서 다시 칠 수 있어요"]}, {"v": "2.00.00", "d": "2026-11-24", "items": ["곡마다 여러 난이도: 같은 곡을 EASY · MEDIUM · HARD (+ 원래 난이도)로 골라서 칠 수 있어요 · 곡 선택에서 난이도 이름을 누르거나 ← → 키", "연습실: 구간을 골라 반복하고, ×0.5 · ×0.75로 느리게 칠 수 있어요 (메인의 「연습」)", "결과 화면에 가장 많이 놓친 구간을 알려주고, 바로 그 구간을 연습할 수 있어요", "고스트: 플레이 중에 내 최고 기록보다 앞서는지 뒤처지는지 보여줘요", "시즌 랭킹: 매달 새 시즌 · 지난 시즌 3위 안에 들면 시즌 칭호", "오늘의 도전 · 이번 주 도전: 날마다(주마다) 정해지는 곡과 조건, 전용 랭킹", "친구 목록과 접속 표시 · 랭킹에서 「친구만」 보기", "실시간 1:1 대결: 방을 만들거나 친구를 초대해서 같은 곡을 동시에 치고 점수를 실시간으로 비교", "업적 5개 추가 (오늘의 도전 · 주간 도전 · 시즌 입상 · 실시간 대결)", "정리: 곡 속도(×1.5 · ×2) 옵션과 따로 나뉜 랭킹, 친구 기록 코드, 싱크 보정 슬라이더 · 그래픽 품질 설정(자동으로 조절), 데스크톱 앱 다운로드를 없앴어요 · 펀치 보정은 설정 안에 있어요", "종합 점수는 곡마다 가장 높은 난이도 점수 하나만 더해요"]}, {"v": "1.04.00", "d": "2026-11-23", "items": ["연습 게이지(안 죽는 모드)로 친 판은 랭킹 · 내 최고 기록 · 업적에 들어가지 않아요", "연습 게이지로는 친구 대결 점수도 인정되지 않아요 (도전장은 남아 있어서 다시 도전할 수 있어요)"]}, {"v": "1.03.02", "d": "2026-11-23", "items": ["「다시 보지 않기」를 한 번 누르면 다음 업데이트 로그까지 영영 안 뜨던 문제를 고쳤어요 · 이제 그 버전만 안 뜨고, 새 업데이트가 나오면 다시 떠요"]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["설정 맨 위에 「점수 보너스」 안내를 넣었어요 · 항목마다 「점수 보너스 +5%」처럼 표시돼요"]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["체력 게이지와 판정 범위에도 점수 배율이 생겼어요: 연습 ×0.9 · 하드 ×1.05 / 널널하게 ×0.9 · 강하게 ×1.05 (배속 배율과 곱해져요)", "설정에서 지금 설정의 전체 점수 배율과 만점을 보여줘요", "곡 도중에 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용돼요"]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["업데이트 로그의 「다시 보지 않기 · 닫기」 버튼이 목록 맨 아래에 숨어 있던 문제를 고쳤어요 (항상 아래에 보여요)"]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["업데이트 로그에 「다시 보지 않기」 버튼을 추가했어요 · 로비 아래 「업데이트 로그」로는 언제든 다시 볼 수 있어요"]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["버전 표시와 업데이트 로그를 추가했어요", "배속에 따라 점수 배율이 달라져요 (0.75배 ×0.85 ~ 2배 ×1.06) · 1배보다 빠르면 만점도 늘어나요", "메인 화면을 정리했어요: 싸움 시작 + 랭킹 · 대결 · 업적, 오른쪽 위 설정", "HELL · DEATH 변속 구간에서 최윤혁이 광폭화 · 탈진해요", "친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정을 추가했어요", "계정 화면에서 닉네임과 프로필 사진을 바꿀 수 있어요"]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["Bong's Game 첫 공개: 51곡 · EASY부터 DEATH까지", "아이디 · 구글 로그인, 곡별 · 종합 랭킹", "Android · Windows · Mac · Linux 앱과 설치형 웹앱"]}], APP_VER=CHANGELOG[0].v;
 function renderLog(){
   $('ulogList').replaceChildren(...CHANGELOG.map((e,i)=>{ const d=document.createElement('section'); d.className='ulv';
     const h=document.createElement('h3'); h.textContent='v'+e.v; const sm=document.createElement('small'); sm.textContent=e.d; h.append(sm);
@@ -2555,6 +2572,7 @@ function frame(){
   drawBackFX(pt);
   drawPerson(pt,beat);
   drawAtmos(pt,drop,true,live?dt:0);
+  skinTick(performance.now()/1000);
   if(run){ run.dfx=run.death?deathFX(now):stageFX(now); if(run.dfx.dark>0.01){ ctx.fillStyle=`rgba(0,0,0,${run.dfx.dark})`; ctx.fillRect(-W,-H,W*3,H*3); } }
   if(run){ drawIncoming(now,pt); drawTargets(pt,pulse); drawNotes(now); }
   drawFX(pt,live?dt:0);
@@ -2683,14 +2701,16 @@ const GLOVE_SKINS={
   inferno:{n:'지옥불',c:['#e0561c','#c23a12'],b:'#ffcf3f',req:'hell_clear'},
   champion:{n:'챔피언',c:['#b3141c','#d4a032'],b:'#fff1cc',req:'boss_clear'},
   royal:{n:'왕실',c:['#4b2a8a','#4b2a8a'],b:'#f3d995',req:'pass_20'},
-  obsidian:{n:'흑요석',c:['#1c1a22','#1c1a22'],b:'#d0203a',req:'death_clear'}};
+  obsidian:{n:'흑요석',c:['#1c1a22','#1c1a22'],b:'#d0203a',req:'death_clear'},
+  reaper:{n:'명계',c:['#12060a','#3a0614'],b:'#ff2a4a',req:'death_all',top:true}};   // 최상급: 띠가 핏빛 ↔ 금빛으로 일렁임
 const NOTE_SKINS={
   classic:{n:'금빛',c:['#9cc4e8','#e3c47a','#e3c47a','#e0703c']},
   amethyst:{n:'자수정',c:['#b48cff','#e6ccff','#e6ccff','#8a5cf0'],req:'plays_50'},
   jade:{n:'비취',c:['#6fe0b0','#d4f2c4','#d4f2c4','#2fb486'],req:'combo_100'},
   ice:{n:'빙결',c:['#bfe8ff','#f4fbff','#f4fbff','#7fc4ff'],req:'ap_1'},
   sun:{n:'태양',c:['#ffd23f','#fff0a0','#fff0a0','#ff9f1c'],req:'total_10m'},
-  ember:{n:'불씨',c:['#ff7a3c','#ffc08a','#ffc08a','#e0411c'],req:'att_30'}};
+  ember:{n:'불씨',c:['#ff7a3c','#ffc08a','#ffc08a','#e0411c'],req:'att_30'},
+  abyss:{n:'심연',c:['#ff2a4a','#ffd98a','#ffd98a','#b0123a'],req:'death_all',top:true}};   // 최상급: 레인 색이 맥동
 const ACHS=[
   {id:'first_play',n:'첫 링',d:'곡을 처음 플레이',t:'신입 복서',v:(S)=>[S.plays,1]},
   {id:'first_clear',n:'첫 승리',d:'곡 클리어 1번',t:'루키',v:(S)=>[S.clears,1]},
@@ -2704,6 +2724,7 @@ const ACHS=[
   {id:'ext_clear',n:'극한 돌파',d:'EXTREME 곡 클리어',t:'극한 돌파자',v:(S,B)=>[B.ext,1]},
   {id:'hell_clear',n:'지옥의 생존자',d:'HELL 곡 클리어',t:'지옥의 생존자',v:(S,B)=>[B.hell,1]},
   {id:'death_clear',n:'사신',d:'DEATH 곡 클리어',t:'사신',v:(S,B)=>[B.death,1]},
+  {id:'death_all',n:'명계 정복',d:'DEATH 3곡 모두 클리어',t:'명계의 지배자',top:true,v:(S,B)=>[B.death,DEATH_IDS.length]},
   {id:'rage_tame',n:'맹수 조련사',d:'광폭화 중 노트 누적 300개 성공',t:'맹수 조련사',v:(S)=>[S.rageHits,300]},
   {id:'tired_ko',n:'피니셔',d:'탈진한 최윤혁을 K.O.',t:'피니셔',v:(S)=>[S.tiredKO,1]},
   {id:'charge_100',n:'한 방의 사나이',d:'차징 펀치 누적 100번',t:'한 방의 사나이',v:(S)=>[S.charges,100]},
@@ -2723,6 +2744,7 @@ const ACHS=[
   {id:'att_7',n:'개근',d:'7일 연속 출석',t:'개근상',v:(S)=>[S.bestStreak,7]},
   {id:'att_30',n:'한 달 출석',d:'출석 30일',t:'링의 터줏대감',v:(S)=>[S.att,30]},
   {id:'pass_20',n:'시즌 마스터',d:'시즌 보상 20단계 달성',t:'시즌 마스터',v:(S)=>[S.passMax,20]}];
+const TOP_TITLES=ACHS.filter(a=>a.top).map(a=>a.t);   // 최상급 칭호 (특별한 색)
 const DEV_UIDS=['9R3rJTrsOyS1crzNgMlcBxHhAZx1'], DEV_TITLE='개발자', RESERVED_NICK=['개발자','운영자','관리자'];   // 개발자 전용 칭호 (서버 규칙도 같은 계정만 허용)
 const isDev=uid=>!!uid&&DEV_UIDS.includes(uid);
 const ST0={plays:0,clears:0,kos:0,maxCombo:0,charges:0,defs:0,rageHits:0,tiredKO:0,chWins:0,dcDone:0,wcDone:0,seasonTop:0,rtWins:0,medClear:0,bossClear:0,svBest:0,att:0,streak:0,bestStreak:0,lastAtt:0,passMax:0};
@@ -2748,6 +2770,12 @@ function bestSum(best){
 function achState(S,best){ const B=bestSum(best); return ACHS.map(a=>{ const [c,g]=a.v(S||ST0,B); return {a,cur:Math.min(c,g),goal:g,ok:c>=g}; }); }
 function myAch(){ if(!ST) loadProg(); return achState(ST,NET&&NET.mine&&NET.mine.best); }
 const unlocked=req=>!req||myAch().some(x=>x.ok&&x.a.id===req);
+function mixHex(a,b,t){ const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)), A=p(a), B=p(b); return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join(''); }
+function skinTick(t){   // 최상급 스킨: 매 프레임 색이 일렁임
+  if(!EQ) return; const g=GLOVE_SKINS[EQ.g], n=NOTE_SKINS[EQ.n];
+  if(g&&g.top) GLOVE_BAND=mixHex('#ff2a4a','#ffd98a',0.5+0.5*Math.sin(t*2.4));
+  if(n&&n.top){ const k=0.5+0.5*Math.sin(t*3.1); for(let i=0;i<4;i++) LCOL[i]=mixHex(n.c[i],i===1||i===2?'#ffffff':'#ffd98a',k*0.45); }
+}
 function applySkin(){
   if(!EQ) return; const g=GLOVE_SKINS[EQ.g]||GLOVE_SKINS.classic, n=NOTE_SKINS[EQ.n]||NOTE_SKINS.classic;
   GLOVE[0]=g.c[0]; GLOVE[1]=g.c[1]; GLOVE_BAND=g.b; for(let i=0;i<4;i++) LCOL[i]=n.c[i]; COL[0]=n.c[0]; COL[1]=n.c[3];
@@ -3437,7 +3465,7 @@ function showCode(){ NET.noWrite=false; $('rRankNote').textContent='랭킹 저�
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261124013132'; let pending=false, NEWNAME='';
+  const CUR='20261124013855'; let pending=false, NEWNAME='';
   const busy=()=>!!(run&&!run.ended&&!run.paused);
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent=NEWNAME?`새 버전 v${NEWNAME}로 업데이트하는 중…`:'새 버전으로 업데이트하는 중…';
@@ -3531,7 +3559,7 @@ function renderAccount(){}
     if(!ACC||$('account').classList.contains('hidden')) return;
     const ph=myPhoto(), nick=myNick();
     $('acImg').style.display=ph?'':'none'; if(ph) $('acImg').src=ph; $('acInit').textContent=ph?'':nick.slice(0,1).toUpperCase();
-    $('acNick').textContent=nick; $('acIdTag').textContent='@'+ACC.id; $('acTitle').textContent=EQ&&EQ.t?'「'+EQ.t+'」':''; $('acTitle').classList.toggle('dev',EQ&&EQ.t===DEV_TITLE);
+    $('acNick').textContent=nick; $('acIdTag').textContent='@'+ACC.id; $('acTitle').textContent=EQ&&EQ.t?'「'+EQ.t+'」':''; $('acTitle').classList.toggle('dev',EQ&&EQ.t===DEV_TITLE); $('acTitle').classList.toggle('top',!!(EQ&&TOP_TITLES.includes(EQ.t)));
     $('acPhotoDel').classList.toggle('hidden',!myProf().photo);
     const pv=FBK.providers(), g=pv.includes('google.com'), pw=pv.includes('password');
     const mine=NET.mine||{}, best=mine.best||{}, played=Object.keys(best).length;
@@ -3609,19 +3637,19 @@ function renderProgUI(){
     if(dot) b.appendChild(dot); b.appendChild(document.createTextNode(label)); if(title) b.title=title; b.onclick=()=>{ if(lock){ $('acSkMsg').textContent=title; return; } uiTick(); cb(); renderProgUI(); renderAccount(); renderAcct(); }; return b; };
   const sT=seasonTitles(); if(sT.length&&ST&&!ST.seasonTop){ ST.seasonTop=1; saveProg(); achCheck(false); }
   const rw=(myProf().rw||[]).filter(t=>typeof t==='string');
-  const titles=[chip('없음',!EQ.t,false,'',()=>equip('t',''))].concat([...new Set([...sT,...rw])].map(t=>chip(t,EQ.t===t,false,'',()=>equip('t',t)))).concat(isDev(NET.uid)?[Object.assign(chip(DEV_TITLE,EQ.t===DEV_TITLE,false,'',()=>equip('t',DEV_TITLE)),{className:'acchip dev'})]:[],list.filter(x=>x.ok).map(x=>chip(x.a.t,EQ.t===x.a.t,false,'',()=>equip('t',x.a.t))));
+  const titles=[chip('없음',!EQ.t,false,'',()=>equip('t',''))].concat([...new Set([...sT,...rw])].map(t=>chip(t,EQ.t===t,false,'',()=>equip('t',t)))).concat(isDev(NET.uid)?[Object.assign(chip(DEV_TITLE,EQ.t===DEV_TITLE,false,'',()=>equip('t',DEV_TITLE)),{className:'acchip dev'})]:[],list.filter(x=>x.ok).map(x=>{ const c=chip(x.a.t,EQ.t===x.a.t,false,'',()=>equip('t',x.a.t)); if(x.a.top) c.classList.add('top'); return c; }));
   $('acTitles').replaceChildren(...titles);
   const reqName=id=>{ const a=ACHS.find(q=>q.id===id); return a?`업적 「${a.n}」(${a.d}) 달성 시 해금`:''; };
   $('acGloves').replaceChildren(...Object.entries(GLOVE_SKINS).map(([k,v])=>{ const d=document.createElement('i'); d.style.background=`radial-gradient(circle at 35% 30%,#fff3d6 0,${v.c[0]} 35%,${v.c[1]} 70%,#0d0a08)`; d.style.boxShadow=`0 0 0 1.5px ${v.b}`;
-    return chip(v.n,EQ.g===k,!unlocked(v.req),reqName(v.req),()=>equip('g',k),d); }));
+    const c=chip(v.n,EQ.g===k,!unlocked(v.req),reqName(v.req),()=>equip('g',k),d); if(v.top) c.classList.add('top'); return c; }));
   $('acNotes').replaceChildren(...Object.entries(NOTE_SKINS).map(([k,v])=>{ const d=document.createElement('i'); d.className='nt'; d.style.background=`linear-gradient(90deg,${v.c[0]} 0 25%,${v.c[1]} 25% 75%,${v.c[3]} 75%)`;
-    return chip(v.n,EQ.n===k,!unlocked(v.req),reqName(v.req),()=>equip('n',k),d); }));
+    const c=chip(v.n,EQ.n===k,!unlocked(v.req),reqName(v.req),()=>equip('n',k),d); if(v.top) c.classList.add('top'); return c; }));
   renderPass();
   $('acAchN').textContent=`${okN} / ${ACHS.length}`;
-  $('acAchs').replaceChildren(...list.map(x=>{ const e=document.createElement('div'); e.className='acach'+(x.ok?' ok':'');
+  $('acAchs').replaceChildren(...list.map(x=>{ const e=document.createElement('div'); e.className='acach'+(x.ok?' ok':'')+(x.a.top?' top':'');
     const g=Object.values(GLOVE_SKINS).find(v=>v.req===x.a.id), n=Object.values(NOTE_SKINS).find(v=>v.req===x.a.id);
     const fmt=v=>v>=1e6?(v/1e6).toFixed(v>=1e7?0:1)+'백만':Math.round(v).toLocaleString();
-    e.innerHTML=`<b>${x.ok?'✓ ':''}${x.a.n}</b><small>${x.a.d} · 칭호 「${x.a.t}」${g?` · 글러브 ${g.n}`:''}${n?` · 노트 ${n.n}`:''}</small>${x.ok?'':`<div class="bar"><i style="width:${Math.round(100*x.cur/x.goal)}%"></i></div><small>${fmt(x.cur)} / ${fmt(x.goal)}</small>`}`; return e; }));
+    e.innerHTML=`<b>${x.ok?'✓ ':''}${x.a.n}${x.a.top?' <em class="topb">최상급</em>':''}</b><small>${x.a.d} · 칭호 「${x.a.t}」${g?` · 글러브 ${g.n}`:''}${n?` · 노트 ${n.n}`:''}</small>${x.ok?'':`<div class="bar"><i style="width:${Math.round(100*x.cur/x.goal)}%"></i></div><small>${fmt(x.cur)} / ${fmt(x.goal)}</small>`}`; return e; }));
 }
 /* ---------- 친구 대결 ---------- */
 NET.duels=[]; let CH_PENDING=null;
@@ -3697,7 +3725,7 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
     uiTick(); const p=NET.profs.get(uid)||{}, sc=NET.all.get(uid)||{}, rows=rankList(null), ri=rows.findIndex(r=>r.id===uid);
     const ach=achState(p.st||{},sc.best||{}).filter(x=>x.ok).length, ph=photoOf(uid), nk=nickOf(uid);
     const key=rkKey()||(ckey(SONGS[rkIdx],curLv(SONGS[rkIdx]))+'@1'), kinfo=parseKey(key), sb=sc.best&&sc.best[key], mineB=NET.mine&&NET.mine.best&&NET.mine.best[key];
-    $('pcBody').innerHTML=`<div class="pav">${ph?`<img src="${ph}" alt="">`:''}</div>${p.title&&(p.title!==DEV_TITLE||isDev(uid))?`<div class="pt${p.title===DEV_TITLE?' dev':''}">「${p.title.replace(/[<>&]/g,'')}」</div>`:''}<div class="pn"></div><div class="pi">@${idOf(uid)}</div>
+    $('pcBody').innerHTML=`<div class="pav">${ph?`<img src="${ph}" alt="">`:''}</div>${p.title&&(p.title!==DEV_TITLE||isDev(uid))?`<div class="pt${p.title===DEV_TITLE?' dev':''}${TOP_TITLES.includes(p.title)?' top':''}">「${p.title.replace(/[<>&]/g,'')}」</div>`:''}<div class="pn"></div><div class="pi">@${idOf(uid)}</div>
       <dl class="acinfo" style="margin-top:12px"><dt>종합 점수</dt><dd>${Math.round(num(sc.total,1e9)).toLocaleString()}</dd><dt>종합 순위</dt><dd>${ri>=0?ri+1+'위':'—'}</dd><dt>업적</dt><dd>${ach} / ${ACHS.length}</dd><dt>${SONGS[rkIdx].title} ${tier(kinfo.lv)[0]}</dt><dd>${sb?num(sb.s,MAXS).toLocaleString():'기록 없음'}</dd></dl>`;
     $('pcBody').querySelector('.pn').textContent=nk; if(!ph) $('pcBody').querySelector('.pav').textContent=nk.slice(0,1).toUpperCase();
     const me=uid===NET.uid; $('pcDuel').classList.toggle('hidden',me||!ACC); $('pcFr').classList.toggle('hidden',me||!ACC);
