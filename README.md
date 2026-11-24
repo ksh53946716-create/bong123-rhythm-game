@@ -10,6 +10,7 @@
 ## 출처
 - 메뉴 아이콘(laurel-crown, crossed-swords, laurels-trophy): [game-icons.net](https://game-icons.net) 제작자들, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 - 악보 원본(선율): [Mutopia Project](https://www.mutopiaproject.org), 공개 ABC 악보 모음 ([SBurrell23/Sheets](https://github.com/SBurrell23/Sheets) 등) – 모두 퍼블릭 도메인 작품의 선율만 가져와 직접 편곡했어요
+- 「화성」(홀스트) · 「라 캄파넬라」(리스트): [Sao Mai Center for the Blind 악보 도서관](https://saomaicenter.org/en/music-library)의 MusicXML 총보를 그대로 연주해 만들었어요 (퍼블릭 도메인 작품)
 - 음악 (원곡 음원, 게임용으로 음량을 맞추고 「Local Forecast – Elevator」 · 「Pixel Peeker Polka」는 앞부분 2분 10초만 잘라 썼어요):
   - "Monkeys Spinning Monkeys" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 – https://creativecommons.org/licenses/by/4.0/
   - "Sneaky Snitch" Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0 – https://creativecommons.org/licenses/by/4.0/
