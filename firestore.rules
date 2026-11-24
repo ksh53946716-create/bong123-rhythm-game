@@ -30,7 +30,8 @@ service cloud.firestore {
       allow read: if true;
       allow create, update: if signedIn() && request.auth.uid == uid
         && exists(/databases/$(database)/documents/accounts/$(uid))
-        && request.resource.data.keys().hasOnly(['nick', 'best', 'total', 'v', 'ss', 'dc', 'wc'])
+        && request.resource.data.keys().hasOnly(['nick', 'best', 'total', 'v', 'ss', 'dc', 'wc', 'md', 'sv'])
+        && request.resource.data.get('md', {}) is map && request.resource.data.get('md', {}).size() <= 10
         && request.resource.data.get('ss', {}) is map && request.resource.data.get('ss', {}).size() <= 4
         && request.resource.data.nick == get(/databases/$(database)/documents/accounts/$(uid)).data.gameId
         && request.resource.data.best is map && request.resource.data.best.size() <= 400
@@ -42,13 +43,14 @@ service cloud.firestore {
       allow read: if true;
       allow create, update: if signedIn() && request.auth.uid == uid
         && exists(/databases/$(database)/documents/accounts/$(uid))
-        && request.resource.data.keys().hasOnly(['nick', 'photo', 'at', 'title', 'eq', 'st', 'fr'])
+        && request.resource.data.keys().hasOnly(['nick', 'photo', 'at', 'title', 'eq', 'st', 'fr', 'rw'])
+        && request.resource.data.get('rw', []) is list && request.resource.data.get('rw', []).size() <= 40
         && request.resource.data.get('fr', []) is list && request.resource.data.get('fr', []).size() <= 100
         && request.resource.data.get('title', '') is string && request.resource.data.get('title', '').size() <= 16
         && (request.resource.data.get('title', '') != '개발자' || isDev())
         && (!(request.resource.data.nick in ['개발자', '운영자', '관리자']) || isDev())
         && request.resource.data.get('eq', {}) is map && request.resource.data.get('eq', {}).keys().hasOnly(['g', 'n'])
-        && request.resource.data.get('st', {}) is map && request.resource.data.get('st', {}).size() <= 16
+        && request.resource.data.get('st', {}) is map && request.resource.data.get('st', {}).size() <= 32
         && request.resource.data.nick is string && request.resource.data.nick.size() >= 2 && request.resource.data.nick.size() <= 12
         && request.resource.data.nick.matches('^[-A-Za-z0-9가-힣_. ]+$')
         && request.resource.data.photo is string && request.resource.data.photo.size() <= 150000
