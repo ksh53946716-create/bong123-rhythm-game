@@ -48,6 +48,7 @@ service cloud.firestore {
         && request.resource.data.get('fr', []) is list && request.resource.data.get('fr', []).size() <= 100
         && request.resource.data.get('title', '') is string && request.resource.data.get('title', '').size() <= 16
         && (request.resource.data.get('title', '') != '개발자' || isDev())
+        && (request.resource.data.get('title', '') != '최초의 사신' || get(/databases/$(database)/documents/firsts/death).data.uid == request.auth.uid)
         && (!(request.resource.data.nick in ['개발자', '운영자', '관리자']) || isDev())
         && request.resource.data.get('eq', {}) is map && request.resource.data.get('eq', {}).keys().hasOnly(['g', 'n'])
         && request.resource.data.get('st', {}) is map && request.resource.data.get('st', {}).size() <= 32
@@ -105,6 +106,17 @@ service cloud.firestore {
             && request.resource.data.guest == request.auth.uid && request.resource.data.state == 'ready'
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['guest', 'state'])));
       allow delete: if signedIn() && (resource.data.host == request.auth.uid || resource.data.guest == request.auth.uid);
+    }
+    // 서버 최초 기록 (UNIQUE 칭호): 처음 만든 단 한 명만 · 본인 랭킹 기록에 DEATH 클리어가 있어야 함 · 바꾸거나 지울 수 없음
+    match /firsts/{kind} {
+      allow read: if true;
+      allow create: if signedIn() && kind == 'death' && !isDev()
+        && request.resource.data.keys().hasOnly(['uid', 'nick', 'key', 'at'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.at == request.time
+        && request.resource.data.nick is string && request.resource.data.nick.size() <= 16
+        && request.resource.data.key is string && request.resource.data.key.matches('^[a-z0-9]+#11@1$')
+        && get(/databases/$(database)/documents/scores/$(request.auth.uid)).data.best[request.resource.data.key].l >= 3;
+      allow update, delete: if false;
     }
     match /{document=**} { allow read, write: if false; }
   }
