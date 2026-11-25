@@ -48,7 +48,8 @@ service cloud.firestore {
         && request.resource.data.get('fr', []) is list && request.resource.data.get('fr', []).size() <= 100
         && request.resource.data.get('title', '') is string && request.resource.data.get('title', '').size() <= 16
         && (request.resource.data.get('title', '') != '개발자' || isDev())
-        && (request.resource.data.get('title', '') != '최초의 사신' || get(/databases/$(database)/documents/firsts/death).data.uid == request.auth.uid)
+        && (request.resource.data.get('title', '') != '최초의 사신' || isDev() || get(/databases/$(database)/documents/firsts/death).data.uid == request.auth.uid)
+        && ((request.resource.data.get('eq', {}).get('g', '') != 'first' && request.resource.data.get('eq', {}).get('n', '') != 'first') || isDev() || get(/databases/$(database)/documents/firsts/death).data.uid == request.auth.uid)
         && (!(request.resource.data.nick in ['개발자', '운영자', '관리자']) || isDev())
         && request.resource.data.get('eq', {}) is map && request.resource.data.get('eq', {}).keys().hasOnly(['g', 'n'])
         && request.resource.data.get('st', {}) is map && request.resource.data.get('st', {}).size() <= 32
