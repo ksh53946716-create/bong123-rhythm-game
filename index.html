@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko">
-<head>
+<head><meta http-equiv="Content-Security-Policy" content="default-src * data: blob: 'unsafe-inline'; script-src 'self' 'sha256-5mTV9IDNW3zd4M7jOcKfkTDkzQdvRBHCzZuHSzW+S8k=' https://apis.google.com https://www.gstatic.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Bong's Game</title>
@@ -1083,7 +1083,7 @@ html.thb .panel .item.song:not(.sel) :is(small,.info){color:var(--c-sub)!importa
 html.thb .panel .item.song:not(.sel) .dchip{background:var(--c-ink)!important;color:var(--c-paper)!important}
 html.thb .panel .item.song:not(.sel) .dchip.on{background:var(--c-red)!important;color:#fff!important}
 html.thb .panel .item.song:hover{background:#fff!important}
-html.thb .panel .item.song.sel{background:var(--c-red)!important;box-shadow:6px 6px 0 #000,6px 6px 0 2px var(--c-paper)!important;transform:rotate(-1.2deg) scale(1.015);z-index:1;position:relative}
+html.thb .panel .item.song.sel{background:var(--c-red)!important;box-shadow:6px 6px 0 #000,6px 6px 0 2px var(--c-paper)!important;transform:rotate(-.8deg);z-index:1;position:relative}
 /* 창 제목표: 검은 그림자 */
 html.thb .panel h2{filter:drop-shadow(5px 5px 0 #000)}
 @media (prefers-reduced-motion:reduce){ html.thb .ov-panel .panel .seg button{transition:none} }
@@ -1114,6 +1114,9 @@ html.thb .ov-panel .panel .list .item.sel,html.thb .ov-panel .panel .list .item:
 html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:not([type=checkbox]){background:var(--c-paper)!important;color:var(--c-ink)!important;border:0!important;box-shadow:4px 4px 0 var(--c-red),4px 4px 0 1.5px #000!important;font-family:var(--b-body)!important}
 html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input::placeholder{color:#77706a!important;font-family:var(--b-body)!important}
 html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:focus{outline:3px solid var(--c-red)!important;outline-offset:2px}
+/* 기울어진 카드 때문에 생기던 좌우 스크롤 제거 (곡 선택 · 모든 창) */
+html.thb .ov-panel .panel,html.thb .ov-panel .panel .list,#songList{overflow-x:hidden!important}
+html.thb #songList{padding:4px 12px 4px 8px!important}
 /*C_COLLAGE_END*/
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0b0b0b"><link rel="icon" href="icons/app-192.png?v=e80aa73b44"><link rel="apple-touch-icon" href="icons/app-192.png?v=e80aa73b44"><meta name="apple-mobile-web-app-capable" content="yes"></head>
@@ -1132,14 +1135,14 @@ html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:focus{outline:3px so
 
 <div id="localfile" class="ov ov-panel hidden">
   <div class="panel acpanel"><h2>음악 파일 고르기</h2>
-    <p class="lfp">「<b id="lfTitle"></b>」은 저작권 때문에 사이트에 음원을 올리지 않았어요. 내 폰·컴퓨터에 있는 이 곡의 음악 파일을 골라주세요.<br><small>파일은 이 기기 안에만 저장되고 서버로 보내지 않아요. 한 번 고르면 다음부터는 바로 시작해요.</small></p>
+    <p class="lfp">「<b id="lfTitle"></b>」은 저작권 때문에 사이트에 음원을 올리지 않았어요. 내 폰·컴퓨터에 있는 이 곡의 음악 파일을 골라 주세요.<br><small>파일은 이 기기 안에만 저장되고 서버로 보내지 않아요. 한 번 고르면 다음부터는 바로 시작해요.</small></p>
     <label class="lfpick"><input type="file" id="lfInput" accept="audio/*,.mp3,.m4a,.wav,.ogg"><span>파일 고르기</span></label>
     <div class="acmsg" id="lfMsg"></div><button type="button" class="tchip hidden" id="lfForce">그래도 이 파일로</button>
     <nav class="list"><button class="item" id="lfBack"><span>돌아가기</span></button></nav></div>
 </div>
 <div id="modes" class="ov ov-panel hidden">
   <div class="panel acpanel"><h2>모드</h2><div class="mdlist" id="mdList"></div>
-    <small class="mdnote">메들리 · 보스 러시 · 서바이벌은 곡이 이어지고 체력도 이어져요. 연습 게이지로 해도 일반 게이지로 진행돼요.</small>
+    <small class="mdnote">메들리 · 보스 러시 · 서바이벌은 여러 곡을 이어서 치고, 체력도 다음 곡으로 이어져요. 연습 게이지를 골라도 일반 게이지로 진행돼요.</small>
     <nav class="list"><button class="item" id="mdBack"><span>돌아가기</span></button></nav></div>
 </div>
 <div id="seqres" class="ov ov-panel hidden">
@@ -1151,7 +1154,7 @@ html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:focus{outline:3px so
     <section class="acsec" style="border-top:0;margin-top:0;padding-top:0"><h3>곡</h3><div class="acrow" style="align-items:center;justify-content:space-between"><span id="prSong"></span><button type="button" class="tchip" id="prSongBtn">곡 바꾸기</button></div></section>
     <section class="acsec"><h3>구간</h3><div class="acchips" id="prSecs"></div></section>
     <section class="acsec"><h3>속도 <small class="acnote">노래와 노트가 함께 느려져요</small></h3><div class="acchips" id="prSpeed"></div></section>
-    <section class="acsec"><small style="margin-top:0">연습실에서는 체력이 줄지 않아요. 다 치면 어느 마디에서 많이 놓쳤는지 알려주고, 그 부분만 바로 다시 연습할 수 있어요. 기록은 랭킹 · 업적에 들어가지 않아요.</small></section>
+    <section class="acsec"><small style="margin-top:0">연습실에서는 체력이 줄지 않아요. 끝나면 어느 마디에서 많이 놓쳤는지 알려 주고, 그 부분만 바로 다시 연습할 수 있어요. 기록은 랭킹 · 업적에 들어가지 않아요.</small></section>
     <nav class="list ulognav"><button class="item" id="prGo"><span>연습 시작</span></button><button class="item" id="prBack"><span>돌아가기</span></button></nav>
   </div>
 </div>
@@ -1182,7 +1185,7 @@ html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:focus{outline:3px so
     <h2 id="lgTitle">로그인</h2>
     <div class="orn"></div>
     <div class="lgtabs" id="lgTabs"><button type="button" class="tchip on" data-t="in" style="--tc:#e3c47a">로그인</button><button type="button" class="tchip" data-t="up" style="--tc:#e3c47a">회원가입</button></div>
-    <form class="lgform" id="lgForm" autocomplete="on" onsubmit="return false">
+    <form class="lgform" id="lgForm" autocomplete="on">
       <label><span>아이디</span><input id="lgId" name="username" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="영문·숫자·한글 2~16자"></label>
       <label><span>비밀번호</span><input id="lgPw" name="password" type="password" maxlength="64" autocomplete="current-password" placeholder="4자 이상"></label>
       <label class="hidden" id="lgPw2Row"><span>비밀번호 확인</span><input id="lgPw2" type="password" maxlength="64" autocomplete="new-password"></label>
@@ -1231,13 +1234,13 @@ html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:focus{outline:3px so
     <h2>조작법</h2>
     <div class="orn"></div>
     <ol class="tut">
-      <li><b>노트가 금빛 판정선에 닿을 때</b> 그 칸을 치세요. 키보드 <span class="kb kk0">D</span><span class="kb kk1">F</span><span class="kb kk2">J</span><span class="kb kk3">K</span> · 모바일은 아래 패드.</li>
+      <li><b>노트가 판정선에 닿을 때</b> 그 칸을 치세요. 키보드 <span class="kb kk0">D</span><span class="kb kk1">F</span><span class="kb kk2">J</span><span class="kb kk3">K</span> · 모바일은 아래 패드.</li>
       <li><b>바깥 칸 = 얼굴</b>, <b>안쪽 칸 = 몸통</b> 펀치. 금테 노트 두 개는 <b>동시에</b>.</li>
       <li><b>꼬리 달린 노트</b>는 누른 채 힘을 모으다가, 꼬리가 판정선에 닿을 때 <b>떼면 차징 펀치</b>.</li>
       <li><b>턴제 격투</b>: 곡이 <b style="color:#e3c47a">공격 차례(ATK)</b>와 <b style="color:#ff6b7a">방어 차례(DEF)</b>로 번갈아 바뀌어요. 가운데 위에 지금 차례가 표시돼요.</li>
       <li><b style="color:#ff6b7a">✕ 빨간 노트</b> = 상대의 반격 주먹. 맞춰 치면 <b>PERFECT 회피 + 반격</b>, 그 외엔 <b>가드</b>. 놓치면 <b>피격 → 체력 크게 감소</b>. 긴 빨간 노트는 끝까지 버티다 떼면 <b>카운터</b>.</li>
-      <li>왼쪽 위 <b>내 체력(YOU)</b>이 <b>0이 되면 곡 중간이라도 T.K.O. 패배</b>. 오른쪽 위는 상대 체력. (설정 → 체력 게이지 · 연습은 안 죽음)</li>
-      <li>판정선 아래 <b>오차 막대</b>: 왼쪽에 쌓이면 빠른 것, 오른쪽이면 늦은 것.</li>
+      <li>왼쪽 위 <b>내 체력(YOU)</b>이 <b>0이 되면 곡 중간이라도 T.K.O. 패배</b>. 오른쪽 위는 상대 체력이에요. (설정 → 체력 게이지에서 「연습」을 고르면 쓰러지지 않아요)</li>
+      <li>판정선 아래 <b>오차 막대</b>: 왼쪽에 쌓이면 빨리 친 것, 오른쪽에 쌓이면 늦게 친 것이에요.</li>
       <li><span class="kb">R</span> 즉시 재시작 · <span class="kb">ESC</span> 일시정지 · 박자가 안 맞으면 <b>펀치 보정</b>.</li>
     </ol>
     <nav class="list"><button class="item" id="tutGo"><span>알겠어요, 시작!</span></button></nav>
@@ -1248,19 +1251,19 @@ html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:focus{outline:3px so
   <div class="panel">
     <h2>설정</h2>
     <div class="orn"></div>
-    <div class="bonusnote"><b>점수 보너스</b><p><b>배속</b> · <b>체력 게이지</b> · <b>판정 범위</b>를 어렵게 할수록 점수가 더 나와요 (최대 +17%). 쉽게 하면 그만큼 깎여요. 세 배율은 곱해지고, 랭킹에도 이 점수로 올라가요. 단, <b>연습 게이지</b>는 안 죽는 모드라 랭킹 · 업적에 기록되지 않아요.</p><div class="bonusnow" id="mulTotal"></div></div>
+    <div class="bonusnote"><b>점수 보너스</b><p><b>배속</b> · <b>체력 게이지</b> · <b>판정 범위</b>를 어렵게 설정할수록 점수를 더 받아요 (최대 +17%). 쉽게 하면 그만큼 줄어요. 세 가지 배율은 곱해서 적용되고, 랭킹에도 이 점수로 올라가요. 단, <b>연습 게이지</b>는 쓰러지지 않는 모드라서 랭킹 · 업적에 기록되지 않아요.</p><div class="bonusnow" id="mulTotal"></div></div>
     <div class="prow"><span>배속 <small class="hint" id="spHint">노트 낙하 속도</small></span><div class="seg" id="speedSeg"><button data-s="0.75">0.75</button><button data-s="1">1.0</button><button data-s="1.25">1.25</button><button data-s="1.5">1.5</button><button data-s="2">2.0</button></div></div>
     <div class="prow"><span>타격 멈춤 <small class="hint">펀치가 들어갈 때 화면이 아주 잠깐 멈춤</small></span><div class="seg" id="hsSeg"><button data-v="1">켜기</button><button data-v="0">끄기</button></div></div>
-    <div class="prow"><span>진동 <small class="hint">안드로이드 폰 · 맞히거나 맞을 때</small></span><div class="seg" id="vbSeg"><button data-v="1">켜기</button><button data-v="0">끄기</button></div></div>
+    <div class="prow"><span>진동 <small class="hint">안드로이드 폰 · 때리거나 맞을 때</small></span><div class="seg" id="vbSeg"><button data-v="1">켜기</button><button data-v="0">끄기</button></div></div>
     <div class="prow"><span>번쩍임 효과 <small class="hint">DEATH 연출 · 광과민 주의</small></span><div class="seg" id="flashSeg"><button data-f="on">켜기</button><button data-f="safe">약하게</button></div></div>
     <div class="prow"><span>체력 게이지 <small class="hint" id="gHint"></small></span><div class="seg" id="gaugeSeg"><button data-g="easy">연습</button><button data-g="normal">일반</button><button data-g="hard">하드</button></div></div>
     <div class="prow"><span>판정 범위 <small class="hint" id="jHint"></small></span><div class="seg" id="judgeSeg"><button data-j="loose">널널하게</button><button data-j="normal">중간</button><button data-j="strict">강하게</button></div></div>
     <div class="prow"><span>음악 볼륨</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="mvol" min="0" max="100" step="5"><output id="mvolVal">80</output></span></div>
     <div class="prow"><span>효과음 볼륨</span><span style="display:flex;align-items:center;gap:10px"><input type="range" id="svol" min="0" max="100" step="5"><output id="svolVal">80</output></span></div>
-    <div class="prow"><span>키 설정 <small class="hint">누른 뒤 원하는 키 입력 · 바깥=얼굴 안쪽=몸통</small></span><div class="seg" id="keySeg"><button data-k="0">D</button><button data-k="1">F</button><button data-k="2">J</button><button data-k="3">K</button><button data-k="-1">기본</button></div></div>
+    <div class="prow"><span>키 설정 <small class="hint">칸을 누르고 원하는 키 입력 · 바깥 칸=얼굴, 안쪽 칸=몸통</small></span><div class="seg" id="keySeg"><button data-k="0">D</button><button data-k="1">F</button><button data-k="2">J</button><button data-k="3">K</button><button data-k="-1">기본</button></div></div>
     <div class="keymsg" id="keyMsg"></div>
     <div class="prow" id="fsRow"><span>전체화면</span><div class="seg"><button id="fsBtn" aria-pressed="false">전환</button></div></div>
-    <div class="howto">네 칸으로 떨어지는 노트가 아래 <b>금빛 판정선</b>에 닿을 때 해당 키(<b class="kkall">D F J K</b>)를 누르세요.<br>꼬리가 달린 노트는 <b>꾹 눌러 힘을 모으고</b>, 꼬리가 고리에 닿을 때 손을 떼면 <b>차징 펀치</b>.<br><b style="color:#ff6b7a">빨간 노트</b>는 상대의 공격 — 놓치면 맞아서 체력이 크게 줄어요.<br>박자가 어긋나면 아래 <b>펀치 보정</b>으로 맞추세요.</div>
+    <div class="howto">네 칸으로 떨어지는 노트가 아래 <b>판정선</b>에 닿을 때 해당 키(<b class="kkall">D F J K</b>)를 누르세요.<br>꼬리가 달린 노트는 <b>꾹 눌러 힘을 모으고</b>, 꼬리가 고리에 닿을 때 손을 떼면 <b>차징 펀치</b>.<br><b style="color:#ff6b7a">빨간 노트</b>는 상대의 공격 — 놓치면 맞아서 체력이 크게 줄어요.<br>박자가 어긋나면 아래 <b>펀치 보정</b>으로 맞추세요.</div>
     <div class="credit">메뉴 아이콘: <a href="https://game-icons.net" target="_blank" rel="noopener">game-icons.net</a> 제작자들 · CC BY 3.0</div>
     <nav class="list" id="setList"><button class="item" id="calBtn"><span>펀치 보정</span></button><button class="item" id="tutBtn"><span>조작법 보기</span></button><button class="item" id="setBack"><span>돌아가기</span></button></nav>
   </div>
@@ -1284,7 +1287,7 @@ html.thb .ov-panel .panel :is(.lgform,.acrow,.arjoin) input:focus{outline:3px so
   <div class="panel" style="width:min(460px,92vw)">
     <h2>펀치 보정</h2>
     <div class="orn"></div>
-    <div id="calMsg">신호음 네 번 뒤에 울리는 <b>북소리</b>에 맞춰<br>아무 펀치 키(<span class="kb kk0">D</span><span class="kb kk1">F</span><span class="kb kk2">J</span><span class="kb kk3">K</span>)를 누르세요 (모바일은 원을 터치)</div>
+    <div id="calMsg">신호음 네 번 뒤에 울리는 <b>북소리</b>에 맞춰<br>아무 펀치 키(<span class="kb kk0">D</span><span class="kb kk1">F</span><span class="kb kk2">J</span><span class="kb kk3">K</span>)를 누르세요 (모바일은 가운데 원을 누르세요)</div>
     <div id="calPad"><div id="calDot"></div><span id="calCount"></span></div>
     <nav class="list" id="calList">
       <div class="hidden" id="calDone" style="display:contents">
@@ -1470,7 +1473,7 @@ function attCheck(){
   if(!ACC) return; if(!ST) loadProg(); const today=dayNum(), yest=dayNum(Date.now()-864e5); if(ST.lastAtt===today) return;
   ST.streak=ST.lastAtt===yest?ST.streak+1:1; ST.att++; ST.bestStreak=Math.max(ST.bestStreak,ST.streak); ST.lastAtt=today; saveProg(); achCheck(false);
   const el=document.createElement('div'); el.className='attcard'; const wk=((ST.streak-1)%7)+1;
-  el.innerHTML=`<b>출석 ${ST.att}일째</b><span>연속 ${ST.streak}일</span><div class="stamps">${Array.from({length:7},(_,i)=>`<i class="${i<wk?'on':''}">${i+1}</i>`).join('')}</div><small>${ST.bestStreak>=7?'':'7일 연속이면 칭호 「개근상」 · '}출석 30일이면 노트 「불씨」</small>`;
+  el.innerHTML=`<b>출석 ${ST.att}일째</b><span>연속 ${ST.streak}일</span><div class="stamps">${Array.from({length:7},(_,i)=>`<i class="${i<wk?'on':''}">${i+1}</i>`).join('')}</div><small>${ST.bestStreak>=7?'':'7일 연속이면 칭호 「개근상」 · '}30일 출석하면 노트 「불씨」</small>`;
   el.onclick=()=>el.remove(); document.body.appendChild(el); setTimeout(()=>el.classList.add('out'),5200); setTimeout(()=>el.remove(),5800); buzz(15);
 }
 /* ---------- 시즌 보상 단계 (무료) ---------- */
@@ -1531,7 +1534,7 @@ function openModes(){
   $('mdList').replaceChildren(
     card('연습실','구간을 골라 느리게 · 체력 무한','기록 없음 · 약한 부분 분석',()=>openPractice(),'prac'),
     ...COURSES.map(c=>{ const ls=courseList(c), r=md[c.id]; return card(c.name,c.sub||ls.map(z=>{ const x=SONGS.find(q=>q.id===z.id); return x?x.title:''; }).join(' → '),r?`내 최고 ${num(r.s,1e8).toLocaleString()}${r.c?' · 완주':''}`:(c.fixed?'4곡 연속 · 체력이 이어져요':'이번 달 코스 · 체력이 이어져요'),()=>seqStart('med',c.id),c.id==='boss'?'boss':c.fixed?'fixed':''); }),
-    card('서바이벌',`이번 주 순서 · 라운드마다 점점 어려워짐`,sv?`이번 주 최고 ${sv.r}라운드 · ${num(sv.s,1e9).toLocaleString()}`:'죽을 때까지 버티기',()=>seqStart('sv'),'sv'));
+    card('서바이벌',`이번 주 순서 · 라운드마다 점점 어려워짐`,sv?`이번 주 최고 ${sv.r}라운드 · ${num(sv.s,1e9).toLocaleString()}`:'쓰러질 때까지 버티기',()=>seqStart('sv'),'sv'));
   show('modes'); clickGuard=performance.now()+300;
 }
 
@@ -1548,7 +1551,7 @@ function askLocalFile(x){
   const use=async(blob)=>{ LMEM[x.id]=blob; await LDB.set(x.id,blob); for(const k of Object.keys(bufCache)) if(k.startsWith(x.id)) delete bufCache[k]; delete x._m; $('lfMsg').classList.add('ok'); $('lfMsg').textContent='저장했어요 · 곡을 시작해요'; setTimeout(()=>{ songIdx=SONGS.indexOf(x); startRun(); },500); };
   inp.onchange=async()=>{ const f=inp.files[0]; if(!f) return; $('lfMsg').textContent='파일 확인 중…';
     initAudio();
-    let d=0; try{ const ab=await f.arrayBuffer(); const buf=await new Promise((ok,no)=>actx.decodeAudioData(ab,ok,no)); d=buf.duration; }catch(e){ $('lfMsg').textContent='이 파일은 재생할 수 없어요 · mp3 같은 음악 파일을 골라주세요'; return; }
+    let d=0; try{ const ab=await f.arrayBuffer(); const buf=await new Promise((ok,no)=>actx.decodeAudioData(ab,ok,no)); d=buf.duration; }catch(e){ $('lfMsg').textContent='이 파일은 재생할 수 없어요 · mp3 같은 음악 파일을 골라 주세요'; return; }
     if(x.dur&&Math.abs(d-x.dur)>2.5){ $('lfMsg').textContent=`길이가 달라요 (이 파일 ${Math.round(d)}초 · 채보는 ${Math.round(x.dur)}초). 다른 버전이면 박자가 안 맞을 수 있어요.`; $('lfForce').classList.remove('hidden'); $('lfForce').onclick=()=>use(f); return; }
     use(f); };
 }
@@ -1853,65 +1856,6 @@ function riser(out,t,dur,v=0.22){
 }
 function duckAt(duck,t){ duck.gain.setValueAtTime(0.25,t); duck.gain.linearRampToValueAtTime(1,t+0.17); }
 
-function playStep(r,step,t){
-  const out=r.bus, duck=r.duck, b=Math.floor(step/16), s=step%16, S=sec(b), k=b-secStart(b), ci=b%4, ch=CHORDS[ci], root=ROOTS[ci];
-  const doKick=(v=1)=>{kick(out,t,v); duckAt(duck,t);};
-  const L_=LEAD.get(step);
-  if(S==='intro'){
-    if(s===0) saws(duck,t,ch.map(mtof),BAR,0.05,500+b*500,900+b*900);
-    if(b===1&&s%4===0) doKick(0.85);
-    if(s%4===2) ohat(out,t,0.08);
-    if(b===1&&s>=12) snare(out,t,0.3+(s-12)*0.12);
-    return;
-  }
-  if(S==='end'){ if(s===0){doKick(1.3); crash(out,t,0.3); sub(out,t); saws(out,t,CHORDS[0].concat([69]).map(mtof),2.2,0.08,3000,400); bell(out,t,0.2);} return; }
-  if(b===2&&s===0) bell(out,t,0.25);
-  if(L_&&L_.drop){ crash(out,t); sub(out,t); }
-  if(S==='verse'){
-    if(s%4===0) doKick();
-    if(s===4||s===12) clap(out,t,0.85);
-    if(s%4===2) ohat(out,t,0.12); else chat(out,t,0.05);
-    if(s%4===2) tone(duck,t,'sawtooth',mtof(root+12),S16*1.8,0.22,900);
-    if(s===0) saws(duck,t,ch.map(m=>mtof(m+12)),BAR*0.95,0.025,1400);
-    if(k===7&&s>=8) snare(out,t,0.3+(s-8)*0.08);
-    if(L_) lead(out,t,L_.midi,L_.len*S16,'pluck');
-  }
-  else if(S==='build'){
-    if(k<3&&s%4===0) doKick(0.9);
-    if(k===3&&s<8&&s%4===0) doKick(0.9);
-    if(s===0&&k===0) riser(out,t,BAR*4-0.02,0.2);
-    const R=ROLL.get(step); if(R) snare(out,t,R.vol);
-    if(s%2===0&&!(k===3&&s>=8)) tone(duck,t,'sawtooth',mtof(root+12),S16*1.5,0.15+k*0.03,600+k*600);
-    if(L_&&L_.riser) saws(out,t,[mtof(76),mtof(81)],BAR/2,0.05,1500,8000);
-  }
-  else if(S==='drop'){
-    const second=b>=30;
-    if(s%4===0) doKick(1.05);
-    if(s===4||s===12) clap(out,t,1);
-    if(s%4===2) ohat(out,t,0.14); else chat(out,t,0.07);
-    if(s%4!==0) tone(duck,t,'sawtooth',mtof(root+((s===6||s===14)?24:12)),S16*0.9,0.24,1100);   // 롤링 베이스
-    if(s===0) tone(duck,t,'sine',mtof(root),BAR*0.9,0.3);
-    if(s%4===2) saws(duck,t,ch.map(m=>mtof(m+12)),S16*1.6,0.06,3800,1200);                    // 오프비트 스탭
-    if(second&&s%2===1) tone(out,t,'square',mtof(ch[(s>>1)%3]+24),0.07,0.03,5000);              // 2절 아르페지오
-    if(k===7&&s>=12) snare(out,t,0.5+(s-12)*0.12);
-    if(L_){ lead(out,t,L_.midi,L_.len*S16,'saw'); if(second) lead(out,t,L_.midi+12,L_.len*S16*0.9,'bell'); }
-  }
-  else if(S==='break'){
-    if(s===0) saws(duck,t,ch.map(m=>mtof(m+12)),BAR,0.05,1800,700);
-    if(s===0) tone(out,t,'sine',mtof(root+12),BAR,0.25);
-    if(s===8) kick(out,t,0.7);
-    if(s===4||s===12) clap(out,t,0.4);
-    if(s%2===0) chat(out,t,0.06);
-    if(L_) lead(out,t,L_.midi,L_.len*S16,'bell');
-  }
-  else if(S==='fin'){
-    if(s===0){ doKick(1.3); clap(out,t); saws(duck,t,CHORDS[0].concat([69,72]).map(m=>mtof(m+12)),BAR,0.07,5000,900); lead(out,t,81,S16*4,'saw'); }
-    if(s===4) riser(out,t,S16*12,0.24);
-    if(L_&&s===4) lead(out,t,L_.midi,L_.len*S16,'saw');
-    if(s>=8&&s%2===0) snare(out,t,0.4+(s-8)*0.08);
-  }
-}
-
 // 스킨 타격음: 타일 재질에 맞춘 합성음 (Web Audio, 샘플 파일 없음)
 const SKIN_SFX=(()=>{
   let NB=null;
@@ -2034,16 +1978,6 @@ function playClock(){
 }
 function songNow(){ return playClock()-run.songStart-offsetMs/1000; }
 
-function scheduleMusic(){
-  const r=run; if(!r||r.paused) return;
-  const ahead=actx.currentTime+0.2;
-  while(r.nextStep<END_BAR*16){
-    const st=r.songStart+r.nextStep*S16;
-    if(st>ahead) break;
-    playStep(r,r.nextStep,st); r.nextStep++;
-  }
-}
-
 function startRun(){
   initAudio(); actx.resume();
   const base=SONGS[songIdx], song=chartOf(base,SEQ&&SEQ.cur?SEQ.cur.lv:curLv(base));
@@ -2093,7 +2027,7 @@ function stopRun(){
   run=null; bgC=null; $('pauseBtn').classList.add('hidden');
 }
 /* ---------- 버전 · 업데이트 로그 (버전 규칙: 대규모 업데이트.신규 기능.버그 수정) ---------- */
-const CHANGELOG=[{"v": "3.01.00", "d": "2026-11-27", "items": ["[변경] 모든 창의 디자인이 흰 종이 카드가 비스듬히 겹치는 콜라주 스타일로 변경되었습니다. 카드에는 빨간 그림자가 생기고, 고른 버튼은 빨갛게 튀어나옵니다.", "[변경] 곡 선택 목록이 흰 카드로 바뀌었고, 고른 곡은 빨간 카드로 강조됩니다.", "[변경] 랭킹 줄이 흑백 교차 띠로 바뀌었고, 내 순위는 빨간 띠로 표시됩니다.", "[변경] 결과 화면의 판정표가 흰 테두리의 검은 카드로, 업적 알림이 흰 종이 카드로 변경되었습니다.", "[변경] 플레이 중 상단 체력바가 비스듬한 칼날 모양으로, 남은 시간 표시가 기울어진 흰 카드로 변경되었습니다.", "[변경] 로그인 입력칸과 일시정지 버튼의 디자인이 새 스타일에 맞게 변경되었습니다.", "[개선] 휴대폰에서 난이도 · 필터 · 닫기 버튼의 누르는 영역이 넓어졌습니다.", "[개선] 결과 화면 배경이 더 어두워져 뒤에서 노트가 지나가도 글씨가 또렷하게 보입니다.", "[개선] 오래 켜 두어도 메모리가 쌓이지 않도록 최근에 들은 4곡의 음원만 기억합니다.", "[개선] 앱을 내리거나 화면을 끄면 곡 미리듣기와 메뉴 소리가 멈춥니다.", "[수정] T.K.O. 직후 바로 다시 시작하면 새 판 도중에 이전 판의 결과 화면이 뜨던 버그를 수정했습니다.", "[수정] 점수는 높지만 풀콤보 · 등급이 낮은 기록이 저장되면 기존 풀콤보 · S 업적과 스킨이 다시 잠기던 버그를 수정했습니다.", "[수정] 로그아웃 후 다시 로그인하면 친구 접속 표시와 대전 신청이 멈추던 버그를 수정했습니다.", "[수정] 실시간 대결 도중 나가면 상대가 끝없이 기다리던 버그를 수정했습니다. 이제 나간 쪽은 기권 처리됩니다.", "[수정] 방 만들기를 빠르게 두 번 누르면 방이 두 개 생기던 버그를 수정했습니다.", "[수정] 플레이 · 일시정지 · 결과 화면 도중 자동 업데이트로 새로고침되던 문제를 수정했습니다.", "[수정] 잘못된 대전 방 정보를 받으면 대결 화면이 멈추던 문제와 보안 문제를 수정했습니다.", "[수정] 화면 그리기 중 오류가 나도 게임이 멈추지 않고 계속 진행되도록 수정했습니다."]}, {"v": "3.00.14", "d": "2026-11-26", "items": ["[변경] 흑건 · 백건 DEATH 난이도가 상향되었습니다.", "[변경] 흑건 · 백건 DEATH의 노트 수가 약 7% 늘었습니다. 0.1초보다 빠른 16분 연타가 네 박 중 세 박에서 유지됩니다.", "[변경] 흑건 · 백건 DEATH의 동시치기가 약 30% 늘었습니다.", "[변경] 흑건 · 백건 DEATH에서 받는 피해가 일반 게이지의 1.15배에서 1.25배로, 회복량이 0.9배에서 0.85배로 변경되었습니다.", "[변경] 다른 DEATH 곡의 난이도는 변경되지 않았으며, 기존 기록과 업적 · 보상은 그대로 유지됩니다."]}, {"v": "3.00.13", "d": "2026-11-26", "items": ["[추가] DEATH 변속에 급정거 → 급가속 연출이 다시 추가되었습니다. 노트가 순간적으로 0.55배로 느려졌다가 한 박 뒤 1.8배로 빨라집니다.", "[변경] 급정거 · 급가속 빈도가 3.00.09 이전보다 약 55% 줄었습니다. 곡당 1~3번 나오고, 한 번 나온 뒤 64박 안에는 다시 나오지 않습니다.", "[변경] 모든 DEATH 곡에서 급정거 · 급가속이 최소 한 번은 나옵니다."]}, {"v": "3.00.12", "d": "2026-11-26", "items": ["[변경] DEATH 난이도가 상향되었습니다. 3.00.09 하향 이전과 이후의 중간 수준으로 조정되었습니다.", "[변경] DEATH 노트 수가 약 10% 늘었습니다. 0.1초보다 빠른 16분 연타가 세 박 중 두 박에서 유지됩니다.", "[변경] DEATH 동시치기가 약 70% 늘었습니다. 드롭 구간 엇박 동시치기가 더 자주 나오고, 16분 당김음 멜로디 동시치기가 다시 추가되었습니다.", "[변경] DEATH 변속 폭이 0.75~1.3배에서 0.7~1.45배로 넓어졌습니다.", "[변경] DEATH 노트 낙하 시간이 0.78초에서 0.75초로 짧아졌습니다.", "[변경] DEATH에서 받는 피해가 일반 게이지의 0.8배에서 1.15배로, 회복량이 1.15배에서 0.9배로 변경되었습니다.", "[변경] 기존 DEATH 기록과 업적 · 보상은 그대로 유지됩니다."]}, {"v": "3.00.11", "d": "2026-11-26", "items": ["[변경] DEATH 노트 디자인이 변경되었습니다. 양끝을 깎은 육각형 흰 카드 뒤로 붉은 판이 어긋나게 겹치고, 이중 검은 사선 · 망점 무늬 · 붉은 삼각 포인트가 들어갑니다.", "[변경] DEATH 노트에 검은 외곽선, 위쪽 광택, 바닥 그림자가 추가되어 입체감이 생겼습니다.", "[변경] DEATH 동시치기 노트는 뒤쪽 붉은 판이 더 크게 어긋나 일반 노트와 구분됩니다.", "[변경] DEATH 방어 노트는 검은 카드 뒤로 흰 판이 겹치고, 붉은 망점과 빛나는 붉은 X가 들어간 디자인으로 변경되었습니다.", "[변경] DEATH 롱노트가 어두운 유리 몸통, 양옆 상아색 레일, 가운데 붉은 실선 디자인으로 변경되었고, 누르고 있는 동안 몸통이 밝아집니다.", "[개선] DEATH 노트를 미리 고해상도로 그려 두고 재사용해 화면이 더 선명하고 부드럽게 그려집니다."]}, {"v": "3.00.10", "d": "2026-11-26", "items": ["[변경] DEATH 노트가 검은색에서 흰 몸통 + 검은 사선 띠 디자인으로 변경되었습니다. 어두운 배경과 캐릭터 위에서도 노트가 잘 보입니다.", "[변경] DEATH 방어 노트는 검은 몸통에 붉은 X 표시로 변경되어 일반 노트와 한눈에 구분됩니다.", "[변경] DEATH 동시치기 노트에 붉은 테두리와 흰 외곽선이 추가되었습니다.", "[변경] DEATH 롱노트 몸통과 꼬리가 밝은 색으로 변경되었습니다.", "[개선] DEATH 플레이 중 레인 뒤 배경이 어둡게 깔려 노트가 배경에 묻히지 않습니다.", "[수정] DEATH에서 검은 노트가 어두운 배경과 겹쳐 잘 보이지 않던 문제를 수정했습니다."]}, {"v": "3.00.09", "d": "2026-11-26", "items": ["[변경] DEATH 난이도가 크게 하향되었습니다.", "[변경] DEATH 노트 수가 평균 약 20% 줄었습니다. 0.1초보다 빠른 16분 연타는 두 박 중 한 박만 남고, 드롭 외 구간의 16분 엇박 노트가 삭제되었습니다.", "[변경] DEATH 동시치기가 약 60% 줄었습니다. 엇박 동시치기는 드롭 구간에서만 나옵니다.", "[변경] DEATH 변속 폭이 0.65~1.6배에서 0.75~1.3배로 줄었고, 변속 간격이 길어졌으며, 급정거 · 급가속이 삭제되었습니다.", "[변경] DEATH 노트 낙하 시간이 0.72초에서 0.78초로 늘어 노트를 보는 시간이 길어졌습니다.", "[변경] DEATH에서 받는 피해가 일반 게이지의 1.5배에서 0.8배로, 회복량이 0.65배에서 1.15배로 조정되었습니다.", "[변경] 기존 DEATH 기록과 업적 · 보상은 그대로 유지됩니다."]}, {"v": "3.00.08", "d": "2026-11-25", "items": ["[변경] 로비 화면에서 이전에 플레이한 곡의 미리듣기가 더 이상 재생되지 않습니다. 곡 미리듣기는 곡 선택 화면에서만 재생됩니다.", "[변경] 곡 선택 화면에서 로비로 돌아가면 미리듣기가 자연스럽게 꺼지도록 변경되었습니다."]}, {"v": "3.00.07", "d": "2026-11-25", "items": ["[변경] 스킨 전용 타격음의 크기가 커졌습니다. 스킨마다 크기를 측정해 모든 스킨이 기본 타격음과 같은 크기로 들리도록 조정되었습니다. (약 1.4~8배)", "[변경] 도감의 「♪ 타격음」 미리듣기도 같은 크기로 재생됩니다."]}, {"v": "3.00.06", "d": "2026-11-25", "items": ["[수정] 전용 타격음이 있는 노트 스킨(EPIC 이상)에서 공통 타격음이 함께 재생되어 스킨별 소리가 묻히던 문제를 수정했습니다. 이제 해당 스킨의 타격음만 재생됩니다.", "[변경] 차징 펀치 타격음도 장착한 스킨의 타격음으로 재생되도록 변경되었습니다."]}, {"v": "3.00.05", "d": "2026-11-25", "items": ["[변경] 모든 업적의 등급이 업적 이름 옆에 배지로 표시되도록 변경되었습니다. 업적 등급은 보상 중 가장 높은 등급을 따르며, 도감의 칭호 등급도 같은 기준으로 변경되었습니다.", "[변경] 업적 설명 끝에 붙어 있던 보상 등급 표기가 삭제되었습니다.", "[수정] 홈 화면에 설치한 웹앱의 아이콘이 새 아이콘으로 바뀌지 않던 문제를 수정했습니다. 앞으로 아이콘이 바뀌면 설치된 웹앱도 자동으로 갱신됩니다."]}, {"v": "3.00.04", "d": "2026-11-25", "items": ["[수정] 업적 화면에 업적 목록이 표시되지 않던 버그를 수정했습니다. 업적 이름 · 획득 조건 · 보상 · 진행도가 다시 표시됩니다.", "[변경] 모든 창(업적 · 모드 · 랭킹 · 설정 · 계정 · 대전 · 업데이트 로그 등)의 항목에 어두운 배경 띠가 추가되어 글씨가 더 잘 읽히도록 변경되었습니다.", "[변경] 창 안의 설명 글꼴이 또렷한 고딕체로, 항목 제목이 굵은 제목체로 변경되었습니다.", "[변경] 시즌 보상 상자와 출석 알림이 새 디자인에 맞게 변경되었습니다."]}, {"v": "3.00.03", "d": "2026-11-25", "items": ["[변경] 「최초의 사신」 칭호 · 글러브 · 노트의 획득 조건 설명이 「서버에서 DEATH를 가장 먼저 클리어한 단 한 명」으로 변경되었습니다.", "[변경] 업데이트 로그 전체가 추가 · 변경 · 수정 · 삭제 항목으로 정리되었습니다."]}, {"v": "3.00.02", "d": "2026-11-25", "items": ["[변경] UNIQUE 노트 스킨 4종에 스킨별 전용 연출이 적용되었습니다. 대기 중인 노트, 타격, 롱노트 연출이 모두 스킨마다 다릅니다.", "[변경] 「명부」: 노트 뒤로 열기가 일렁이고 용암 균열이 불규칙하게 달아오릅니다. 타격 시 판정선에 용암 균열이 갈라지며 흑요석 파편과 불티가 튑니다.", "[변경] 「심연」: 핏빛 영혼불이 타오르고 결정이 심장 박동처럼 맥동합니다. 타격 시 혼이 소용돌이치며 빨려 들어간 뒤 붉은 고리와 결정 파편이 퍼집니다.", "[변경] 「망자의 왕」: 창백한 망령불과 함께 깃털이 흩날립니다. 타격 시 가시 왕관 문양이 찍히고 검은 깃털이 흩날리며 떨어집니다.", "[변경] 「최초의 사신」: 붉은 모래가 흘러내리고 테두리를 따라 빛이 돕니다. 타격 시 시계판이 거꾸로 돌며 낫이 긋고 붉은 모래가 쏟아집니다.", "[수정] 같은 레인을 빠르게 연타하면 이펙트가 겹쳐 화면이 하얗게 번지던 문제를 수정했습니다."]}, {"v": "3.00.01", "d": "2026-11-25", "items": ["[변경] 앱 아이콘이 새 디자인으로 변경되었습니다. (빨간 바탕을 가르는 검은 사선 위 「BONG'S GAME」)", "[변경] Android 앱이 3.00 버전으로 업데이트되었습니다. 새 APK를 기존 앱 위에 설치하면 기록은 그대로 유지됩니다."]}, {"v": "3.00.00", "d": "2026-11-25", "items": ["[변경] 대규모 업데이트 「팬텀 스트라이크」: 게임 전체 디자인이 빨강 · 검정 · 흰색의 만화풍 디자인으로 변경되었습니다.", "[변경] 배경이 붉은 달 아래 뒷골목 링으로 변경되었습니다. HELL · DEATH 곡에서는 불타는 골목과 일식 배경이 나옵니다.", "[변경] 첫 화면이 화면 중앙을 가르는 빨간 사선 디자인으로 변경되었습니다.", "[추가] 새 스킨 등급 UNIQUE와 DEATH 업적 전용 UNIQUE 스킨이 추가되었습니다.", "[변경] 이전 디자인 「성당의 정적」은 주소 뒤에 ?theme=a를 붙여 이용할 수 있습니다."]}, {"v": "2.31.02", "d": "2026-11-25", "items": ["[변경] 첫 화면의 빨간 사선이 화면 중앙을 가로지르도록 변경되었습니다."]}, {"v": "2.31.01", "d": "2026-11-25", "items": ["[변경] 첫 화면의 「PRESS ANY KEY」 위치가 화면 하단 중앙으로 변경되었습니다."]}, {"v": "2.31.00", "d": "2026-11-25", "items": ["[추가] 새 스킨 등급 UNIQUE가 추가되었습니다.", "[변경] DEATH 업적 3종(사신 · 명계 정복 · 명계의 끝)의 등급이 UNIQUE로 상향되었고, 각 업적 보상에 UNIQUE 글러브와 노트 스킨이 추가되었습니다.", "[추가] 「사신」 보상: 글러브 「사신의 흑요석」, 노트 「명부」가 추가되었습니다.", "[변경] 「명계 정복」 보상: 글러브 「명계」와 노트 「심연」이 UNIQUE 등급으로 상향되고 새 원화로 변경되었습니다.", "[추가] 「명계의 끝」 보상: 글러브 · 노트 「망자의 왕」이 추가되었습니다.", "[추가] 서버 최초 DEATH 클리어 보상에 UNIQUE 글러브 · 노트 「최초의 사신」이 추가되었습니다. 서버에서 단 한 명만 획득할 수 있습니다.", "[추가] UNIQUE 스킨 전용 연출과 스킨별 타격음이 추가되었습니다."]}, {"v": "2.30.00", "d": "2026-11-25", "items": ["[변경] 배경이 붉은 달 아래 뒷골목 링으로 변경되었습니다.", "[추가] HELL · DEATH 곡 전용 배경(불타는 골목과 일식)이 추가되었습니다.", "[변경] 플레이 중 배경 연출이 박자에 맞춰 빨갛게 번쩍이는 효과로 변경되었습니다.", "[변경] 첫 화면에서 최윤혁의 위치가 화면 오른쪽 아래로 변경되었습니다.", "[개선] 배경 이미지를 따로 불러오도록 바꿔 첫 로딩 속도가 개선되었습니다."]}, {"v": "2.29.00", "d": "2026-11-25", "items": ["[변경] 기본 디자인이 「팬텀 스트라이크」로 변경되었습니다.", "[수정] 로비 메뉴 글씨가 화면 끝에 붙어 보이던 문제를 수정했습니다.", "[변경] 곡 선택 화면에서 모든 곡에 배경 띠가 표시되고, 선택한 곡은 빨간 띠로 강조되도록 변경되었습니다.", "[변경] 플레이 화면의 체력바 · 레인 · 판정 색이 새 디자인에 맞게 변경되었습니다.", "[수정] 첫 화면에서 최윤혁이 디자인 요소에 가려지던 문제를 수정했습니다.", "[개선] 새 디자인용 글꼴이 게임에 내장되어 글자가 더 빨리 표시됩니다."]}, {"v": "2.28.00", "d": "2026-11-25", "items": ["[추가] 새 디자인 「팬텀 스트라이크」 미리보기가 추가되었습니다. 주소 뒤에 ?theme=b를 붙여 확인할 수 있습니다."]}, {"v": "2.27.00", "d": "2026-11-25", "items": ["[변경] 첫 화면이 포스터형 대형 표제로, 메인 메뉴가 목차형 세로 메뉴로 변경되었습니다.", "[변경] 모든 창이 화면 왼쪽에서 펼쳐지는 페이지형 레이아웃으로 변경되었습니다.", "[변경] 곡 선택은 목차형 목록으로, 결과 화면은 큰 랭크 글자와 장부형 기록표로 변경되었습니다.", "[변경] 플레이 화면 체력바가 얇은 막대로 변경되었고, 체력바의 장식이 삭제되었습니다."]}, {"v": "2.26.00", "d": "2026-11-25", "items": ["[변경] 전체 디자인이 「성당의 정적」으로 변경되었습니다. (금색 강조 최소화, 각진 판과 가는 선, 줄형 목록)", "[변경] 글꼴이 정리되었습니다. 블랙레터는 로고에만 쓰고, 영문 · 숫자는 EB Garamond, 한글은 고운바탕을 사용합니다.", "[변경] 결과 화면의 숫자와 판정표가 더 크게 표시되도록 변경되었고, 빛 번짐 · 그라데이션 글씨 등 과한 장식이 삭제되었습니다.", "[변경] 대전 로비 · 스킨 도감 · 곡 선택 · 메뉴의 디자인 규칙이 통일되었습니다."]}, {"v": "2.25.00", "d": "2026-11-25", "items": ["[추가] 실시간 대전 로비가 추가되었습니다. 나와 상대의 사진 · 칭호 · 점수 · 전적 · 장착 스킨이 표시됩니다.", "[추가] 대전 로비에서 대전 곡을 변경할 수 있습니다.", "[추가] 친구 탭에서 친구 추가, 접속 중인 친구 초대, 방 코드 참가 기능이 추가되었습니다.", "[변경] 대전 신청을 수락하면 바로 대전 로비로 이동하도록 변경되었습니다."]}, {"v": "2.24.00", "d": "2026-11-25", "items": ["[변경] 친구 대결이 실시간 대전 방식으로 변경되었습니다.", "[삭제] 도전장(고스트) 방식의 친구 대결이 삭제되었습니다.", "[추가] 대전 신청을 받으면 어느 화면에서든 수락 · 거절 창이 표시됩니다. (플레이 중에는 알림만 표시)"]}, {"v": "2.23.00", "d": "2026-11-25", "items": ["[변경] 친구 대결이 체력을 깎는 전투 방식으로 변경되었습니다. 도전장을 보낸 사람의 기록이 고스트가 되어 싸웁니다.", "[추가] 고스트는 기록이 높을수록 강해지고, 콤보 20마다 러시 공격을 보냅니다.", "[변경] 체력이 먼저 0이 되면 K.O. 패배, 끝까지 가면 남은 체력으로 승패가 결정됩니다."]}, {"v": "2.22.00", "d": "2026-11-25", "items": ["[변경] DEATH 난이도가 완화되었습니다. (노트 수 5~7% 감소, 동시치기 감소, 노트 낙하 시간 증가)", "[변경] DEATH 변속 폭이 0.55~1.75배에서 0.65~1.6배로 완화되었습니다.", "[변경] DEATH에서 받는 피해가 1.7배에서 1.5배로, 회복량이 0.55배에서 0.65배로 조정되었습니다."]}, {"v": "2.21.00", "d": "2026-11-25", "items": ["[추가] 새 업적 「명계의 끝」(DEATH 9곡 모두 클리어)과 칭호 「죽음을 넘어선 자」가 추가되었습니다.", "[추가] 서버에서 DEATH를 가장 먼저 클리어한 한 명만 받을 수 있는 UNIQUE 칭호 「최초의 사신」이 추가되었습니다.", "[추가] 도감 칭호 탭에서 「최초의 사신」의 주인을 확인할 수 있습니다."]}, {"v": "2.20.00", "d": "2026-11-25", "items": ["[추가] DEATH 채보 6곡이 추가되었습니다. (카프리스 24번 · 에튀드 「폭포」 · 흑건 · 백건 · 월광 3악장 · 사계 「여름」 3악장)", "[변경] 업적 「명계 정복」의 조건이 「DEATH 곡 아무거나 3곡 클리어」로 변경되었습니다. 이미 얻은 보상은 유지됩니다."]}, {"v": "2.19.01", "d": "2026-11-25", "items": ["[추가] 신곡 5곡에 EASY · MEDIUM · HARD 채보가 추가되었습니다."]}, {"v": "2.19.00", "d": "2026-11-25", "items": ["[추가] 신곡 5곡이 추가되었습니다. (MONTAGEM HIKARI · LUNA BALA (Slowed) · MONTAGEM XONADA · NO BATIDÃO (Extended) · PASSO BEM SOLTO (Slowed))", "[추가] 음원이 사이트에 없는 곡은 처음 플레이할 때 기기의 음악 파일을 선택해 재생하는 기능이 추가되었습니다."]}, {"v": "2.18.02", "d": "2026-11-25", "items": ["[수정] 대결에서 노트를 쳐도 최윤혁의 체력이 줄지 않던 버그를 수정했습니다.", "[변경] 회피 노트의 균열이 실제로 깨진 듯한 모양으로 변경되었습니다."]}, {"v": "2.18.01", "d": "2026-11-24", "items": ["[수정] 도감 미리보기에서 일부 LEGENDARY 이펙트 뒤에 검은 상자가 보이던 문제를 수정했습니다."]}, {"v": "2.18.00", "d": "2026-11-24", "items": ["[추가] 회피(방어) 노트에도 장착한 노트 스킨이 적용됩니다.", "[추가] 도감 미리보기에서 회피 노트 모양도 확인할 수 있습니다."]}, {"v": "2.17.01", "d": "2026-11-24", "items": ["[수정] 일부 노트 스킨이 기본 노트보다 얇아 보이던 문제를 수정했습니다."]}, {"v": "2.17.00", "d": "2026-11-24", "items": ["[변경] 실시간 대결이 점수 비교에서 서로 체력을 깎는 전투 방식으로 변경되었습니다.", "[추가] 콤보 20마다 상대의 노트를 방어 노트로 바꾸는 「러시」 공격이 추가되었습니다.", "[변경] 체력이 먼저 0이 되면 K.O. 패배, 곡이 끝나면 남은 체력이 많은 쪽이 승리합니다.", "[변경] 실시간 대결 기록은 랭킹과 개인 최고 기록에 반영되지 않습니다."]}, {"v": "2.16.03", "d": "2026-11-24", "items": ["[수정] 스킨 노트가 기본 노트보다 얇게 표시되던 문제를 수정했습니다.", "[변경] LEGENDARY 타격 이펙트가 레인 안에서 작고 짧게(0.42초) 표시되도록 변경되었습니다.", "[삭제] 타격 시 여러 색의 원이 튀던 입자 연출이 삭제되었습니다.", "[변경] 「심연」 · 「연승의 불꽃」 노트의 불꽃이 낮고 은은하게 변경되었습니다."]}, {"v": "2.16.02", "d": "2026-11-24", "items": ["[추가] 「장미창」 스킨 전용 타격 이펙트(스테인드글라스 파편)가 추가되었습니다.", "[추가] 「성유물」 스킨 전용 타격 이펙트(성당 빛줄기)가 추가되었습니다.", "[변경] LEGENDARY 노트 · 글러브 스킨의 타격 이펙트가 강화되었습니다.", "[수정] 스킨 타격 이펙트가 중간에 끊기던 문제를 수정했습니다."]}, {"v": "2.16.01", "d": "2026-11-24", "items": ["[변경] 휴대폰 가로 화면에서 도감 레이아웃이 탭 · 카드 · 미리보기 3단 배치로 변경되었습니다."]}, {"v": "2.16.00", "d": "2026-11-24", "items": ["[추가] 도감에서 스킨을 장착하지 않고도 움직이는 미리보기로 확인할 수 있습니다."]}, {"v": "2.15.02", "d": "2026-11-24", "items": ["[수정] 도감에서 스킨 이름이 잘려 보이던 문제를 수정했습니다.", "[변경] 로비 하단 메뉴가 한 줄 5칸으로 정리되었습니다.", "[변경] 가로 화면에서 도감 미리보기가 옆에 배치되도록 변경되었습니다."]}, {"v": "2.15.01", "d": "2026-11-24", "items": ["[변경] 타격 이펙트 리소스가 정리되었습니다."]}, {"v": "2.15.00", "d": "2026-11-24", "items": ["[추가] 스킨 도감이 추가되었습니다. 글러브 · 노트 · 칭호를 탭별로 확인할 수 있습니다.", "[변경] 모든 노트 스킨과 글러브 스킨이 원화로 변경되었습니다.", "[추가] 새 노트 스킨 8종이 추가되었습니다. (LEGENDARY 장미창 · 챔피언 벨트 · 성유물, EPIC 흑대리석 · 가시 철관 · 용비늘, RARE 해골 성유물함 · 별밤)", "[추가] 새 업적 「대성당의 주인」(모든 곡 클리어)과 「성인」(ALL PERFECT 10곡)이 추가되었습니다.", "[추가] 노트 스킨마다 다른 판정선 타격 이펙트가 추가되었습니다.", "[추가] EPIC 이상 노트 스킨에 전용 타격음이 추가되었습니다."]}, {"v": "2.14.00", "d": "2026-11-24", "items": ["[추가] 노트 디자인 3종(흑요석 · 스테인드글라스 · 각인 금속판)이 추가되었습니다.", "[변경] 동시 타격 노트가 금빛 외곽선으로 표시되도록 변경되었습니다."]}, {"v": "2.13.02", "d": "2026-11-24", "items": ["[변경] 기본 노트 디자인이 흑요석 스타일로 변경되었습니다."]}, {"v": "2.13.01", "d": "2026-11-24", "items": ["[변경] 모든 노트 스킨의 재질 표현이 개선되었습니다.", "[변경] 노트와 타격 이펙트의 밝기가 낮아졌습니다.", "[수정] 곡 시작 직후 「FIGHT」 글자가 뒤집혀 보이던 버그를 수정했습니다."]}, {"v": "2.13.00", "d": "2026-11-24", "items": ["[추가] 모든 창 오른쪽 위에 닫기(X) 버튼이 추가되었습니다.", "[변경] PERFECT 타격음이 더 크고 또렷하게 변경되었습니다."]}, {"v": "2.12.04", "d": "2026-11-24", "items": ["[수정] 실시간 대결 결과 대기 화면에서 나갈 수 없던 문제를 수정했습니다. (닫기 버튼 추가)", "[수정] 첫 LEGENDARY 노트를 칠 때 화면이 잠깐 멈추던 문제를 수정했습니다.", "[수정] 실시간 대결 점수 바의 내 점수가 왼쪽 위 점수와 다르게 보이던 문제를 수정했습니다."]}, {"v": "2.12.03", "d": "2026-11-24", "items": ["[수정] 일부 곡에서 READY 중에 노트가 내려오던 버그를 수정했습니다."]}, {"v": "2.12.02", "d": "2026-11-24", "items": ["[변경] 롱노트(차징 노트)에도 노트 스킨이 끝까지 적용되도록 변경되었습니다.", "[추가] 「심연」 · 「연승의 불꽃」 롱노트 전용 불꽃 연출이 추가되었습니다."]}, {"v": "2.12.01", "d": "2026-11-24", "items": ["[수정] 다른 기기로 접속하면 스킨이 예전 것으로 바뀌던 문제를 수정했습니다.", "[변경] 장착 중인 스킨이 업적 화면에서 더 잘 보이도록 변경되었습니다."]}, {"v": "2.12.00", "d": "2026-11-24", "items": ["[변경] LEGENDARY 글러브 「명계」 · 「제왕」의 디자인과 연출이 개편되었습니다.", "[추가] LEGENDARY 전용 타격 연출이 추가되었습니다.", "[변경] 모든 노트 스킨의 타격 이펙트가 개편되었습니다.", "[변경] HELL 변속 폭이 0.5~1.3배에서 0.82~1.18배로 완화되었습니다.", "[변경] DEATH 난이도가 하향되었습니다. (변속 폭 축소, 동시치기 감소, 체력 감소량 완화)"]}, {"v": "2.11.01", "d": "2026-11-24", "items": ["[변경] 「연승의 불꽃」 노트의 불꽃 표현이 개선되었습니다."]}, {"v": "2.11.00", "d": "2026-11-24", "items": ["[추가] 스킨 등급(COMMON · UNCOMMON · RARE · EPIC · LEGENDARY)이 추가되었습니다.", "[추가] LEGENDARY 글러브 「명계」 · 「제왕」과 LEGENDARY 노트 「심연」 · 「연승의 불꽃」 전용 연출이 추가되었습니다."]}, {"v": "2.10.01", "d": "2026-11-24", "items": ["[변경] 운영 계정이 모든 랭킹에서 제외되었습니다."]}, {"v": "2.10.00", "d": "2026-11-24", "items": ["[추가] 대결 결과에 따라 시즌 XP를 받는 대결 보상이 추가되었습니다. (승리 +300 · 무승부 +120 · 패배 +60)", "[추가] 2연승부터 연승 보너스 XP가 추가되었습니다. (최대 +250)", "[추가] 대결 업적 5종이 추가되었습니다."]}, {"v": "2.09.00", "d": "2026-11-24", "items": ["[삭제] 오리지널 곡 「검은 돛의 행진」 · 「건반 폭주」가 삭제되었습니다.", "[추가] 실시간 대결에 점수 줄다리기 바와 「역전!」 알림이 추가되었습니다.", "[추가] 대결 종료 시 승리 · 패배 · 무승부 화면이 추가되었습니다."]}, {"v": "2.08.00", "d": "2026-11-24", "items": ["[추가] 오리지널 곡 「검은 돛의 행진」(HARD) · 「건반 폭주」(HELL)가 추가되었습니다."]}, {"v": "2.07.00", "d": "2026-11-24", "items": ["[추가] 신곡 「흑건」(HELL) · 「백건」(HELL) · 「송어」(EASY)가 추가되었습니다.", "[변경] 곡 검색에서 영어 이름으로도 찾을 수 있도록 변경되었습니다."]}, {"v": "2.06.00", "d": "2026-11-24", "items": ["[추가] 곡 선택 화면에 곡 검색이 추가되었습니다. (곡 이름 · 작곡가 · 영어 이름 · 초성)", "[추가] 검색 단축키(/ 또는 Ctrl+F)가 추가되었습니다."]}, {"v": "2.05.00", "d": "2026-11-24", "items": ["[추가] EXTREME 채보 17개와 HELL 채보 13개가 추가되었습니다.", "[추가] 「왕벌의 비행」 · 「라 캄파넬라」 DEATH 채보가 추가되었습니다.", "[추가] 새 업적 「명계 정복」과 보상(칭호 · 글러브 · 노트 스킨)이 추가되었습니다."]}, {"v": "2.04.01", "d": "2026-11-24", "items": ["[변경] 「화성」 · 「라 캄파넬라」가 원곡 악보 기준으로 다시 편곡되었고, 노트 타이밍이 조정되었습니다."]}, {"v": "2.04.00", "d": "2026-11-24", "items": ["[추가] 신곡 38곡이 추가되었습니다. (클래식 · 민요 · Kevin MacLeod 곡 등)", "[추가] 비발디 「사계」 전 악장이 추가되었습니다.", "[추가] 모드에 「비발디 사계 메들리」 코스가 추가되었습니다."]}, {"v": "2.03.01", "d": "2026-11-24", "items": ["[삭제] 「NO BATIDÃO」가 삭제되었습니다."]}, {"v": "2.03.00", "d": "2026-11-24", "items": ["[추가] 신곡 「NO BATIDÃO」(EXTREME)가 추가되었습니다."]}, {"v": "2.02.00", "d": "2026-11-24", "items": ["[추가] 타격 시 히트스톱과 진동(Android) 효과가 추가되었습니다. 설정에서 끌 수 있습니다.", "[추가] 모드 메뉴(연습실 · 메들리 · 보스 러시 · 서바이벌)가 추가되었습니다.", "[추가] 출석 체크와 출석 보상이 추가되었습니다.", "[추가] 무료 시즌 보상 단계(20단계)가 추가되었습니다.", "[추가] 업적 6종, 글러브 2종, 노트 스킨 1종이 추가되었습니다."]}, {"v": "2.01.00", "d": "2026-11-24", "items": ["[변경] 연습실에서는 체력이 줄지 않도록 변경되었습니다.", "[추가] 연습 결과에 마디별 실수 그래프와 구간 다시 연습 기능이 추가되었습니다."]}, {"v": "2.00.00", "d": "2026-11-24", "items": ["[추가] 곡마다 여러 난이도(EASY · MEDIUM · HARD 등)가 추가되었습니다.", "[추가] 구간 반복과 느린 속도를 지원하는 연습실이 추가되었습니다.", "[추가] 고스트, 시즌 랭킹, 오늘의 도전 · 이번 주 도전이 추가되었습니다.", "[추가] 친구 목록, 접속 표시, 실시간 1:1 대결이 추가되었습니다.", "[추가] 업적 5종이 추가되었습니다.", "[삭제] 곡 속도 옵션, 친구 기록 코드, 싱크 보정 슬라이더, 그래픽 품질 설정, 데스크톱 앱 다운로드가 삭제되었습니다.", "[변경] 종합 점수가 곡마다 가장 높은 난이도 점수 하나만 합산하도록 변경되었습니다."]}, {"v": "1.04.00", "d": "2026-11-23", "items": ["[변경] 연습 게이지로 플레이한 기록은 랭킹 · 최고 기록 · 업적 · 친구 대결에 반영되지 않도록 변경되었습니다."]}, {"v": "1.03.02", "d": "2026-11-23", "items": ["[수정] 「다시 보지 않기」를 누르면 이후 업데이트 로그가 계속 표시되지 않던 문제를 수정했습니다."]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["[추가] 설정에 점수 보너스 안내가 추가되었습니다."]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["[추가] 체력 게이지와 판정 범위 설정에 점수 배율이 추가되었습니다.", "[변경] 곡 도중 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용되도록 변경되었습니다."]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["[수정] 업데이트 로그의 버튼이 목록 아래에 가려지던 문제를 수정했습니다."]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["[추가] 업데이트 로그에 「다시 보지 않기」 버튼이 추가되었습니다."]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["[추가] 버전 표시와 업데이트 로그가 추가되었습니다.", "[추가] 배속에 따른 점수 배율이 추가되었습니다.", "[변경] 메인 화면 메뉴 구성이 변경되었습니다.", "[추가] HELL · DEATH 변속 구간의 광폭화 · 탈진 연출이 추가되었습니다.", "[추가] 친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정, 프로필 편집이 추가되었습니다."]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["[추가] Bong's Game이 출시되었습니다. (51곡 · EASY~DEATH)", "[추가] 아이디 · 구글 로그인과 곡별 · 종합 랭킹이 추가되었습니다.", "[추가] Android · Windows · Mac · Linux 앱과 설치형 웹앱이 추가되었습니다."]}], APP_VER=CHANGELOG[0].v;
+const CHANGELOG=[{"v": "3.01.01", "d": "2026-11-27", "items": ["[수정] 컴퓨터의 곡 선택 화면에서 좌우로 스크롤되던 문제를 수정했습니다.", "[수정] 앱을 내렸다가 다시 열면 화면 빛 효과가 꺼진 채로 돌아오지 않던 문제를 수정했습니다.", "[수정] 거절한 실시간 대전 신청이 새로고침할 때마다 다시 뜨던 문제를 수정했습니다. 1시간 넘게 버려진 대결 방도 자동으로 정리됩니다.", "[개선] 노트 빛 · 홀드 노트 · 화면 테두리 효과 · 축하 빛 알갱이를 미리 그려 두고 재사용하여, 노트가 많은 곡에서 끊김이 줄었습니다.", "[개선] 친구 접속 표시는 친구 · 대결 화면이나 선수 카드를 볼 때만 실시간으로 받아 서버 사용량을 줄였습니다.", "[개선] 앱을 3분 넘게 내려 두면 랭킹 실시간 갱신을 잠시 멈추고, 다시 열면 이어서 받습니다.", "[개선] 보안이 강화되었습니다. 허용되지 않은 스크립트는 실행되지 않으며, 프로필 사진도 더 엄격하게 확인합니다.", "[변경] 게임 안의 안내 문구를 더 자연스러운 한국어로 다듬었습니다.", "[삭제] 쓰이지 않던 옛 배경음 재생 코드와 친구 도전 실시간 구독을 삭제했습니다."]}, {"v": "3.01.00", "d": "2026-11-27", "items": ["[변경] 모든 창의 디자인이 흰 종이 카드가 비스듬히 겹치는 콜라주 스타일로 변경되었습니다. 카드에는 빨간 그림자가 생기고, 고른 버튼은 빨갛게 튀어나옵니다.", "[변경] 곡 선택 목록이 흰 카드로 바뀌었고, 고른 곡은 빨간 카드로 강조됩니다.", "[변경] 랭킹 줄이 흑백 교차 띠로 바뀌었고, 내 순위는 빨간 띠로 표시됩니다.", "[변경] 결과 화면의 판정표가 흰 테두리의 검은 카드로, 업적 알림이 흰 종이 카드로 변경되었습니다.", "[변경] 플레이 중 상단 체력바가 비스듬한 칼날 모양으로, 남은 시간 표시가 기울어진 흰 카드로 변경되었습니다.", "[변경] 로그인 입력칸과 일시정지 버튼의 디자인이 새 스타일에 맞게 변경되었습니다.", "[개선] 휴대폰에서 난이도 · 필터 · 닫기 버튼의 누르는 영역이 넓어졌습니다.", "[개선] 결과 화면 배경이 더 어두워져 뒤에서 노트가 지나가도 글씨가 또렷하게 보입니다.", "[개선] 오래 켜 두어도 메모리가 쌓이지 않도록 최근에 들은 4곡의 음원만 기억합니다.", "[개선] 앱을 내리거나 화면을 끄면 곡 미리듣기와 메뉴 소리가 멈춥니다.", "[수정] T.K.O. 직후 바로 다시 시작하면 새 판 도중에 이전 판의 결과 화면이 뜨던 버그를 수정했습니다.", "[수정] 점수는 높지만 풀콤보 · 등급이 낮은 기록이 저장되면 기존 풀콤보 · S 업적과 스킨이 다시 잠기던 버그를 수정했습니다.", "[수정] 로그아웃 후 다시 로그인하면 친구 접속 표시와 대전 신청이 멈추던 버그를 수정했습니다.", "[수정] 실시간 대결 도중 나가면 상대가 끝없이 기다리던 버그를 수정했습니다. 이제 나간 쪽은 기권 처리됩니다.", "[수정] 방 만들기를 빠르게 두 번 누르면 방이 두 개 생기던 버그를 수정했습니다.", "[수정] 플레이 · 일시정지 · 결과 화면 도중 자동 업데이트로 새로고침되던 문제를 수정했습니다.", "[수정] 잘못된 대전 방 정보를 받으면 대결 화면이 멈추던 문제와 보안 문제를 수정했습니다.", "[수정] 화면 그리기 중 오류가 나도 게임이 멈추지 않고 계속 진행되도록 수정했습니다."]}, {"v": "3.00.14", "d": "2026-11-26", "items": ["[변경] 흑건 · 백건 DEATH 난이도가 상향되었습니다.", "[변경] 흑건 · 백건 DEATH의 노트 수가 약 7% 늘었습니다. 0.1초보다 빠른 16분 연타가 네 박 중 세 박에서 유지됩니다.", "[변경] 흑건 · 백건 DEATH의 동시치기가 약 30% 늘었습니다.", "[변경] 흑건 · 백건 DEATH에서 받는 피해가 일반 게이지의 1.15배에서 1.25배로, 회복량이 0.9배에서 0.85배로 변경되었습니다.", "[변경] 다른 DEATH 곡의 난이도는 변경되지 않았으며, 기존 기록과 업적 · 보상은 그대로 유지됩니다."]}, {"v": "3.00.13", "d": "2026-11-26", "items": ["[추가] DEATH 변속에 급정거 → 급가속 연출이 다시 추가되었습니다. 노트가 순간적으로 0.55배로 느려졌다가 한 박 뒤 1.8배로 빨라집니다.", "[변경] 급정거 · 급가속 빈도가 3.00.09 이전보다 약 55% 줄었습니다. 곡당 1~3번 나오고, 한 번 나온 뒤 64박 안에는 다시 나오지 않습니다.", "[변경] 모든 DEATH 곡에서 급정거 · 급가속이 최소 한 번은 나옵니다."]}, {"v": "3.00.12", "d": "2026-11-26", "items": ["[변경] DEATH 난이도가 상향되었습니다. 3.00.09 하향 이전과 이후의 중간 수준으로 조정되었습니다.", "[변경] DEATH 노트 수가 약 10% 늘었습니다. 0.1초보다 빠른 16분 연타가 세 박 중 두 박에서 유지됩니다.", "[변경] DEATH 동시치기가 약 70% 늘었습니다. 드롭 구간 엇박 동시치기가 더 자주 나오고, 16분 당김음 멜로디 동시치기가 다시 추가되었습니다.", "[변경] DEATH 변속 폭이 0.75~1.3배에서 0.7~1.45배로 넓어졌습니다.", "[변경] DEATH 노트 낙하 시간이 0.78초에서 0.75초로 짧아졌습니다.", "[변경] DEATH에서 받는 피해가 일반 게이지의 0.8배에서 1.15배로, 회복량이 1.15배에서 0.9배로 변경되었습니다.", "[변경] 기존 DEATH 기록과 업적 · 보상은 그대로 유지됩니다."]}, {"v": "3.00.11", "d": "2026-11-26", "items": ["[변경] DEATH 노트 디자인이 변경되었습니다. 양끝을 깎은 육각형 흰 카드 뒤로 붉은 판이 어긋나게 겹치고, 이중 검은 사선 · 망점 무늬 · 붉은 삼각 포인트가 들어갑니다.", "[변경] DEATH 노트에 검은 외곽선, 위쪽 광택, 바닥 그림자가 추가되어 입체감이 생겼습니다.", "[변경] DEATH 동시치기 노트는 뒤쪽 붉은 판이 더 크게 어긋나 일반 노트와 구분됩니다.", "[변경] DEATH 방어 노트는 검은 카드 뒤로 흰 판이 겹치고, 붉은 망점과 빛나는 붉은 X가 들어간 디자인으로 변경되었습니다.", "[변경] DEATH 롱노트가 어두운 유리 몸통, 양옆 상아색 레일, 가운데 붉은 실선 디자인으로 변경되었고, 누르고 있는 동안 몸통이 밝아집니다.", "[개선] DEATH 노트를 미리 고해상도로 그려 두고 재사용해 화면이 더 선명하고 부드럽게 그려집니다."]}, {"v": "3.00.10", "d": "2026-11-26", "items": ["[변경] DEATH 노트가 검은색에서 흰 몸통 + 검은 사선 띠 디자인으로 변경되었습니다. 어두운 배경과 캐릭터 위에서도 노트가 잘 보입니다.", "[변경] DEATH 방어 노트는 검은 몸통에 붉은 X 표시로 변경되어 일반 노트와 한눈에 구분됩니다.", "[변경] DEATH 동시치기 노트에 붉은 테두리와 흰 외곽선이 추가되었습니다.", "[변경] DEATH 롱노트 몸통과 꼬리가 밝은 색으로 변경되었습니다.", "[개선] DEATH 플레이 중 레인 뒤 배경이 어둡게 깔려 노트가 배경에 묻히지 않습니다.", "[수정] DEATH에서 검은 노트가 어두운 배경과 겹쳐 잘 보이지 않던 문제를 수정했습니다."]}, {"v": "3.00.09", "d": "2026-11-26", "items": ["[변경] DEATH 난이도가 크게 하향되었습니다.", "[변경] DEATH 노트 수가 평균 약 20% 줄었습니다. 0.1초보다 빠른 16분 연타는 두 박 중 한 박만 남고, 드롭 외 구간의 16분 엇박 노트가 삭제되었습니다.", "[변경] DEATH 동시치기가 약 60% 줄었습니다. 엇박 동시치기는 드롭 구간에서만 나옵니다.", "[변경] DEATH 변속 폭이 0.65~1.6배에서 0.75~1.3배로 줄었고, 변속 간격이 길어졌으며, 급정거 · 급가속이 삭제되었습니다.", "[변경] DEATH 노트 낙하 시간이 0.72초에서 0.78초로 늘어 노트를 보는 시간이 길어졌습니다.", "[변경] DEATH에서 받는 피해가 일반 게이지의 1.5배에서 0.8배로, 회복량이 0.65배에서 1.15배로 조정되었습니다.", "[변경] 기존 DEATH 기록과 업적 · 보상은 그대로 유지됩니다."]}, {"v": "3.00.08", "d": "2026-11-25", "items": ["[변경] 로비 화면에서 이전에 플레이한 곡의 미리듣기가 더 이상 재생되지 않습니다. 곡 미리듣기는 곡 선택 화면에서만 재생됩니다.", "[변경] 곡 선택 화면에서 로비로 돌아가면 미리듣기가 자연스럽게 꺼지도록 변경되었습니다."]}, {"v": "3.00.07", "d": "2026-11-25", "items": ["[변경] 스킨 전용 타격음의 크기가 커졌습니다. 스킨마다 크기를 측정해 모든 스킨이 기본 타격음과 같은 크기로 들리도록 조정되었습니다. (약 1.4~8배)", "[변경] 도감의 「♪ 타격음」 미리듣기도 같은 크기로 재생됩니다."]}, {"v": "3.00.06", "d": "2026-11-25", "items": ["[수정] 전용 타격음이 있는 노트 스킨(EPIC 이상)에서 공통 타격음이 함께 재생되어 스킨별 소리가 묻히던 문제를 수정했습니다. 이제 해당 스킨의 타격음만 재생됩니다.", "[변경] 차징 펀치 타격음도 장착한 스킨의 타격음으로 재생되도록 변경되었습니다."]}, {"v": "3.00.05", "d": "2026-11-25", "items": ["[변경] 모든 업적의 등급이 업적 이름 옆에 배지로 표시되도록 변경되었습니다. 업적 등급은 보상 중 가장 높은 등급을 따르며, 도감의 칭호 등급도 같은 기준으로 변경되었습니다.", "[변경] 업적 설명 끝에 붙어 있던 보상 등급 표기가 삭제되었습니다.", "[수정] 홈 화면에 설치한 웹앱의 아이콘이 새 아이콘으로 바뀌지 않던 문제를 수정했습니다. 앞으로 아이콘이 바뀌면 설치된 웹앱도 자동으로 갱신됩니다."]}, {"v": "3.00.04", "d": "2026-11-25", "items": ["[수정] 업적 화면에 업적 목록이 표시되지 않던 버그를 수정했습니다. 업적 이름 · 획득 조건 · 보상 · 진행도가 다시 표시됩니다.", "[변경] 모든 창(업적 · 모드 · 랭킹 · 설정 · 계정 · 대전 · 업데이트 로그 등)의 항목에 어두운 배경 띠가 추가되어 글씨가 더 잘 읽히도록 변경되었습니다.", "[변경] 창 안의 설명 글꼴이 또렷한 고딕체로, 항목 제목이 굵은 제목체로 변경되었습니다.", "[변경] 시즌 보상 상자와 출석 알림이 새 디자인에 맞게 변경되었습니다."]}, {"v": "3.00.03", "d": "2026-11-25", "items": ["[변경] 「최초의 사신」 칭호 · 글러브 · 노트의 획득 조건 설명이 「서버에서 DEATH를 가장 먼저 클리어한 단 한 명」으로 변경되었습니다.", "[변경] 업데이트 로그 전체가 추가 · 변경 · 수정 · 삭제 항목으로 정리되었습니다."]}, {"v": "3.00.02", "d": "2026-11-25", "items": ["[변경] UNIQUE 노트 스킨 4종에 스킨별 전용 연출이 적용되었습니다. 대기 중인 노트, 타격, 롱노트 연출이 모두 스킨마다 다릅니다.", "[변경] 「명부」: 노트 뒤로 열기가 일렁이고 용암 균열이 불규칙하게 달아오릅니다. 타격 시 판정선에 용암 균열이 갈라지며 흑요석 파편과 불티가 튑니다.", "[변경] 「심연」: 핏빛 영혼불이 타오르고 결정이 심장 박동처럼 맥동합니다. 타격 시 혼이 소용돌이치며 빨려 들어간 뒤 붉은 고리와 결정 파편이 퍼집니다.", "[변경] 「망자의 왕」: 창백한 망령불과 함께 깃털이 흩날립니다. 타격 시 가시 왕관 문양이 찍히고 검은 깃털이 흩날리며 떨어집니다.", "[변경] 「최초의 사신」: 붉은 모래가 흘러내리고 테두리를 따라 빛이 돕니다. 타격 시 시계판이 거꾸로 돌며 낫이 긋고 붉은 모래가 쏟아집니다.", "[수정] 같은 레인을 빠르게 연타하면 이펙트가 겹쳐 화면이 하얗게 번지던 문제를 수정했습니다."]}, {"v": "3.00.01", "d": "2026-11-25", "items": ["[변경] 앱 아이콘이 새 디자인으로 변경되었습니다. (빨간 바탕을 가르는 검은 사선 위 「BONG'S GAME」)", "[변경] Android 앱이 3.00 버전으로 업데이트되었습니다. 새 APK를 기존 앱 위에 설치하면 기록은 그대로 유지됩니다."]}, {"v": "3.00.00", "d": "2026-11-25", "items": ["[변경] 대규모 업데이트 「팬텀 스트라이크」: 게임 전체 디자인이 빨강 · 검정 · 흰색의 만화풍 디자인으로 변경되었습니다.", "[변경] 배경이 붉은 달 아래 뒷골목 링으로 변경되었습니다. HELL · DEATH 곡에서는 불타는 골목과 일식 배경이 나옵니다.", "[변경] 첫 화면이 화면 중앙을 가르는 빨간 사선 디자인으로 변경되었습니다.", "[추가] 새 스킨 등급 UNIQUE와 DEATH 업적 전용 UNIQUE 스킨이 추가되었습니다.", "[변경] 이전 디자인 「성당의 정적」은 주소 뒤에 ?theme=a를 붙여 이용할 수 있습니다."]}, {"v": "2.31.02", "d": "2026-11-25", "items": ["[변경] 첫 화면의 빨간 사선이 화면 중앙을 가로지르도록 변경되었습니다."]}, {"v": "2.31.01", "d": "2026-11-25", "items": ["[변경] 첫 화면의 「PRESS ANY KEY」 위치가 화면 하단 중앙으로 변경되었습니다."]}, {"v": "2.31.00", "d": "2026-11-25", "items": ["[추가] 새 스킨 등급 UNIQUE가 추가되었습니다.", "[변경] DEATH 업적 3종(사신 · 명계 정복 · 명계의 끝)의 등급이 UNIQUE로 상향되었고, 각 업적 보상에 UNIQUE 글러브와 노트 스킨이 추가되었습니다.", "[추가] 「사신」 보상: 글러브 「사신의 흑요석」, 노트 「명부」가 추가되었습니다.", "[변경] 「명계 정복」 보상: 글러브 「명계」와 노트 「심연」이 UNIQUE 등급으로 상향되고 새 원화로 변경되었습니다.", "[추가] 「명계의 끝」 보상: 글러브 · 노트 「망자의 왕」이 추가되었습니다.", "[추가] 서버 최초 DEATH 클리어 보상에 UNIQUE 글러브 · 노트 「최초의 사신」이 추가되었습니다. 서버에서 단 한 명만 획득할 수 있습니다.", "[추가] UNIQUE 스킨 전용 연출과 스킨별 타격음이 추가되었습니다."]}, {"v": "2.30.00", "d": "2026-11-25", "items": ["[변경] 배경이 붉은 달 아래 뒷골목 링으로 변경되었습니다.", "[추가] HELL · DEATH 곡 전용 배경(불타는 골목과 일식)이 추가되었습니다.", "[변경] 플레이 중 배경 연출이 박자에 맞춰 빨갛게 번쩍이는 효과로 변경되었습니다.", "[변경] 첫 화면에서 최윤혁의 위치가 화면 오른쪽 아래로 변경되었습니다.", "[개선] 배경 이미지를 따로 불러오도록 바꿔 첫 로딩 속도가 개선되었습니다."]}, {"v": "2.29.00", "d": "2026-11-25", "items": ["[변경] 기본 디자인이 「팬텀 스트라이크」로 변경되었습니다.", "[수정] 로비 메뉴 글씨가 화면 끝에 붙어 보이던 문제를 수정했습니다.", "[변경] 곡 선택 화면에서 모든 곡에 배경 띠가 표시되고, 선택한 곡은 빨간 띠로 강조되도록 변경되었습니다.", "[변경] 플레이 화면의 체력바 · 레인 · 판정 색이 새 디자인에 맞게 변경되었습니다.", "[수정] 첫 화면에서 최윤혁이 디자인 요소에 가려지던 문제를 수정했습니다.", "[개선] 새 디자인용 글꼴이 게임에 내장되어 글자가 더 빨리 표시됩니다."]}, {"v": "2.28.00", "d": "2026-11-25", "items": ["[추가] 새 디자인 「팬텀 스트라이크」 미리보기가 추가되었습니다. 주소 뒤에 ?theme=b를 붙여 확인할 수 있습니다."]}, {"v": "2.27.00", "d": "2026-11-25", "items": ["[변경] 첫 화면이 포스터형 대형 표제로, 메인 메뉴가 목차형 세로 메뉴로 변경되었습니다.", "[변경] 모든 창이 화면 왼쪽에서 펼쳐지는 페이지형 레이아웃으로 변경되었습니다.", "[변경] 곡 선택은 목차형 목록으로, 결과 화면은 큰 랭크 글자와 장부형 기록표로 변경되었습니다.", "[변경] 플레이 화면 체력바가 얇은 막대로 변경되었고, 체력바의 장식이 삭제되었습니다."]}, {"v": "2.26.00", "d": "2026-11-25", "items": ["[변경] 전체 디자인이 「성당의 정적」으로 변경되었습니다. (금색 강조 최소화, 각진 판과 가는 선, 줄형 목록)", "[변경] 글꼴이 정리되었습니다. 블랙레터는 로고에만 쓰고, 영문 · 숫자는 EB Garamond, 한글은 고운바탕을 사용합니다.", "[변경] 결과 화면의 숫자와 판정표가 더 크게 표시되도록 변경되었고, 빛 번짐 · 그라데이션 글씨 등 과한 장식이 삭제되었습니다.", "[변경] 대전 로비 · 스킨 도감 · 곡 선택 · 메뉴의 디자인 규칙이 통일되었습니다."]}, {"v": "2.25.00", "d": "2026-11-25", "items": ["[추가] 실시간 대전 로비가 추가되었습니다. 나와 상대의 사진 · 칭호 · 점수 · 전적 · 장착 스킨이 표시됩니다.", "[추가] 대전 로비에서 대전 곡을 변경할 수 있습니다.", "[추가] 친구 탭에서 친구 추가, 접속 중인 친구 초대, 방 코드 참가 기능이 추가되었습니다.", "[변경] 대전 신청을 수락하면 바로 대전 로비로 이동하도록 변경되었습니다."]}, {"v": "2.24.00", "d": "2026-11-25", "items": ["[변경] 친구 대결이 실시간 대전 방식으로 변경되었습니다.", "[삭제] 도전장(고스트) 방식의 친구 대결이 삭제되었습니다.", "[추가] 대전 신청을 받으면 어느 화면에서든 수락 · 거절 창이 표시됩니다. (플레이 중에는 알림만 표시)"]}, {"v": "2.23.00", "d": "2026-11-25", "items": ["[변경] 친구 대결이 체력을 깎는 전투 방식으로 변경되었습니다. 도전장을 보낸 사람의 기록이 고스트가 되어 싸웁니다.", "[추가] 고스트는 기록이 높을수록 강해지고, 콤보 20마다 러시 공격을 보냅니다.", "[변경] 체력이 먼저 0이 되면 K.O. 패배, 끝까지 가면 남은 체력으로 승패가 결정됩니다."]}, {"v": "2.22.00", "d": "2026-11-25", "items": ["[변경] DEATH 난이도가 완화되었습니다. (노트 수 5~7% 감소, 동시치기 감소, 노트 낙하 시간 증가)", "[변경] DEATH 변속 폭이 0.55~1.75배에서 0.65~1.6배로 완화되었습니다.", "[변경] DEATH에서 받는 피해가 1.7배에서 1.5배로, 회복량이 0.55배에서 0.65배로 조정되었습니다."]}, {"v": "2.21.00", "d": "2026-11-25", "items": ["[추가] 새 업적 「명계의 끝」(DEATH 9곡 모두 클리어)과 칭호 「죽음을 넘어선 자」가 추가되었습니다.", "[추가] 서버에서 DEATH를 가장 먼저 클리어한 한 명만 받을 수 있는 UNIQUE 칭호 「최초의 사신」이 추가되었습니다.", "[추가] 도감 칭호 탭에서 「최초의 사신」의 주인을 확인할 수 있습니다."]}, {"v": "2.20.00", "d": "2026-11-25", "items": ["[추가] DEATH 채보 6곡이 추가되었습니다. (카프리스 24번 · 에튀드 「폭포」 · 흑건 · 백건 · 월광 3악장 · 사계 「여름」 3악장)", "[변경] 업적 「명계 정복」의 조건이 「DEATH 곡 아무거나 3곡 클리어」로 변경되었습니다. 이미 얻은 보상은 유지됩니다."]}, {"v": "2.19.01", "d": "2026-11-25", "items": ["[추가] 신곡 5곡에 EASY · MEDIUM · HARD 채보가 추가되었습니다."]}, {"v": "2.19.00", "d": "2026-11-25", "items": ["[추가] 신곡 5곡이 추가되었습니다. (MONTAGEM HIKARI · LUNA BALA (Slowed) · MONTAGEM XONADA · NO BATIDÃO (Extended) · PASSO BEM SOLTO (Slowed))", "[추가] 음원이 사이트에 없는 곡은 처음 플레이할 때 기기의 음악 파일을 선택해 재생하는 기능이 추가되었습니다."]}, {"v": "2.18.02", "d": "2026-11-25", "items": ["[수정] 대결에서 노트를 쳐도 최윤혁의 체력이 줄지 않던 버그를 수정했습니다.", "[변경] 회피 노트의 균열이 실제로 깨진 듯한 모양으로 변경되었습니다."]}, {"v": "2.18.01", "d": "2026-11-24", "items": ["[수정] 도감 미리보기에서 일부 LEGENDARY 이펙트 뒤에 검은 상자가 보이던 문제를 수정했습니다."]}, {"v": "2.18.00", "d": "2026-11-24", "items": ["[추가] 회피(방어) 노트에도 장착한 노트 스킨이 적용됩니다.", "[추가] 도감 미리보기에서 회피 노트 모양도 확인할 수 있습니다."]}, {"v": "2.17.01", "d": "2026-11-24", "items": ["[수정] 일부 노트 스킨이 기본 노트보다 얇아 보이던 문제를 수정했습니다."]}, {"v": "2.17.00", "d": "2026-11-24", "items": ["[변경] 실시간 대결이 점수 비교에서 서로 체력을 깎는 전투 방식으로 변경되었습니다.", "[추가] 콤보 20마다 상대의 노트를 방어 노트로 바꾸는 「러시」 공격이 추가되었습니다.", "[변경] 체력이 먼저 0이 되면 K.O. 패배, 곡이 끝나면 남은 체력이 많은 쪽이 승리합니다.", "[변경] 실시간 대결 기록은 랭킹과 개인 최고 기록에 반영되지 않습니다."]}, {"v": "2.16.03", "d": "2026-11-24", "items": ["[수정] 스킨 노트가 기본 노트보다 얇게 표시되던 문제를 수정했습니다.", "[변경] LEGENDARY 타격 이펙트가 레인 안에서 작고 짧게(0.42초) 표시되도록 변경되었습니다.", "[삭제] 타격 시 여러 색의 원이 튀던 입자 연출이 삭제되었습니다.", "[변경] 「심연」 · 「연승의 불꽃」 노트의 불꽃이 낮고 은은하게 변경되었습니다."]}, {"v": "2.16.02", "d": "2026-11-24", "items": ["[추가] 「장미창」 스킨 전용 타격 이펙트(스테인드글라스 파편)가 추가되었습니다.", "[추가] 「성유물」 스킨 전용 타격 이펙트(성당 빛줄기)가 추가되었습니다.", "[변경] LEGENDARY 노트 · 글러브 스킨의 타격 이펙트가 강화되었습니다.", "[수정] 스킨 타격 이펙트가 중간에 끊기던 문제를 수정했습니다."]}, {"v": "2.16.01", "d": "2026-11-24", "items": ["[변경] 휴대폰 가로 화면에서 도감 레이아웃이 탭 · 카드 · 미리보기 3단 배치로 변경되었습니다."]}, {"v": "2.16.00", "d": "2026-11-24", "items": ["[추가] 도감에서 스킨을 장착하지 않고도 움직이는 미리보기로 확인할 수 있습니다."]}, {"v": "2.15.02", "d": "2026-11-24", "items": ["[수정] 도감에서 스킨 이름이 잘려 보이던 문제를 수정했습니다.", "[변경] 로비 하단 메뉴가 한 줄 5칸으로 정리되었습니다.", "[변경] 가로 화면에서 도감 미리보기가 옆에 배치되도록 변경되었습니다."]}, {"v": "2.15.01", "d": "2026-11-24", "items": ["[변경] 타격 이펙트 리소스가 정리되었습니다."]}, {"v": "2.15.00", "d": "2026-11-24", "items": ["[추가] 스킨 도감이 추가되었습니다. 글러브 · 노트 · 칭호를 탭별로 확인할 수 있습니다.", "[변경] 모든 노트 스킨과 글러브 스킨이 원화로 변경되었습니다.", "[추가] 새 노트 스킨 8종이 추가되었습니다. (LEGENDARY 장미창 · 챔피언 벨트 · 성유물, EPIC 흑대리석 · 가시 철관 · 용비늘, RARE 해골 성유물함 · 별밤)", "[추가] 새 업적 「대성당의 주인」(모든 곡 클리어)과 「성인」(ALL PERFECT 10곡)이 추가되었습니다.", "[추가] 노트 스킨마다 다른 판정선 타격 이펙트가 추가되었습니다.", "[추가] EPIC 이상 노트 스킨에 전용 타격음이 추가되었습니다."]}, {"v": "2.14.00", "d": "2026-11-24", "items": ["[추가] 노트 디자인 3종(흑요석 · 스테인드글라스 · 각인 금속판)이 추가되었습니다.", "[변경] 동시 타격 노트가 금빛 외곽선으로 표시되도록 변경되었습니다."]}, {"v": "2.13.02", "d": "2026-11-24", "items": ["[변경] 기본 노트 디자인이 흑요석 스타일로 변경되었습니다."]}, {"v": "2.13.01", "d": "2026-11-24", "items": ["[변경] 모든 노트 스킨의 재질 표현이 개선되었습니다.", "[변경] 노트와 타격 이펙트의 밝기가 낮아졌습니다.", "[수정] 곡 시작 직후 「FIGHT」 글자가 뒤집혀 보이던 버그를 수정했습니다."]}, {"v": "2.13.00", "d": "2026-11-24", "items": ["[추가] 모든 창 오른쪽 위에 닫기(X) 버튼이 추가되었습니다.", "[변경] PERFECT 타격음이 더 크고 또렷하게 변경되었습니다."]}, {"v": "2.12.04", "d": "2026-11-24", "items": ["[수정] 실시간 대결 결과 대기 화면에서 나갈 수 없던 문제를 수정했습니다. (닫기 버튼 추가)", "[수정] 첫 LEGENDARY 노트를 칠 때 화면이 잠깐 멈추던 문제를 수정했습니다.", "[수정] 실시간 대결 점수 바의 내 점수가 왼쪽 위 점수와 다르게 보이던 문제를 수정했습니다."]}, {"v": "2.12.03", "d": "2026-11-24", "items": ["[수정] 일부 곡에서 READY 중에 노트가 내려오던 버그를 수정했습니다."]}, {"v": "2.12.02", "d": "2026-11-24", "items": ["[변경] 롱노트(차징 노트)에도 노트 스킨이 끝까지 적용되도록 변경되었습니다.", "[추가] 「심연」 · 「연승의 불꽃」 롱노트 전용 불꽃 연출이 추가되었습니다."]}, {"v": "2.12.01", "d": "2026-11-24", "items": ["[수정] 다른 기기로 접속하면 스킨이 예전 것으로 바뀌던 문제를 수정했습니다.", "[변경] 장착 중인 스킨이 업적 화면에서 더 잘 보이도록 변경되었습니다."]}, {"v": "2.12.00", "d": "2026-11-24", "items": ["[변경] LEGENDARY 글러브 「명계」 · 「제왕」의 디자인과 연출이 개편되었습니다.", "[추가] LEGENDARY 전용 타격 연출이 추가되었습니다.", "[변경] 모든 노트 스킨의 타격 이펙트가 개편되었습니다.", "[변경] HELL 변속 폭이 0.5~1.3배에서 0.82~1.18배로 완화되었습니다.", "[변경] DEATH 난이도가 하향되었습니다. (변속 폭 축소, 동시치기 감소, 체력 감소량 완화)"]}, {"v": "2.11.01", "d": "2026-11-24", "items": ["[변경] 「연승의 불꽃」 노트의 불꽃 표현이 개선되었습니다."]}, {"v": "2.11.00", "d": "2026-11-24", "items": ["[추가] 스킨 등급(COMMON · UNCOMMON · RARE · EPIC · LEGENDARY)이 추가되었습니다.", "[추가] LEGENDARY 글러브 「명계」 · 「제왕」과 LEGENDARY 노트 「심연」 · 「연승의 불꽃」 전용 연출이 추가되었습니다."]}, {"v": "2.10.01", "d": "2026-11-24", "items": ["[변경] 운영 계정이 모든 랭킹에서 제외되었습니다."]}, {"v": "2.10.00", "d": "2026-11-24", "items": ["[추가] 대결 결과에 따라 시즌 XP를 받는 대결 보상이 추가되었습니다. (승리 +300 · 무승부 +120 · 패배 +60)", "[추가] 2연승부터 연승 보너스 XP가 추가되었습니다. (최대 +250)", "[추가] 대결 업적 5종이 추가되었습니다."]}, {"v": "2.09.00", "d": "2026-11-24", "items": ["[삭제] 오리지널 곡 「검은 돛의 행진」 · 「건반 폭주」가 삭제되었습니다.", "[추가] 실시간 대결에 점수 줄다리기 바와 「역전!」 알림이 추가되었습니다.", "[추가] 대결 종료 시 승리 · 패배 · 무승부 화면이 추가되었습니다."]}, {"v": "2.08.00", "d": "2026-11-24", "items": ["[추가] 오리지널 곡 「검은 돛의 행진」(HARD) · 「건반 폭주」(HELL)가 추가되었습니다."]}, {"v": "2.07.00", "d": "2026-11-24", "items": ["[추가] 신곡 「흑건」(HELL) · 「백건」(HELL) · 「송어」(EASY)가 추가되었습니다.", "[변경] 곡 검색에서 영어 이름으로도 찾을 수 있도록 변경되었습니다."]}, {"v": "2.06.00", "d": "2026-11-24", "items": ["[추가] 곡 선택 화면에 곡 검색이 추가되었습니다. (곡 이름 · 작곡가 · 영어 이름 · 초성)", "[추가] 검색 단축키(/ 또는 Ctrl+F)가 추가되었습니다."]}, {"v": "2.05.00", "d": "2026-11-24", "items": ["[추가] EXTREME 채보 17개와 HELL 채보 13개가 추가되었습니다.", "[추가] 「왕벌의 비행」 · 「라 캄파넬라」 DEATH 채보가 추가되었습니다.", "[추가] 새 업적 「명계 정복」과 보상(칭호 · 글러브 · 노트 스킨)이 추가되었습니다."]}, {"v": "2.04.01", "d": "2026-11-24", "items": ["[변경] 「화성」 · 「라 캄파넬라」가 원곡 악보 기준으로 다시 편곡되었고, 노트 타이밍이 조정되었습니다."]}, {"v": "2.04.00", "d": "2026-11-24", "items": ["[추가] 신곡 38곡이 추가되었습니다. (클래식 · 민요 · Kevin MacLeod 곡 등)", "[추가] 비발디 「사계」 전 악장이 추가되었습니다.", "[추가] 모드에 「비발디 사계 메들리」 코스가 추가되었습니다."]}, {"v": "2.03.01", "d": "2026-11-24", "items": ["[삭제] 「NO BATIDÃO」가 삭제되었습니다."]}, {"v": "2.03.00", "d": "2026-11-24", "items": ["[추가] 신곡 「NO BATIDÃO」(EXTREME)가 추가되었습니다."]}, {"v": "2.02.00", "d": "2026-11-24", "items": ["[추가] 타격 시 히트스톱과 진동(Android) 효과가 추가되었습니다. 설정에서 끌 수 있습니다.", "[추가] 모드 메뉴(연습실 · 메들리 · 보스 러시 · 서바이벌)가 추가되었습니다.", "[추가] 출석 체크와 출석 보상이 추가되었습니다.", "[추가] 무료 시즌 보상 단계(20단계)가 추가되었습니다.", "[추가] 업적 6종, 글러브 2종, 노트 스킨 1종이 추가되었습니다."]}, {"v": "2.01.00", "d": "2026-11-24", "items": ["[변경] 연습실에서는 체력이 줄지 않도록 변경되었습니다.", "[추가] 연습 결과에 마디별 실수 그래프와 구간 다시 연습 기능이 추가되었습니다."]}, {"v": "2.00.00", "d": "2026-11-24", "items": ["[추가] 곡마다 여러 난이도(EASY · MEDIUM · HARD 등)가 추가되었습니다.", "[추가] 구간 반복과 느린 속도를 지원하는 연습실이 추가되었습니다.", "[추가] 고스트, 시즌 랭킹, 오늘의 도전 · 이번 주 도전이 추가되었습니다.", "[추가] 친구 목록, 접속 표시, 실시간 1:1 대결이 추가되었습니다.", "[추가] 업적 5종이 추가되었습니다.", "[삭제] 곡 속도 옵션, 친구 기록 코드, 싱크 보정 슬라이더, 그래픽 품질 설정, 데스크톱 앱 다운로드가 삭제되었습니다.", "[변경] 종합 점수가 곡마다 가장 높은 난이도 점수 하나만 합산하도록 변경되었습니다."]}, {"v": "1.04.00", "d": "2026-11-23", "items": ["[변경] 연습 게이지로 플레이한 기록은 랭킹 · 최고 기록 · 업적 · 친구 대결에 반영되지 않도록 변경되었습니다."]}, {"v": "1.03.02", "d": "2026-11-23", "items": ["[수정] 「다시 보지 않기」를 누르면 이후 업데이트 로그가 계속 표시되지 않던 문제를 수정했습니다."]}, {"v": "1.03.01", "d": "2026-11-23", "items": ["[추가] 설정에 점수 보너스 안내가 추가되었습니다."]}, {"v": "1.03.00", "d": "2026-11-23", "items": ["[추가] 체력 게이지와 판정 범위 설정에 점수 배율이 추가되었습니다.", "[변경] 곡 도중 설정을 바꾸면 그 판에는 가장 낮은 배율이 적용되도록 변경되었습니다."]}, {"v": "1.02.01", "d": "2026-11-23", "items": ["[수정] 업데이트 로그의 버튼이 목록 아래에 가려지던 문제를 수정했습니다."]}, {"v": "1.02.00", "d": "2026-11-23", "items": ["[추가] 업데이트 로그에 「다시 보지 않기」 버튼이 추가되었습니다."]}, {"v": "1.01.01", "d": "2026-11-23", "items": ["[추가] 버전 표시와 업데이트 로그가 추가되었습니다.", "[추가] 배속에 따른 점수 배율이 추가되었습니다.", "[변경] 메인 화면 메뉴 구성이 변경되었습니다.", "[추가] HELL · DEATH 변속 구간의 광폭화 · 탈진 연출이 추가되었습니다.", "[추가] 친구 대결, 업적 · 칭호, 글러브 · 노트 스킨, 키 설정, 프로필 편집이 추가되었습니다."]}, {"v": "1.00.00", "d": "2026-11-23", "items": ["[추가] Bong's Game이 출시되었습니다. (51곡 · EASY~DEATH)", "[추가] 아이디 · 구글 로그인과 곡별 · 종합 랭킹이 추가되었습니다.", "[추가] Android · Windows · Mac · Linux 앱과 설치형 웹앱이 추가되었습니다."]}], APP_VER=CHANGELOG[0].v;
 function renderLog(){
   $('ulogList').replaceChildren(...CHANGELOG.map((e,i)=>{ const d=document.createElement('section'); d.className='ulv';
     const h=document.createElement('h3'); h.textContent='v'+e.v; const sm=document.createElement('small'); sm.textContent=e.d; h.append(sm);
@@ -2489,7 +2423,8 @@ if(THEME==='b'){ document.documentElement.classList.add('thb'); SERIF='"Black Ha
 // B 테마: 게임 화면(캔버스)의 금색 UI를 빨강 · 흰색으로 (스킨 원화 · 그라데이션 금속은 그대로)
 if(THEME==='b') (()=>{ const P=CanvasRenderingContext2D.prototype, MAP=[[/rgba\(227,\s*196,\s*122,/g,'rgba(224,38,43,'],[/rgba\(240,\s*215,\s*150,/g,'rgba(246,243,238,'],[/rgba\(216,\s*181,\s*106,/g,'rgba(224,38,43,'],[/rgba\(255,\s*236,\s*200,/g,'rgba(246,243,238,'],
     [/^#e3c47a$/i,'#e0262b'],[/^#f3d995$/i,'#ffffff'],[/^#fff1cc$/i,'#ffffff'],[/^#efe6d2$/i,'#f6f3ee'],[/^#d8b56a$/i,'#e0262b'],[/^#f0dca8$/i,'#ffffff']], C=new Map();
-  const conv=v=>{ if(typeof v!=='string') return v; let o=C.get(v); if(o===undefined){ o=v; for(const [re,to] of MAP) o=o.replace(re,to); if(C.size>6000) C.clear(); C.set(v,o); } return o; };
+  const HIT=/rgba\(\s*(227|240|216|255),|^#(e3c47a|f3d995|fff1cc|efe6d2|d8b56a|f0dca8)$/i;   // 바꿀 색이 아니면 정규식·캐시 없이 바로 통과 (매 프레임 새 색 문자열로 캐시가 넘치던 문제)
+  const conv=v=>{ if(typeof v!=='string'||!HIT.test(v)) return v; let o=C.get(v); if(o===undefined){ o=v; for(const [re,to] of MAP) o=o.replace(re,to); if(C.size>6000) C.clear(); C.set(v,o); } return o; };
   for(const k of ['fillStyle','strokeStyle','shadowColor']){ const d=Object.getOwnPropertyDescriptor(P,k); if(!d||!d.set) continue; Object.defineProperty(P,k,{configurable:true,enumerable:d.enumerable,get:d.get,set(v){ d.set.call(this,conv(v)); }}); }
 })();
 const IVORY='#efe6d2', STONE='#2b2620';
@@ -3070,14 +3005,19 @@ function deathHold(x,yT,yH,bw,holding){
   const sp=deathSprite(DNV,bw+6,7,'n'); ctx.drawImage(sp.c,x-(Math.round(bw+6))/2-sp.P,yT-3.5-sp.P,Math.round(bw+6)+sp.P*2,7+sp.P*2);   // 꼬리 끝
 }
 // 노트: 기본은 보석 막대, 스킨은 원화
+// 노트 주변 은은한 빛: 색 · 크기별로 한 번만 그려 두고 재사용 (매 프레임 노트마다 그라데이션을 새로 만들던 것 개선)
+const GLOW=new Map();
+function glowSprite(c,both,lw,h){ const L=Math.max(8,Math.round(lw)), H=Math.round(h*4)/4, k=c+'|'+(both?1:0)+'|'+L+'|'+H; let cv2=GLOW.get(k);
+  if(!cv2){ if(GLOW.size>64) GLOW.clear(); const S=Math.ceil(L*1.2); cv2=document.createElement('canvas'); cv2.width=cv2.height=S; const g=cv2.getContext('2d'), m=S/2;
+    const gr=g.createRadialGradient(m,m,H*0.3,m,m,L*0.6); gr.addColorStop(0,hexA(both?'#f3d995':c,both?0.2:0.13)); gr.addColorStop(1,hexA(c,0)); g.fillStyle=gr; g.fillRect(0,0,S,S); GLOW.set(k,cv2); }
+  return cv2; }
 function gem(x,y,lw,c,a,both,def){
   const w=Math.min(lw*0.82,150), h=gemH();
   if(run&&run.song.level>=11){ deathGem(x,y,w,h,a,both,def); return; }
   ctx.save(); ctx.globalAlpha=a;
   const nk=!def&&legN(), sk=EQ&&NOTE_SKINS[EQ.n], art=!def&&sk&&sk.a, dart=def&&sk&&sk.a; if(nk){ if(art&&sk.r==='UNIQUE') uniqBack(nk,x,y,w,h); else if(art){ ctx.globalAlpha=a*0.55; legNote(nk,x,y,Math.min(lw*0.82,150)*0.9,gemH()*0.4,c,'back'); ctx.globalAlpha=a; } else legNote(nk,x,y,Math.min(lw*0.82,150),gemH(),c,'back'); }   // 원화 스킨: 낮고 은은한 불꽃
   ctx.globalCompositeOperation='lighter';   // 은은한 빛 (예전보다 훨씬 약하게)
-  const gl=ctx.createRadialGradient(x,y,h*0.3,x,y,lw*0.6); gl.addColorStop(0,hexA(both?'#f3d995':c,both?0.2:0.13)); gl.addColorStop(1,hexA(c,0));
-  ctx.fillStyle=gl; ctx.fillRect(x-lw*0.6,y-lw*0.6,lw*1.2,lw*1.2);
+  { const gs=glowSprite(c,both,lw,h); ctx.drawImage(gs,x-lw*0.6,y-lw*0.6,lw*1.2,lw*1.2); }
   ctx.globalCompositeOperation='source-over';
   const bc=both?'#d9b45a':c, M=noteMetal();
   if(dart&&defSprite(dart,DEFV)){ const sp=defSprite(dart,DEFV); gemSpriteRaw(sp,dart,x,y,w,h);   // 방어 노트: 스킨 원화를 위험 표시로
@@ -3266,12 +3206,12 @@ function drawNotes(now){
       if(obs&&noteArt()){ const hc=HC(), iw=Math.max(3,bw*0.16), ig=ctx.createLinearGradient(0,yT,0,yH);   // 흑요석 몸통 가운데 레인색 상감선 (누르는 동안 밝아짐)
         ig.addColorStop(0,hexA(hc,0.25)); ig.addColorStop(1,hexA(n.holding?HL():hc,n.holding?0.95:0.75)); ctx.fillStyle=ig; ctx.fillRect(x-iw/2,yT,iw,yH-yT);
         ctx.fillStyle='rgba(255,255,255,.07)'; ctx.fillRect(x-bw/2+1,yT,bw*0.18,yH-yT); }   // 유약 광택
-      ctx.strokeStyle=obs?(()=>{ const M=noteMetal(), mg=ctx.createLinearGradient(x-bw/2,0,x+bw/2,0); M.forEach((mc,i)=>mg.addColorStop(i/(M.length-1),mc)); return mg; })():'rgba(227,196,122,.75)'; ctx.lineWidth=lk?1.6:1.2; ctx.strokeRect(x-bw/2,yT,bw,yH-yT);
+      ctx.strokeStyle=obs?metalGrad(x,bw):'rgba(227,196,122,.75)'; ctx.lineWidth=lk?1.6:1.2; ctx.strokeRect(x-bw/2,yT,bw,yH-yT);
       ctx.globalCompositeOperation='lighter';
       for(let q=0;q<(r.song.level>=11?0:5);q++){ const f=((now*1.6+q/5)%1), py=lerp(yT,yH,f); ctx.fillStyle=dn?'rgba(255,235,190,.5)':hexA(HL(),0.35); ctx.beginPath(); ctx.arc(x,py,bw*0.08,0,TAU); ctx.fill(); }
       if(lk) legHold(lk,x,yT,yH,bw,now,'front');
       ctx.restore();
-      ctx.fillStyle=dn?'#e3c47a':(()=>{ const M=noteMetal(), mg=ctx.createLinearGradient(x-bw/2,0,x+bw/2,0); M.forEach((mc,i)=>mg.addColorStop(i/(M.length-1),mc)); return mg; })(); rr(x-bw/2-3,yT-3,bw+6,6,3); ctx.fill();   // 꼬리 끝
+      ctx.fillStyle=dn?'#e3c47a':metalGrad(x,bw); rr(x-bw/2-3,yT-3,bw+6,6,3); ctx.fill();   // 꼬리 끝
       if(lk){ ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.shadowColor=hexA(HL(),0.5); ctx.shadowBlur=6; ctx.fillStyle=hexA(HL(),0.28); rr(x-bw/2-3,yT-3,bw+6,6,3); ctx.fill(); ctx.restore(); }
       if(n.holding){ ctx.fillStyle=IVORY; ctx.font=`600 ${Math.round(Math.max(11,lw*0.2))}px ${SERIF}`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(dn?'버텨라':'떼라',x,Math.max(top+10,yT-12)); continue; }
       gem(x,yH,lw,dn?'#e8394f':HC(),a,false,dn); continue;
@@ -3855,26 +3795,28 @@ function drawLasers(pt,d){   // EDM 드롭: 위에서 쏟아지는 레이저
 }
 function drawScreenFX(pt,pulse,fever){
   const R=Math.hypot(W,H)/2;
+  // 화면 가장자리 붉은 테두리: 모양은 한 번 만들어 두고 진하기는 globalAlpha로 (매 프레임 그라데이션 생성 줄임)
+  const VG=(drawScreenFX.c||(drawScreenFX.c=new Map())); if(VG.W!==W||VG.H!==H){ VG.clear(); VG.W=W; VG.H=H; }
+  const vig=(inner,c0,c1,al)=>{ if(al<=0.002) return; const k=inner+c0+c1; let g=VG.get(k); if(!g){ g=ctx.createRadialGradient(W/2,H/2,R*inner,W/2,H/2,R); g.addColorStop(0,`rgba(${c0},0)`); g.addColorStop(1,`rgba(${c1},1)`); VG.set(k,g); }
+    const ga=ctx.globalAlpha; ctx.globalAlpha=ga*Math.min(1,al); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.globalAlpha=ga; };
   if(fever){ ctx.save(); ctx.globalCompositeOperation='lighter';
-    const g=ctx.createRadialGradient(W/2,H/2,R*0.6,W/2,H/2,R); g.addColorStop(0,'rgba(255,170,70,0)'); g.addColorStop(1,`rgba(255,150,50,${0.14+0.12*pulse})`);
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.restore(); }
-  if(fx.miss>0){ const g=ctx.createRadialGradient(W/2,H/2,R*0.4,W/2,H/2,R); g.addColorStop(0,'rgba(60,0,0,0)'); g.addColorStop(1,`rgba(70,0,0,${0.6*fx.miss})`);
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
-  if(!POST.on){ const v=ctx.createRadialGradient(W/2,H*0.45,R*0.45,W/2,H*0.45,R*1.05); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.7)');
+    vig(0.6,'255,170,70','255,150,50',0.14+0.12*pulse); ctx.restore(); }
+  if(fx.miss>0) vig(0.4,'60,0,0','70,0,0',0.6*fx.miss);
+  if(!POST.on){ let v=VG.get('dark'); if(!v){ v=ctx.createRadialGradient(W/2,H*0.45,R*0.45,W/2,H*0.45,R*1.05); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.7)'); VG.set('dark',v); }
     ctx.fillStyle=v; ctx.fillRect(0,0,W,H); }
   if(fx.flash>0){ ctx.fillStyle=`rgba(255,245,225,${Math.min(0.7,fx.flash*0.55)})`; ctx.fillRect(0,0,W,H); }
   if(run&&!run.death&&run.dfx){ const d=run.dfx;   // 일반 곡: 색 조명 + 번쩍임
     if(d.wash>0.005){ ctx.save(); ctx.globalCompositeOperation='lighter'; const g=ctx.createRadialGradient(W/2,-H*0.1,0,W/2,-H*0.1,H*1.2); g.addColorStop(0,d.col); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.globalAlpha=Math.min(0.35,d.wash); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.restore(); }
     if(d.flash>0.01){ ctx.fillStyle=d.red?`rgba(255,50,70,${Math.min(0.5,d.flash*0.8)})`:`rgba(255,248,235,${Math.min(0.6,d.flash)})`; ctx.fillRect(0,0,W,H); }
-    if(d.strong&&d.pulse>0){ const g=ctx.createRadialGradient(W/2,H/2,R*0.4,W/2,H/2,R); g.addColorStop(0,'rgba(80,0,10,0)'); g.addColorStop(1,`rgba(120,0,16,${0.1+0.22*d.beat*d.pulse})`); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); } }
+    if(d.strong&&d.pulse>0) vig(0.4,'80,0,10','120,0,16',0.1+0.22*d.beat*d.pulse); }
   if(run&&run.death&&run.dfx){ const d=run.dfx;   // DEATH: 번쩍임 + 박마다 붉은 맥동
     if(d.flash>0.01){ ctx.fillStyle=d.red?`rgba(255,40,60,${d.flash*0.8})`:`rgba(255,250,245,${d.flash})`; ctx.fillRect(0,0,W,H); }
-    const g=ctx.createRadialGradient(W/2,H/2,R*0.35,W/2,H/2,R); g.addColorStop(0,'rgba(80,0,10,0)'); g.addColorStop(1,`rgba(110,0,14,${0.25+0.3*d.beat})`); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+    vig(0.35,'80,0,10','110,0,14',0.25+0.3*d.beat); }
   if(fx.hurt>0){ ctx.fillStyle=`rgba(190,20,30,${0.2*fx.hurt*fx.hurt})`; ctx.fillRect(0,0,W,H);
-    const g=ctx.createRadialGradient(W/2,H/2,R*0.3,W/2,H/2,R); g.addColorStop(0,'rgba(120,0,10,0)'); g.addColorStop(1,`rgba(150,0,12,${0.55*fx.hurt})`); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+    vig(0.3,'120,0,10','150,0,12',0.55*fx.hurt); }
   if(run&&!run.ended&&!run.G.nofail&&run.life<32){   // 체력이 낮으면 붉은 심장박동
     const k=1-run.life/32, ph=(pt*1.6)%1, beat=Math.exp(-ph*9)+0.6*Math.exp(-Math.max(0,ph-0.18)*9)*(ph>0.18?1:0);
-    const g=ctx.createRadialGradient(W/2,H/2,R*0.45,W/2,H/2,R); g.addColorStop(0,'rgba(140,0,10,0)'); g.addColorStop(1,`rgba(170,0,16,${(0.18+0.4*beat)*k})`); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+    vig(0.45,'140,0,10','170,0,16',(0.18+0.4*beat)*k); }
 }
 
 // 맨 위 캔버스: HUD + 금빛 입자(승리 연출) – 후처리 영향 없이 선명하게
@@ -3895,13 +3837,13 @@ function drawOverlay(now,pt,dt,fever){
   if(hud){ ctx=fctx; try{ drawHUD(now,pt,dt,fever); } finally { ctx=mainCtx; } }
   drawConfetti(dt,pt);
 }
+const CONF_DOT=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const g=c.getContext('2d'), gr=g.createRadialGradient(32,32,0,32,32,32); gr.addColorStop(0,'rgba(255,235,185,1)'); gr.addColorStop(1,'rgba(255,200,120,0)'); g.fillStyle=gr; g.fillRect(0,0,64,64); return c; })();
 function drawConfetti(dt,pt){
   if(!fx.conf.length) return;
   fctx.save(); fctx.globalCompositeOperation='lighter';
   for(const p of fx.conf){ p.life-=dt; p.x+=(p.vx+Math.sin(pt*1.5+p.ph)*16)*dt; p.y+=p.vy*dt;
     const a=clamp(p.life/p.max,0,1)*clamp((p.max-p.life)/0.5,0,1)*(0.6+0.4*Math.sin(pt*5+p.ph));
-    const g=fctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.s*4); g.addColorStop(0,`rgba(255,235,185,${a})`); g.addColorStop(1,'rgba(255,200,120,0)');
-    fctx.fillStyle=g; fctx.beginPath(); fctx.arc(p.x,p.y,p.s*4,0,TAU); fctx.fill(); }
+    if(a<=0.003) continue; const r=p.s*4; fctx.globalAlpha=a; fctx.drawImage(CONF_DOT,p.x-r,p.y-r,r*2,r*2); }   // 빛 알갱이는 미리 그린 그림 한 장을 재사용
   fctx.restore();
   fx.conf=fx.conf.filter(p=>p.life>0);
 }
@@ -4299,10 +4241,14 @@ function artStyle(k){   // 원화에서 몸통 · 테두리 색을 뽑아 긴 �
   const rc=acc(rim); return ART_STY[k]={body:acc(body),rim:rc,metal:[mixHex(rc,'#000000',0.6),mixHex(rc,'#ffffff',0.35),rc,mixHex(rc,'#ffffff',0.7),mixHex(rc,'#000000',0.55)]};
 }
 const noteArt=()=>{ const n=EQ&&NOTE_SKINS[EQ.n]; return n&&n.a||null; };
+// 홀드 노트 금속 띠: 줄 위치 · 폭 · 재질별로 한 번만 만들어 재사용
+const MGRAD=new Map();
+function metalGrad(x,bw){ const M=noteMetal(), k=Math.round(x)+'|'+Math.round(bw)+'|'+M.join(); let g=MGRAD.get(k);
+  if(!g){ if(MGRAD.size>48) MGRAD.clear(); g=ctx.createLinearGradient(x-bw/2,0,x+bw/2,0); M.forEach((mc,i)=>g.addColorStop(i/(M.length-1),mc)); MGRAD.set(k,g); } return g; }
 function noteMetal(){ const a=noteArt(), st=a&&artStyle(a); return st?st.metal:METALS.gold; }
 const ACHS=[
-  {id:'first_play',n:'첫 링',d:'곡을 처음 플레이',t:'신입 복서',v:(S)=>[S.plays,1]},
-  {id:'first_clear',n:'첫 승리',d:'곡 클리어 1번',t:'루키',v:(S)=>[S.clears,1]},
+  {id:'first_play',n:'첫 링',d:'처음으로 곡 플레이',t:'신입 복서',v:(S)=>[S.plays,1]},
+  {id:'first_clear',n:'첫 승리',d:'곡 1개 클리어',t:'루키',v:(S)=>[S.clears,1]},
   {id:'ko_1',n:'첫 K.O.',d:'최윤혁을 K.O.',t:'KO 메이커',v:(S)=>[S.kos,1]},
   {id:'plays_50',n:'링 위의 단골',d:'50판 플레이',t:'단골 복서',v:(S)=>[S.plays,50]},
   {id:'combo_100',n:'100 콤보',d:'한 곡에서 100 콤보',t:'콤보 장인',v:(S)=>[S.maxCombo,100]},
@@ -4315,7 +4261,7 @@ const ACHS=[
   {id:'death_clear',n:'사신',d:'DEATH 곡 클리어',t:'사신',r:'UNIQUE',v:(S,B)=>[B.death,1]},
   {id:'death_all',n:'명계 정복',d:'DEATH 3곡 클리어',t:'명계의 지배자',top:true,r:'UNIQUE',v:(S,B)=>[B.death,3]},
   {id:'death_9',n:'명계의 끝',d:'DEATH 9곡 모두 클리어',t:'죽음을 넘어선 자',top:true,r:'UNIQUE',v:(S,B)=>[B.death,DEATH_IDS.length]},
-  {id:'rage_tame',n:'맹수 조련사',d:'광폭화 중 노트 누적 300개 성공',t:'맹수 조련사',v:(S)=>[S.rageHits,300]},
+  {id:'rage_tame',n:'맹수 조련사',d:'광폭화 중에 노트를 누적 300개 맞히기',t:'맹수 조련사',v:(S)=>[S.rageHits,300]},
   {id:'tired_ko',n:'피니셔',d:'탈진한 최윤혁을 K.O.',t:'피니셔',v:(S)=>[S.tiredKO,1]},
   {id:'charge_100',n:'한 방의 사나이',d:'차징 펀치 누적 100번',t:'한 방의 사나이',v:(S)=>[S.charges,100]},
   {id:'def_300',n:'그림자 복서',d:'회피·가드 누적 300번',t:'그림자 복서',v:(S)=>[S.defs,300]},
@@ -4459,7 +4405,7 @@ function achCheck(showNew){
   if(showNew){ const box=$('rAch'); if(box){
     const items=fresh.slice(0,3).map(x=>{ const g=Object.entries(GLOVE_SKINS).find(([,v])=>v.req===x.a.id), n=Object.entries(NOTE_SKINS).find(([,v])=>v.req===x.a.id);
       return `<div><b>업적 달성 · ${x.a.n}</b><span>칭호 「${x.a.t}」${g?` · 글러브 「${g[1].n}」`:''}${n?` · 노트 「${n[1].n}」`:''} 해금</span></div>`; });
-    if(fresh.length>3) items.push(`<div><span>외 ${fresh.length-3}개 더 · 계정에서 확인</span></div>`);
+    if(fresh.length>3) items.push(`<div><span>외 ${fresh.length-3}개 더 · 계정 화면에서 확인하세요</span></div>`);
     box.innerHTML=items.join(''); box.classList.remove('hidden'); confettiBurst(60); if(actx){ const t=actx.currentTime; bell(master,t,0.12); }
   } }
   if(window.onProgSave) onProgSave(); return fresh;
@@ -4475,7 +4421,7 @@ function startCalib(){
   for(let i=0;i<CAL_PRE+CAL_N;i++){const t=t0+i*CAL_SPB; if(i<CAL_PRE) tone(bus,t,'sine',1600,0.07,0.25); else {kick(bus,t,1); chat(bus,t,0.15);}}
   cal={t0,bus,taps:[],done:false,result:0};
   $('calDone').classList.add('hidden'); $('calCount').textContent='';
-  $('calMsg').innerHTML='신호음 네 번 뒤에 울리는 <b>북소리</b>에 맞춰<br>아무 펀치 키('+KEYLBL.map(k=>`<span class="kb">${k}</span>`).join('')+')를 누르세요 (모바일은 원을 터치)';
+  $('calMsg').innerHTML='신호음 네 번 뒤에 울리는 <b>북소리</b>에 맞춰<br>아무 펀치 키('+KEYLBL.map(k=>`<span class="kb">${k}</span>`).join('')+')를 누르세요 (모바일은 가운데 원을 누르세요)';
   show('calib');
 }
 function endCalib(){ if(cal&&cal.bus){try{cal.bus.disconnect()}catch(e){}} cal=null; }
@@ -4553,12 +4499,13 @@ const POST=(()=>{
     return {p,u};
   }
   let P;
+  const geo=()=>{ const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0); };
   try{ P={bright:prog(BRIGHT),blur:prog(BLUR),final:prog(FINAL)}; }catch(e){ console.warn('post fx off',e); return dead; }
-  const buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  geo();
   const tex=()=>{const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
     for(const [k,v] of [[gl.TEXTURE_MIN_FILTER,gl.LINEAR],[gl.TEXTURE_MAG_FILTER,gl.LINEAR],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D,k,v); return t;};
-  const scene=tex();
+  let scene=tex();
   let fbs=null, qw=0, qh=0;
   function target(w,h){const t=tex(); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null); const f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0); return {t,f};}
   function ensure(w,h){
@@ -4573,7 +4520,7 @@ const POST=(()=>{
     set(pr.u); gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
   }
   const api={ok:true,on:false,lost:false,
-    setOn(v){ api.on=v&&!api.lost; gc.style.display=api.on?'block':'none'; },
+    setOn(v){ if(api.lost) api.wasOn=!!v; api.on=v&&!api.lost; gc.style.display=api.on?'block':'none'; },
     render(src,o){
       if(!api.on) return;
       const w=src.width,h=src.height; ensure(w,h);
@@ -4590,7 +4537,9 @@ const POST=(()=>{
         gl.uniform1f(u.bk,o.bloom); gl.uniform1f(u.ca,o.ca); gl.uniform1f(u.gr,o.grain); gl.uniform1f(u.vig,o.vig); gl.uniform1f(u.rays,o.rays); gl.uniform1f(u.sat,o.sat);
       });
     }};
-  gc.addEventListener('webglcontextlost',e=>{ e.preventDefault(); api.lost=true; api.setOn(false); });
+  gc.addEventListener('webglcontextlost',e=>{ e.preventDefault(); const w=api.on; api.setOn(false); api.lost=true; api.wasOn=w; });
+  gc.addEventListener('webglcontextrestored',()=>{   // 앱을 내렸다 올리면 GPU가 초기화될 수 있음 → 효과를 다시 만들어 켬
+    try{ P={bright:prog(BRIGHT),blur:prog(BLUR),final:prog(FINAL)}; geo(); scene=tex(); fbs=null; qw=qh=0; api.lost=false; if(api.wasOn) api.setOn(true); api.wasOn=false; }catch(e){ console.warn('post fx restore',e); } });
   return api;
 })();
 
@@ -4767,8 +4716,8 @@ document.querySelectorAll('#flashSeg button').forEach(b=>b.onclick=()=>{ flashSa
 document.querySelectorAll('#rateSeg button').forEach(b=>b.onclick=()=>{ rateMul=+b.dataset.r; store.set('sb.rate',rateMul); syncSeg('rateSeg','r',rateMul); updateMenu(); uiTick(); });
 function spHint(){
   const f=(id,m,base)=>{ const e=$(id); if(!e) return; const pc=Math.round((m-1)*100); e.textContent=(base?base+' · ':'')+(pc>0?`점수 보너스 +${pc}%`:pc<0?`점수 ${pc}%`:'점수 기본'); e.classList.toggle('up',pc>0); e.classList.toggle('down',pc<0); };
-  f('spHint',spMul(speedMul),'노트 낙하 속도'); f('gHint',GAUGE_SCORE[gaugeKey]||1,''); if(gaugeKey==='easy'){ const g=$('gHint'); if(g){ g.textContent='안 죽는 연습 모드 · 랭킹 · 업적 제외'; g.classList.add('down'); g.classList.remove('up'); } } f('jHint',JUDGE_SCORE[judgeKey]||1,'');
-  const t=scoreMul(), e=$('mulTotal'), pc=Math.round((t-1)*1000)/10; if(e) e.textContent=gaugeKey==='easy'?'지금 설정: 연습 게이지라 랭킹 · 업적에 기록되지 않아요':`지금 설정: ${pc>0?'보너스 +'+pc+'%':pc<0?pc+'%':'기본 점수'} · 만점 ${Math.round(1e6*t).toLocaleString()}점`;
+  f('spHint',spMul(speedMul),'노트 낙하 속도'); f('gHint',GAUGE_SCORE[gaugeKey]||1,''); if(gaugeKey==='easy'){ const g=$('gHint'); if(g){ g.textContent='쓰러지지 않는 연습 모드 · 랭킹 · 업적 제외'; g.classList.add('down'); g.classList.remove('up'); } } f('jHint',JUDGE_SCORE[judgeKey]||1,'');
+  const t=scoreMul(), e=$('mulTotal'), pc=Math.round((t-1)*1000)/10; if(e) e.textContent=gaugeKey==='easy'?'지금 설정: 연습 게이지라서 랭킹 · 업적에 기록되지 않아요':`지금 설정: ${pc>0?'보너스 +'+pc+'%':pc<0?pc+'%':'기본 점수'} · 만점 ${Math.round(1e6*t).toLocaleString()}점`;
 }
 function lockMul(){ if(run) run.sMul=Math.min(run.sMul,scoreMul()); spHint(); }
 document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>{ speedMul=+b.dataset.s; store.set('sb.speed',speedMul); syncSeg('speedSeg','s',speedMul); spHint(); uiTick();
@@ -5011,7 +4960,7 @@ async function netRecord(r,rank,lamp,acc){
   const note=$('rRankNote'); note.textContent='';
   if(!NET.ready) return;
   if(r.prac){ note.textContent='연습실 기록은 랭킹 · 업적에 들어가지 않아요'; return; }
-  if(r.G.nofail){ note.textContent='연습 게이지는 안 죽는 모드라 랭킹 · 업적에 들어가지 않아요'; return; }
+  if(r.G.nofail){ note.textContent='연습 게이지는 쓰러지지 않는 모드라서 랭킹 · 업적에 들어가지 않아요'; return; }
   if(r.rt&&r.rt.pvp){ note.textContent='실시간 대결은 랭킹 · 개인 기록에 들어가지 않아요'; return; }
   if(r.failed){ note.textContent='T.K.O. 기록은 랭킹에 오르지 않아요'; return; }
   if(!NET.db||!NET.uid){ showCode(r,rank,lamp,acc,'게스트 기록'); return; }
@@ -5044,17 +4993,17 @@ let fbStep='login';   // login | setid
 function fbReady(){ return !!(window.FBK&&window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey); }
 function fbUI(){   // 로그인 화면: 구글 로그인 버튼 + 아이디 정하기 단계
   if($('lgGoogle')) return;
-  const form=$('lgForm');
+  const form=$('lgForm'); form.addEventListener('submit',e=>e.preventDefault());   // (CSP: HTML 속성 안의 스크립트 대신)
   const g=document.createElement('button'); g.type='button'; g.id='lgGoogle'; g.className='gbtn';
   g.innerHTML='<svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span>Google 계정으로 로그인</span>';
   const or=document.createElement('div'); or.className='lgor'; or.textContent='또는 게임 아이디로';
   form.parentNode.insertBefore(g,form); form.parentNode.insertBefore(or,form);
-  const sid=document.createElement('label'); sid.className='hidden'; sid.id='lgSetIdRow'; sid.innerHTML='<span>사용할 게임 아이디 (랭킹에 표시 · 나중에 못 바꿔요)</span>';
+  const sid=document.createElement('label'); sid.className='hidden'; sid.id='lgSetIdRow'; sid.innerHTML='<span>사용할 게임 아이디 (랭킹에 표시돼요 · 나중에 바꿀 수 없어요)</span>';
   const inp=document.createElement('input'); inp.id='lgSetId'; inp.maxLength=16; inp.autocomplete='off'; inp.spellcheck=false; inp.placeholder='영문·숫자·한글 2~16자'; sid.appendChild(inp);
   form.insertBefore(sid,form.firstChild);
   $('lgPw').placeholder='6자 이상';
   const inApp=/; wv\)|Electron|Neutralino|RhythmApp/.test(navigator.userAgent);
-  if(inApp){ g.disabled=true; g.style.opacity='.45'; or.textContent='앱에서는 구글 로그인이 막혀 있어요 · 아이디로 로그인하세요 (구글 가입자는 웹의 계정 화면에서 비밀번호를 추가)'; }
+  if(inApp){ g.disabled=true; g.style.opacity='.45'; or.textContent='앱에서는 구글 로그인을 쓸 수 없어요 · 아이디로 로그인하세요 (구글로 가입했다면 웹사이트의 계정 화면에서 비밀번호를 먼저 추가하세요)'; }
   g.onclick=async()=>{ if(!fbReady()||inApp) return; $('lgErr').textContent='구글 로그인 창을 여는 중…';
     try{ await FBK.google($('lgKeep').checked, /Electron|; wv\)/.test(navigator.userAgent)); }catch(e){ $('lgErr').textContent=FBK.errMsg(e); } };
 }
@@ -5066,10 +5015,15 @@ function netInit(){
   NET.db=FBK.db; NET.owner=false; NET.accts=new Map();
   NET.profs=new Map();
   NET.user={ profiles: async ids=>Object.fromEntries(ids.map(i=>{ const pf=NET.profs.get(i)||{}; return [i,{id:i,nick:pf.nick||'',name:pf.nick||(NET.accts.get(i)||{}).gameId||'',avatarUrl:okPhoto(pf.photo)||(i===NET.uid&&NET.me?NET.me.avatarUrl:'')}]; })) };
-  FBK.db.collection('profiles').onSnapshot(s=>{ NET.profs.clear(); for(const d of s.docs) NET.profs.set(d.id,d.data()); NET.profsLoaded=true; MYFR=null; profMerge();
+  const subProfAcc=()=>{ NET.profUnsub=FBK.db.collection('profiles').onSnapshot(s=>{ NET.profs.clear(); for(const d of s.docs) NET.profs.set(d.id,d.data()); NET.profsLoaded=true; MYFR=null; profMerge();
     if(ACC&&NET.uid&&NET.progMerged&&!eqDirty()){ const mp=NET.profs.get(NET.uid); if(mp&&mp.eq&&applyServerEq(mp.eq,mp.title)&&$('achv')&&!$('achv').classList.contains('hidden')) renderProgUI(); } if(window.renderFriends) renderFriends(); renderAcct(); renderRanking(); renderAccount(); },()=>{});
-  FBK.db.collection('accounts').onSnapshot(s=>{ NET.accts.clear(); for(const d of s.docs) NET.accts.set(d.id,d.data()); renderRanking(); },()=>{});
-  subscribeScores();
+  NET.accUnsub=FBK.db.collection('accounts').onSnapshot(s=>{ NET.accts.clear(); for(const d of s.docs) NET.accts.set(d.id,d.data()); renderRanking(); },()=>{}); };
+  subProfAcc(); subscribeScores();
+  // 앱을 3분 넘게 내려 두면 랭킹 · 프로필 실시간 구독을 끊고, 다시 열면 이어 받음 (백그라운드에서 다른 사람 기록마다 읽기 횟수가 쌓이지 않게)
+  { let hideT=0, paused=false;
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){ clearTimeout(hideT); hideT=setTimeout(()=>{ if(!document.hidden||paused) return; paused=true; try{ NET.profUnsub&&NET.profUnsub(); NET.accUnsub&&NET.accUnsub(); NET.unsub&&NET.unsub(); }catch(e){} NET.profUnsub=NET.accUnsub=NET.unsub=null; },180e3); }
+      else { clearTimeout(hideT); if(paused){ paused=false; subProfAcc(); subscribeScores(); } } }); }
   FBK.watchFirst('death',d=>{ NET.firstDeath=d; firstTry(); if(window.bookRender&&!$('book').classList.contains('hidden')) bookRender(); });
   FBK.onAuth(async u=>{
     NET.ready=true;
@@ -5087,10 +5041,10 @@ function firstTry(){
   if(NET.firstDeath!==null||NET.firstBusy||!ACC||!NET.uid||isDev(NET.uid)) return;
   const best=(NET.all&&NET.all.get(NET.uid)||NET.mine||{}).best||{}, key=Object.keys(best).find(k=>/^[a-z0-9]+#11@1$/.test(k)&&num(best[k].l,6)>=3);
   if(!key) return; NET.firstBusy=true;
-  FBK.claimFirst('death',(myProf().nick||ACC.id),key).then(()=>{ toast(`👑 서버 최초 DEATH 클리어! UNIQUE 칭호 「${UNIQUE_DEATH}」와 UNIQUE 글러브 · 노트 「최초의 사신」을 얻었어요`); confettiBurst&&confettiBurst(160); })
+  FBK.claimFirst('death',(myProf().nick||ACC.id),key).then(()=>{ toast(`👑 서버 최초 DEATH 클리어! UNIQUE 칭호 「${UNIQUE_DEATH}」과 UNIQUE 글러브 · 노트 「최초의 사신」을 얻었어요`); confettiBurst&&confettiBurst(160); })
     .catch(()=>{}).finally(()=>{ NET.firstBusy=false; });
 }
-const okPhoto=p=>typeof p==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(p)?p:'';   // 사진은 이미지 데이터만 사용
+const okPhoto=p=>typeof p==='string'&&p.length<400000&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(p)?p:'';   // 사진은 이미지 데이터만 사용
 function myProf(){ return (NET.uid&&NET.profs&&NET.profs.get(NET.uid))||{}; }
 function myNick(){ return myProf().nick||(ACC?ACC.id:''); }
 function myPhoto(){ return okPhoto(myProf().photo)||(NET.me&&NET.me.avatarUrl)||''; }
@@ -5166,7 +5120,7 @@ function showCode(){ NET.noWrite=false; $('rRankNote').textContent='랭킹 저�
     <a class="dl" href="download/RhythmGame.apk" download><b>Android 앱 (APK)</b><small>폰에서 받아 설치 · 「출처를 알 수 없는 앱 허용」 필요</small></a>
     <div class="dl"><b>설치형 웹앱 (추천)</b><small>크롬·엣지 주소창의 설치 아이콘 또는 메뉴 ⋮ → 「앱 설치」 / 아이폰은 공유 → 「홈 화면에 추가」 · 구글 로그인도 돼요</small></div>
   </div>
-  <div class="lgsub">앱 안에서는 구글 로그인이 막혀 있어요. 아이디 + 비밀번호로 로그인하세요.</div>
+  <div class="lgsub">앱 안에서는 구글 로그인을 쓸 수 없어요. 아이디 + 비밀번호로 로그인하세요.</div>
   <nav class="list"><button class="item" id="dlBack"><span>돌아가기</span></button></nav></div>`;
   document.body.appendChild(ov);
   const st=document.createElement('style'); st.textContent='.dlist{display:flex;flex-direction:column;gap:8px;margin:14px 0 8px}.dl{display:flex;flex-direction:column;gap:3px;padding:11px 14px;border:1px solid var(--line);background:rgba(8,6,5,.45);color:var(--ink);text-decoration:none}a.dl:hover{border-color:var(--gold2)}.dl b{font-weight:600}.dl small{font-size:11.5px;color:var(--muted)}';
@@ -5176,7 +5130,7 @@ function showCode(){ NET.noWrite=false; $('rRankNote').textContent='랭킹 저�
 })();
 // 자동 업데이트: 새 버전이 올라오면 (곡 플레이 중이 아닐 때) 바로 새로고침
 (function autoUpdate(){
-  const CUR='20261127023222'; let pending=false, NEWNAME='';
+  const CUR='20261127024437'; let pending=false, NEWNAME='';
   const busy=()=>{ try{ return !!run||!!RT||!!(typeof SEQ!=='undefined'&&SEQ)||!$('result').classList.contains('hidden'); }catch(e){ return true; } };   // 플레이·일시정지·결과 화면·대결 방에서는 새로고침하지 않음
   const apply=()=>{ if(busy()){ pending=true; return; }
     const t=document.createElement('div'); t.textContent=NEWNAME?`새 버전 v${NEWNAME}로 업데이트하는 중…`:'새 버전으로 업데이트하는 중…';
@@ -5435,7 +5389,8 @@ function watchDuels(){
     first=false;
     const wins=list.filter(d=>d.status==='done'&&((d.from===NET.uid&&d.fromScore>d.toScore)||(d.to===NET.uid&&d.toScore>d.fromScore))).length;
     if(ST&&wins>ST.chWins){ ST.chWins=wins; saveProg(); achCheck(false); }
-    renderDuelBadge(); renderDuels(); });
+    renderDuelBadge(); renderDuels();
+    setTimeout(()=>{ if(NET.duelUnsub){ try{ NET.duelUnsub(); }catch(e){} NET.duelUnsub=()=>{}; } },0); });   // 친구 도전 화면이 없어 실시간 구독은 불필요 → 지난 기록만 한 번 읽고 끊음
 }
 function toast(t){ const e=document.createElement('div'); e.className='btoast'; e.textContent=t; document.body.appendChild(e); setTimeout(()=>e.classList.add('out'),3200); setTimeout(()=>e.remove(),3800); }
 function renderDuelBadge(){ const n=(NET.rtInv||[]).filter(r=>!(NET.rtNo&&NET.rtNo.has(r.id))&&(!RT||r.id!==RT.code)).length, b=$('duelBadge'); if(b){ b.textContent=n; b.classList.toggle('hidden',!n); } }
@@ -5451,7 +5406,7 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
   const mb=document.createElement('button'); mb.className='item mtile'; mb.id='duelBtn'; mb.innerHTML='<svg class="gi" viewBox="0 0 512 512" aria-hidden="true"><path fill="currentColor" d="M19.75 14.438c59.538 112.29 142.51 202.35 232.28 292.718l3.626 3.75l.063-.062c21.827 21.93 44.04 43.923 66.405 66.25c-18.856 14.813-38.974 28.2-59.938 40.312l28.532 28.53l68.717-68.717c42.337 27.636 76.286 63.646 104.094 105.81l28.064-28.06c-42.47-27.493-79.74-60.206-106.03-103.876l68.936-68.938l-28.53-28.53c-11.115 21.853-24.413 42.015-39.47 60.593c-43.852-43.8-86.462-85.842-130.125-125.47c-.224-.203-.432-.422-.656-.625C183.624 122.75 108.515 63.91 19.75 14.437zm471.875 0c-83.038 46.28-154.122 100.78-221.97 161.156l22.814 21.562l56.81-56.812l13.22 13.187l-56.438 56.44l24.594 23.186c61.802-66.92 117.6-136.92 160.97-218.72zm-329.53 125.906l200.56 200.53a403 403 0 0 1-13.405 13.032L148.875 153.53zm-76.69 113.28l-28.5 28.532l68.907 68.906c-26.29 43.673-63.53 76.414-106 103.907l28.063 28.06c27.807-42.164 61.758-78.174 104.094-105.81l68.718 68.717l28.53-28.53c-20.962-12.113-41.08-25.5-59.937-40.313c17.865-17.83 35.61-35.433 53.157-52.97l-24.843-25.655l-55.47 55.467c-4.565-4.238-9.014-8.62-13.374-13.062l55.844-55.844l-24.53-25.374c-18.28 17.856-36.602 36.06-55.158 54.594c-15.068-18.587-28.38-38.758-39.5-60.625z"/></svg><span>대결</span><em class="dbadge hidden" id="duelBadge">0</em>'; $('rankBtn').after(mb);
   const ov=document.createElement('div'); ov.id='duels'; ov.className='ov ov-panel hidden';
   ov.innerHTML=`<div class="panel acpanel"><h2>대결</h2><div class="orn"></div>
-  <section class="acsec" style="border-top:0;margin-top:8px;padding-top:0"><h3>실시간 대결 <small class="acnote">같은 곡을 동시에 치며 서로 때려요 — 노트를 치면 상대 체력이 깎이고, 콤보 20마다 러시를 보내면 상대 노트가 빨간 방어 노트로 바뀌어요 · 먼저 체력 0이 되면 K.O. 패배, 끝까지 가면 남은 체력으로 판정 · 이기면 시즌 XP +300 · 연승하면 보너스</small></h3>
+  <section class="acsec" style="border-top:0;margin-top:8px;padding-top:0"><h3>실시간 대결 <small class="acnote">같은 곡을 동시에 치면서 서로 때려요. 노트를 치면 상대 체력이 깎이고, 콤보 20마다 러시를 보내 상대 노트를 빨간 방어 노트로 바꿔요 · 체력이 먼저 0이 되면 K.O. 패배, 끝까지 가면 남은 체력으로 승패를 가려요 · 이기면 시즌 XP +300, 연승하면 보너스</small></h3>
     <div id="rtBox"></div><div class="dulist" id="rtInv"></div>
     <div class="acrow" id="rtJoinRow"><input id="rtCode" maxlength="5" autocomplete="off" spellcheck="false" placeholder="방 코드 5자리"><button type="button" class="tchip" id="rtJoin">참가</button><button type="button" class="tchip" id="rtMake">방 만들기</button></div>
     <div class="acmsg" id="rtMsg"></div></section>
@@ -5476,14 +5431,14 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
 .pcard .pn{font:400 26px "EB Garamond","Bong Myung",serif;color:var(--gold2)}.pcard .pt{font-size:12.5px;color:#f3d995}.pcard .pi{font-size:12.5px;color:var(--muted);margin-top:2px}
 .rkrow{cursor:pointer}`;
   document.head.appendChild(st);
-  const open=()=>{ if(!ACC) return show('login'); show('duels'); $('duMsg').textContent=''; renderDuels(); if(window.renderFriends) renderFriends(); clickGuard=performance.now()+300; };
+  const open=()=>{ if(!ACC) return show('login'); needPres(); show('duels'); $('duMsg').textContent=''; renderDuels(); if(window.renderFriends) renderFriends(); clickGuard=performance.now()+300; };
   mb.onclick=()=>{ uiTick(); open(); }; window.openDuels=open;
   $('duBack').onclick=()=>{ uiTick(); show('menu'); };
   $('duTo').addEventListener('keydown',e=>{ if(e.key==='Enter') $('duSend').click(); });
   $('duSend').onclick=async()=>{ const id=$('duTo').value.trim(), m=$('duMsg'); m.classList.remove('ok');
     if(!ID_RE.test(id)){ m.textContent='아이디는 영문·숫자·한글·_ 2~16자예요'; return; }
     m.textContent='찾는 중…';
-    try{ const uid=await FBK.lookupUid(id); if(!uid) throw {code:'no-user'}; await rtInvite(uid); $('duTo').value=''; m.textContent=`${nickOf(uid)}님에게 실시간 대전을 신청했어요 · 들어오면 「시작」을 눌러요`; m.classList.add('ok'); }
+    try{ const uid=await FBK.lookupUid(id); if(!uid) throw {code:'no-user'}; await rtInvite(uid); $('duTo').value=''; m.textContent=`${nickOf(uid)}님에게 실시간 대전을 신청했어요 · 상대가 들어오면 「시작」을 누르세요`; m.classList.add('ok'); }
     catch(e){ m.textContent=e&&e.code==='offline'?`${id}님은 지금 접속해 있지 않아요 · 실시간 대전은 둘 다 접속해 있어야 해요`:duelErr(e); } };
   // 랭킹에서 이름을 누르면 선수 카드
   const pc=document.createElement('div'); pc.id='pcardOv'; pc.className='ov ov-panel hidden';
@@ -5493,7 +5448,7 @@ const duelErr=e=>({'no-best':'이 곡(곡 속도 포함) 내 랭킹 기록이 �
   const rowClick=e=>{ const li=e.target.closest&&e.target.closest('.rkrow'); if(!li||!li.dataset.uid||li.dataset.uid.startsWith('g_')) return; openPlayer(li.dataset.uid); };
   $('rkList').addEventListener('click',rowClick); $('rkMe').addEventListener('click',rowClick);
   function openPlayer(uid){
-    uiTick(); const p=NET.profs.get(uid)||{}, sc=NET.all.get(uid)||{}, rows=rankList(null), ri=rows.findIndex(r=>r.id===uid);
+    uiTick(); needPres(); const p=NET.profs.get(uid)||{}, sc=NET.all.get(uid)||{}, rows=rankList(null), ri=rows.findIndex(r=>r.id===uid);
     const ach=isDev(uid)?ACHS.length:achState(p.st||{},sc.best||{}).filter(x=>x.ok).length, ph=photoOf(uid), nk=nickOf(uid);
     const key=rkKey()||(ckey(SONGS[rkIdx],curLv(SONGS[rkIdx]))+'@1'), kinfo=parseKey(key), sb=sc.best&&sc.best[key], mineB=NET.mine&&NET.mine.best&&NET.mine.best[key];
     $('pcBody').innerHTML=`<div class="pav">${ph?`<img src="${ph}" alt="">`:''}</div>${p.title&&(p.title!==DEV_TITLE||isDev(uid))?`<div class="pt${p.title===DEV_TITLE?' dev':''}${UNIQ_TITLES.includes(p.title)?' uniq':TOP_TITLES.includes(p.title)?' top':''}">「${p.title.replace(/[<>&]/g,'')}」</div>`:''}<div class="pn"></div><div class="pi">@${idOf(uid)}</div>
@@ -5564,13 +5519,13 @@ window.afterRunHook=async(r)=>{
       <div class="acrow"><input id="arFrId" maxlength="16" autocomplete="off" spellcheck="false" placeholder="친구 게임 아이디"><button type="button" class="tchip" id="arFrAdd">친구 추가</button></div>
       <div class="acmsg" id="arFrMsg"></div><div class="dulist" id="arFrList"></div>
     </div>
-    <div class="arfoot"><small>실시간 대전은 시즌 XP · 업적에 들어가요 · 랭킹 기록엔 들어가지 않아요</small><div class="arbtns"><button type="button" class="tchip" id="arBack">나가기</button><button type="button" class="arstart" id="arStart">대전 시작 <b>→</b></button></div></div>
+    <div class="arfoot"><small>실시간 대전은 시즌 XP · 업적에는 반영되지만 랭킹 기록에는 들어가지 않아요</small><div class="arbtns"><button type="button" class="tchip" id="arBack">나가기</button><button type="button" class="arstart" id="arStart">대전 시작 <b>→</b></button></div></div>
   </div>`;
   document.body.appendChild(ov);
   let TAB='ready', PICK=false;
   const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
   function side(uid,label){   // 선수 카드: 사진 · 닉네임 · 칭호 · 기록 · 장착 스킨
-    if(!uid) return `<span class="arlab">${label}</span><div class="arav q">?</div><b class="arnk">상대 대기 중</b><small class="arsub">친구를 초대하거나 방 코드를 알려주세요</small>`;
+    if(!uid) return `<span class="arlab">${label}</span><div class="arav q">?</div><b class="arnk">상대 대기 중</b><small class="arsub">친구를 초대하거나 방 코드를 알려 주세요</small>`;
     const p=NET.profs.get(uid)||{}, me=uid===NET.uid, ph=photoOf(uid), nk=nickOf(uid), sc=NET.all.get(uid)||{};
     const t=me?(EQ&&EQ.t):p.title, eq=me?EQ:(p.eq||{}), g=GLOVE_SKINS[eq&&eq.g]||GLOVE_SKINS.classic, n=NOTE_SKINS[eq&&eq.n]||NOTE_SKINS.classic;
     const st=me?ST:(p.st||{}), wins=num(st.rtWins,1e6)+num(st.chWins,1e6), ach=isDev(uid)?ACHS.length:achState(st,sc.best||{}).filter(x=>x.ok).length;
@@ -5618,7 +5573,7 @@ window.afterRunHook=async(r)=>{
     try{ const uid=await FBK.lookupUid(id); if(!uid) throw {code:'no-user'}; if(uid===NET.uid) throw {code:'self'}; await setFriend(uid,true); $('arFrId').value=''; m.classList.add('ok'); m.textContent=`${id}님을 친구로 추가했어요`; friends(); }catch(e){ m.textContent=duelErr(e); } };
   $('arStart').onclick=()=>{ if(!RT||!RT.room||RT.role!=='h'||RT.room.state!=='ready') return; uiConfirm(); FBK.roomStart(RT.code).catch(e=>{ $('arMsg').textContent=FBK.errMsg(e); }); };
   $('arBack').onclick=async()=>{ uiTick(); if(RT){ await rtLeave(); $('arMsg').textContent='방에서 나왔어요'; render(); return; } show('menu'); };
-  window.openArena=(t)=>{ if(!ACC) return show('login'); uiTick(); TAB=t||'ready'; $('arMsg').textContent=''; show('arena'); if(TAB==='friends') friends(); render(); clickGuard=performance.now()+300; };
+  window.openArena=(t)=>{ if(!ACC) return show('login'); needPres(); uiTick(); TAB=t||'ready'; $('arMsg').textContent=''; show('arena'); if(TAB==='friends') friends(); render(); clickGuard=performance.now()+300; };
   window.renderArena=()=>{ render(); if(TAB==='friends'&&!ov.classList.contains('hidden')) friends(); };
   // 메뉴 「대결」은 대전 로비로
   const db=$('duelBtn'); if(db) db.onclick=()=>openArena();
@@ -5642,6 +5597,11 @@ window.afterRunHook=async(r)=>{
 /* ================= 친구 · 접속 표시 · 실시간 1:1 대결 ================= */
 NET.pres=new Map(); NET.skew=0; let MYFR=null, RT=null, rtTimer=0, presTimer=0, presUnsub=null, invUnsub=null, presVis=false;
 window.addEventListener('pagehide',()=>{ if(RT) rtLeave().catch(()=>{}); });
+// 친구 접속 표시는 친구 · 대결 화면이나 선수 카드를 볼 때만 실시간으로 받음 (모든 접속 기록을 계속 받으면 무료 읽기 한도를 금방 넘김)
+let presSeen=0;
+function needPres(){ presSeen=Date.now(); if(presUnsub||!NET.uid) return; presUnsub=FBK.watchPresence(m=>{ NET.pres=m; if(window.renderFriends) renderFriends(); if(window.renderArena) renderArena(); }); }
+function presIdle(){ if(!presUnsub) return; const vis=id=>{ const e=$(id); return e&&!e.classList.contains('hidden'); }; if(vis('duels')||vis('arena')||vis('pcardOv')) { presSeen=Date.now(); return; } if(Date.now()-presSeen>5*60e3){ try{ presUnsub(); }catch(e){} presUnsub=null; } }
+window.needPres=needPres;
 function stopOnline(){ clearInterval(presTimer); presTimer=0; try{ presUnsub&&presUnsub(); invUnsub&&invUnsub(); }catch(e){} presUnsub=invUnsub=null; NET.pres=new Map(); NET.rtInv=[]; }
 function myFriends(){ if(MYFR) return MYFR; const p=myProf(); return new Set(Array.isArray(p.fr)?p.fr:[]); }
 window.rkFriends=()=>window.rkOnlyFr&&ACC?new Set([...myFriends(),NET.uid]):null;
@@ -5651,10 +5611,11 @@ async function setFriend(uid,on){ const s=new Set(myFriends()); on?s.add(uid):s.
 function seasonTitles(){ const prev=prevSeason(), rows=[...NET.all].map(([id,v])=>({id,t:num(v&&v.ss&&v.ss[prev]&&v.ss[prev].t,1e9)})).filter(x=>x.t>0&&!isDev(x.id)).sort((a,b)=>b.t-a.t), i=rows.findIndex(x=>x.id===NET.uid); return i>=0&&i<3?[`${seasonName(prev)} ${i+1}위`]:[]; }
 function startOnline(){
   if(presTimer||!NET.uid) return;
-  const ping=async()=>{ if(document.hidden||!NET.uid) return; try{ const k=await FBK.ping(); if(k!=null) NET.skew=k; }catch(e){} };
-  ping(); presTimer=setInterval(ping,240e3); if(!presVis){ presVis=true; document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&presTimer&&NET.uid) FBK.ping().then(k=>{ if(k!=null) NET.skew=k; }).catch(()=>{}); }); }
-  presUnsub=FBK.watchPresence(m=>{ NET.pres=m; renderFriends(); if(window.renderArena) renderArena(); });
-  let first=true; invUnsub=FBK.roomInvites(NET.uid,list=>{ const now=Date.now()+NET.skew; list=list.filter(r=>(!r.at||!r.at.toMillis||now-r.at.toMillis()<15*60e3)&&/^[A-HJ-NP-Z2-9]{5}$/.test(r.id)&&/^[a-z0-9]+(#\d{1,2})?@1$/.test(String(r.key))&&songOfKey(r.key).song); const before=new Set((NET.rtInv||[]).map(r=>r.id)); NET.rtInv=list;
+  let skewDone=false; const ping=async()=>{ if(document.hidden||!NET.uid) return; try{ const k=await FBK.ping(!skewDone); if(k!=null){ NET.skew=k; skewDone=true; } }catch(e){} presIdle(); };
+  ping(); presTimer=setInterval(ping,240e3); if(!presVis){ presVis=true; document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&presTimer&&NET.uid) FBK.ping(false).catch(()=>{}); }); }
+  let first=true; invUnsub=FBK.roomInvites(NET.uid,list=>{ const now=Date.now()+NET.skew;
+    for(const r of list) if(r.at&&r.at.toMillis&&now-r.at.toMillis()>60*60e3) FBK.roomDel(r.id).catch(()=>{});   // 1시간 넘게 버려진 초대 방은 정리
+    list=list.filter(r=>(!r.at||!r.at.toMillis||now-r.at.toMillis()<15*60e3)&&/^[A-HJ-NP-Z2-9]{5}$/.test(r.id)&&/^[a-z0-9]+(#\d{1,2})?@1$/.test(String(r.key))&&songOfKey(r.key).song); const before=new Set((NET.rtInv||[]).map(r=>r.id)); NET.rtInv=list;
     if(!first) for(const r of list) if(!before.has(r.id)) invitePop(r); first=false; renderRT(); renderDuelBadge(); });
 }
 function frItem(uid){
@@ -5676,8 +5637,9 @@ $('frAdd').onclick=async()=>{ const id=$('frId').value.trim(), m=$('frMsg'); m.c
   try{ const uid=await FBK.lookupUid(id); if(!uid) throw {code:'no-user'}; if(uid===NET.uid) throw {code:'self'}; await setFriend(uid,true); $('frId').value=''; m.classList.add('ok'); m.textContent=`${id}님을 친구로 추가했어요`; }catch(e){ m.textContent=duelErr(e); } };
 $('frId').addEventListener('keydown',e=>{ if(e.key==='Enter') $('frAdd').click(); });
 // ----- 실시간 대결 -----
-async function rtInvite(uid){ if(uid===NET.uid) throw {code:'self'}; if(!online(uid)) throw {code:'offline'}; await rtCreate(uid); if(window.openArena&&$('arena').classList.contains('hidden')) openArena(); }
-NET.rtNo=new Set();
+async function rtInvite(uid){ if(uid===NET.uid) throw {code:'self'}; if(!online(uid)){ const t=await FBK.presenceOf(uid); if(t) NET.pres.set(uid,t); } if(!online(uid)) throw {code:'offline'}; await rtCreate(uid); if(window.openArena&&$('arena').classList.contains('hidden')) openArena(); }
+NET.rtNo=(()=>{ try{ return new Set(JSON.parse(localStorage.getItem('sb.rtNo')||'[]').slice(-50)); }catch(e){ return new Set(); } })();   // 거절한 대전 신청은 새로고침해도 다시 뜨지 않게
+const rtNoSave=()=>{ try{ localStorage.setItem('sb.rtNo',JSON.stringify([...NET.rtNo].slice(-50))); }catch(e){} };
 function invitePop(r){   // 어느 화면에서든: 수락 / 거절 (플레이 중엔 알림만)
   if(run&&!run.ended){ toast(`⚡ ${nickOf(r.host)}님이 실시간 대전을 신청했어요 · 곡이 끝나면 대결 화면에서 참가하세요`); return; }
   let el=$('rtPop'); if(!el){ el=document.createElement('div'); el.id='rtPop'; document.body.appendChild(el); }
@@ -5685,7 +5647,7 @@ function invitePop(r){   // 어느 화면에서든: 수락 / 거절 (플레이 �
   el.className='rtpop'; el.innerHTML=`<div class="rtpbox"><div class="rtpav">${ph?`<img src="${ph}" alt="">`:''}</div><b></b><p>실시간 대전 신청</p><small>${song?song.title:'?'} ${tier(lv||1)[0]}</small><div class="rtpbtn"><button type="button" class="ok">수락</button><button type="button" class="no">거절</button></div></div>`;
   el.querySelector('b').textContent=nk; if(!ph) el.querySelector('.rtpav').textContent=nk.slice(0,1).toUpperCase();
   el.querySelector('.ok').onclick=()=>{ uiTick(); el.remove(); if(window.openArena) openArena(); rtJoin(r.id).catch(err=>{ $('rtMsg').textContent=rtErr(err); }); };
-  el.querySelector('.no').onclick=()=>{ uiTick(); el.remove(); NET.rtNo.add(r.id); renderRT(); renderDuelBadge(); };
+  el.querySelector('.no').onclick=()=>{ uiTick(); el.remove(); NET.rtNo.add(r.id); rtNoSave(); renderRT(); renderDuelBadge(); };
 }
 const rtErr=e=>({'no-room':'그런 방이 없어요','room-full':'이미 시작했거나 꽉 찬 방이에요','own':'내가 만든 방이에요'})[e&&e.code]||FBK.errMsg(e);
 function genCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let c=''; for(let i=0;i<5;i++) c+=A[Math.floor(Math.random()*A.length)]; return c; }
@@ -5771,7 +5733,7 @@ function renderRT(){
   $('rtJoinRow').classList.toggle('hidden',!!RT);
   if(!RT){ box.innerHTML=''; return; }
   const room=RT.room, {song,lv}=room?songOfKey(room.key):{}, opp=room?(RT.role==='h'?room.guest:room.host):null;
-  let st=RT.closed?'방이 닫혔어요':!room?'방 여는 중…':room.state==='wait'?(room.inv?`${nickOf(room.inv)}님을 기다리는 중…`:'친구에게 방 코드를 알려주세요 · 상대를 기다리는 중…'):room.state==='ready'?(RT.role==='h'?`${nickOf(opp)}님이 들어왔어요!`:'방장이 시작하기를 기다리는 중…'):room.state==='play'?'대결 중':'대결 끝';
+  let st=RT.closed?'방이 닫혔어요':!room?'방 여는 중…':room.state==='wait'?(room.inv?`${nickOf(room.inv)}님을 기다리는 중…`:'친구에게 방 코드를 알려 주세요 · 상대를 기다리는 중…'):room.state==='ready'?(RT.role==='h'?`${nickOf(opp)}님이 들어왔어요!`:'방장이 시작하기를 기다리는 중…'):room.state==='play'?'대결 중':'대결 끝';
   box.innerHTML=`<div class="rtcard"><div><span class="rtcode">${escH(RT.code)}</span><small>${song?song.title+' '+tier(lv)[0]:''}</small></div><p>${st}</p><div class="acts"></div></div>`;
   const acts=box.querySelector('.acts'), bt=(t,fn)=>{ const x=document.createElement('button'); x.type='button'; x.className='tchip'; x.textContent=t; x.onclick=fn; acts.append(x); };
   if(room&&RT.role==='h'&&room.state==='ready') bt('시작',()=>FBK.roomStart(RT.code).catch(e=>{ $('rtMsg').textContent=FBK.errMsg(e); }));
@@ -5804,7 +5766,7 @@ function renderPass(){
   $('passNote').textContent=`${seasonName(sid)} · ${seasonLeft()}일 남음`;
   box.innerHTML=`<div class="pass"><div class="ptier">${t}<small>/ ${PASS_MAX}단계</small></div><div class="pbar"><i style="width:${t>=PASS_MAX?100:Math.round(100*(x%PASS_XP)/PASS_XP)}%"></i></div><small>${t>=PASS_MAX?'모든 단계 달성!':`다음 단계까지 ${PASS_XP-x%PASS_XP} XP`}${nx?` · ${nx}단계 보상 칭호 「${passReward(nx,sid)}」`:''}</small>
     <div class="psteps">${[5,10,15,20].map(k=>`<span class="${t>=k?'on':''}">${k}단계 · ${passReward(k,sid)}${k===20?' + 글러브 「왕실」':''}</span>`).join('')}</div>
-    <small>한 판 칠 때마다 XP가 쌓여요 (클리어 · 점수 · 도전 성공 · 메들리 · 서바이벌). 매달 새 시즌에 0부터 다시 시작해요.</small></div>`;
+    <small>한 판 칠 때마다 XP가 쌓여요 (클리어 · 점수 · 도전 성공 · 메들리 · 서바이벌). 매달 새 시즌이 시작되면 0부터 다시 모아요.</small></div>`;
 }
 { const st=document.createElement('style'); st.textContent=`
 .pass{padding:12px 14px;border:1px solid rgba(227,196,122,.35);border-radius:var(--r-md);background:rgba(60,45,18,.25)}
@@ -5819,7 +5781,7 @@ window.seqRecord=async function(q,cleared,rounds){
   if(q.kind==='sv'){ const o=mine.sv&&mine.sv.w===weekId()?mine.sv:null; if(!o||q.total>num(o.s,1e9)) patch.sv={w:weekId(),s:q.total,r:rounds}; }
   else { const md=JSON.parse(JSON.stringify(mine.md||{})), o=md[q.id]&&md[q.id].m===sid?md[q.id]:null; if(!o||q.total>num(o.s,1e8)||(cleared&&!o.c)){ md[q.id]={m:sid,s:Math.max(q.total,o?num(o.s,1e8):0),c:!!(cleared||(o&&o.c))}; patch.md=md; } }
   m.textContent='기록하는 중…';
-  try{ await saveMine(Object.assign({best:mine.best||{}},patch)); m.classList.add('ok'); m.textContent=(patch.md||patch.sv?'최고 기록 갱신! 랭킹 → 모드에서 확인':'기록 저장')+` · 시즌 XP +${rounds*60+(cleared?120:0)}`; passCheck(); }
+  try{ await saveMine(Object.assign({best:mine.best||{}},patch)); m.classList.add('ok'); m.textContent=(patch.md||patch.sv?'최고 기록 갱신! 랭킹 → 모드 탭에서 확인하세요':'기록 저장')+` · 시즌 XP +${rounds*60+(cleared?120:0)}`; passCheck(); }
   catch(e){ m.classList.remove('ok'); m.textContent='저장하지 못했어요: '+FBK.errMsg(e); }
 };
 
