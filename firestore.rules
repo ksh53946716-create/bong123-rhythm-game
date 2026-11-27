@@ -92,6 +92,7 @@ service cloud.firestore {
         && request.resource.data.state == 'wait' && request.resource.data.guest == null && request.resource.data.go == null
         && request.resource.data.hs == 0 && request.resource.data.gs == 0 && request.resource.data.hd == false && request.resource.data.gd == false
         && request.resource.data.key is string && request.resource.data.key.size() <= 40 && request.resource.data.at == request.time
+        && rid.matches('^[A-HJ-NP-Z2-9]{5}$') && request.resource.data.key.matches('^[a-z0-9]+(#[0-9]{1,2})?@1$')
         && (request.resource.data.inv == null || request.resource.data.inv is string);
       allow update: if signedIn() && (
           (resource.data.host == request.auth.uid
